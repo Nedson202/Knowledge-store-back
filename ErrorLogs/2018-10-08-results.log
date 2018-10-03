@@ -1,0 +1,62 @@
+2018-10-08 11:40:09 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 11:50:54 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 11:50:54 [Logs!] error: SequelizeDatabaseError: syntax error at or near "["
+    at Query.formatError (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/sequelize/lib/dialects/postgres/query.js:363:16)
+    at query.catch.err (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/sequelize/lib/dialects/postgres/query.js:86:18)
+    at tryCatcher (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/util.js:16:23)
+    at Promise._settlePromiseFromHandler (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/promise.js:512:31)
+    at Promise._settlePromise (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/promise.js:569:18)
+    at Promise._settlePromise0 (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/promise.js:614:10)
+    at Promise._settlePromises (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/promise.js:690:18)
+    at _drainQueueStep (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/async.js:138:12)
+    at _drainQueue (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/async.js:131:9)
+    at Async._drainQueues (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/async.js:147:5)
+    at Immediate.Async.drainQueues (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/async.js:17:14)
+    at runCallback (timers.js:794:20)
+    at tryOnImmediate (timers.js:752:5)
+    at processImmediate [as _immediateCallback] (timers.js:729:5)
+
+2018-10-08 11:50:58 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 11:51:22 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 11:51:27 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 11:51:36 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 11:51:37 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 11:51:47 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 11:51:55 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 11:52:22 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 11:52:24 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 11:52:35 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 11:52:37 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 11:55:35 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 11:55:35 [Logs!] error: SequelizeDatabaseError: relation "Books" does not exist
+    at Query.formatError (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/sequelize/lib/dialects/postgres/query.js:363:16)
+    at query.catch.err (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/sequelize/lib/dialects/postgres/query.js:86:18)
+    at tryCatcher (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/util.js:16:23)
+    at Promise._settlePromiseFromHandler (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/promise.js:512:31)
+    at Promise._settlePromise (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/promise.js:569:18)
+    at Promise._settlePromise0 (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/promise.js:614:10)
+    at Promise._settlePromises (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/promise.js:690:18)
+    at _drainQueueStep (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/async.js:138:12)
+    at _drainQueue (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/async.js:131:9)
+    at Async._drainQueues (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/async.js:147:5)
+    at Immediate.Async.drainQueues (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/async.js:17:14)
+    at runCallback (timers.js:794:20)
+    at tryOnImmediate (timers.js:752:5)
+    at processImmediate [as _immediateCallback] (timers.js:729:5)
+
+2018-10-08 11:55:54 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
