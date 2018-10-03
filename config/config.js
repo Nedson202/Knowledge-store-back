@@ -24,7 +24,4 @@ module.exports = {
   production: {
     use_env_variable: 'DATABASE_URL'
   },
-  secretkey: process.env.JWTSECRET,
-  admin: process.env.ADMIN,
-  adminEmail: process.env.ADMINEMAIL,
 };

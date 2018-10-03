@@ -6,14 +6,21 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING
     },
     review: DataTypes.STRING,
-    rating: DataTypes.FLOAT
-  });
+    rating: DataTypes.FLOAT,
+    likes: DataTypes.INTEGER,
+  }, { paranoid: true });
 
   Review.associate = (models) => {
     Review.belongsTo(models.Book, {
       foreignKey: 'bookId',
       onDelete: 'CASCADE',
-      as: 'bookReviews'
+      as: 'book'
+    });
+
+    Review.hasMany(models.Reply, {
+      foreignKey: 'reviewId',
+      onDelete: 'CASCADE',
+      as: 'bookReplies'
     });
 
     Review.belongsTo(models.User, {

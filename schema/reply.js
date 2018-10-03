@@ -1,34 +1,37 @@
 import {
   GraphQLObjectType,
   GraphQLString,
+  GraphQLInt,
 } from 'graphql';
 
 import {
   GraphQLDateTime,
 } from 'graphql-iso-date';
 
-const UserType = new GraphQLObjectType({
-  name: 'User',
+
+const ReplyType = new GraphQLObjectType({
+  name: 'Reply',
   fields: () => ({
     id: {
       type: GraphQLString
     },
-    username: {
+    reply: { type: GraphQLString },
+    replier: {
       type: GraphQLString
     },
-    email: {
+    picture: {
       type: GraphQLString
     },
-    role: {
+    avatarColor: {
       type: GraphQLString
     },
-    token: {
+    likes: {
+      type: GraphQLInt
+    },
+    userId: {
       type: GraphQLString
     },
-    message: {
-      type: GraphQLString
-    },
-    socialId: {
+    reviewId: {
       type: GraphQLString
     },
     createdAt: {
@@ -40,4 +43,4 @@ const UserType = new GraphQLObjectType({
   })
 });
 
-export default UserType;
+export default ReplyType;

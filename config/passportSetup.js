@@ -12,18 +12,21 @@ const saveUser = async (profile, done) => {
     const payload = {
       id: currentUser.id,
       username: currentUser.username,
-      email: currentUser.email
+      email: currentUser.email,
+      role: currentUser.role,
+      picture: currentUser.picture,
+      isVerified: currentUser.isVerified,
     };
     const token = utils.helper.generateToken(payload);
     payload.token = token;
-    done(null, payload);
+    return done(null, payload);
   }
-
   const newUser = {
     username: profile.displayName,
-    email: `${profile.name.familyName}@gmail.com`,
+    email: profile.emails[0].value,
     password: '123eeR456',
     socialId: profile.id,
+    picture: profile.photos[0].value,
   };
   UserController.addUser(newUser).then((user) => {
     done(null, user);

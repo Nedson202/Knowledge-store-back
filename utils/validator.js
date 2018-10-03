@@ -2,7 +2,7 @@ class Validator {
   static validateData(data) {
     const { username, password } = data;
     const validationError = {};
-    const pattern = /^[A-Za-z0-9!@#$%^&*()_]{6,10}$/;
+    const pattern = /^[A-Za-z0-9!@#$%^&*()_]{6,20}$/;
     try {
       if (!username || !username.trim()) {
         validationError.username = 'Username is required';
@@ -54,15 +54,12 @@ class Validator {
     const validationError = {};
     try {
       if (!name || !name.trim()) validationError.name = 'book name is required';
-      if (!genre || !genre.trim()) validationError.genre = 'genre is required';
-      if (!year) {
+      if (!genre.length) validationError.genre = 'genre is required';
+      if (!year || !year.trim()) {
         validationError.year = 'book published year is required';
       }
-      if (typeof year !== 'number' || year.toString().length > 4) {
-        validationError.year = 'book published year is invalid';
-      }
-      if (!author || !author.trim()) {
-        validationError.author = 'book published year is required';
+      if (!author.length) {
+        validationError.author = 'book author(s) is required';
       }
       throw validationError;
     } catch (error) {
@@ -87,6 +84,24 @@ class Validator {
       }
       if (rating >= 5.0) {
         validationError.rating = 'Rating can not be more than 5.0';
+      }
+      throw validationError;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  static validateAddReply(data) {
+    const {
+      reviewId, reply
+    } = data;
+    const validationError = {};
+    try {
+      if (!reviewId || !reviewId.trim()) {
+        validationError.reviewId = 'reviewId is required';
+      }
+      if (!reply || !reply.trim()) {
+        validationError.reply = 'review is required';
       }
       throw validationError;
     } catch (error) {

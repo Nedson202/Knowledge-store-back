@@ -1,19 +1,9 @@
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('Reviews', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('Favorites', {
     id: {
       allowNull: false,
       primaryKey: true,
       type: Sequelize.STRING
-    },
-    review: {
-      type: Sequelize.TEXT
-    },
-    rating: {
-      type: Sequelize.FLOAT
-    },
-    likes: {
-      type: Sequelize.INTEGER,
-      defaultValue: 0
     },
     createdAt: {
       allowNull: false,
@@ -29,7 +19,7 @@ module.exports = {
       references: {
         model: 'Books',
         key: 'id',
-        as: 'bookId',
+        as: 'favoriteBook',
       },
     },
     userId: {
@@ -38,7 +28,7 @@ module.exports = {
       references: {
         model: 'Users',
         key: 'id',
-        as: 'userId',
+        as: 'favoriteOwner',
       },
     },
     deletedAt: {
@@ -46,5 +36,5 @@ module.exports = {
       type: Sequelize.DATE
     },
   }),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('Reviews') // eslint-disable-line
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('Favorites') // eslint-disable-line
 };

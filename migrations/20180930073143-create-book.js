@@ -12,12 +12,24 @@ module.exports = {
       unique: true
     },
     genre: {
-      type: Sequelize.STRING
+      type: Sequelize.ARRAY(Sequelize.STRING)
     },
-    author: {
-      type: Sequelize.STRING
+    authors: {
+      type: Sequelize.ARRAY(Sequelize.STRING)
+    },
+    downloadable: {
+      type: Sequelize.ARRAY(Sequelize.STRING)
     },
     year: {
+      type: Sequelize.STRING
+    },
+    description: {
+      type: Sequelize.TEXT
+    },
+    image: {
+      type: Sequelize.STRING
+    },
+    pageCount: {
       type: Sequelize.STRING
     },
     userId: {
@@ -30,7 +42,11 @@ module.exports = {
     updatedAt: {
       allowNull: false,
       type: Sequelize.DATE
-    }
+    },
+    deletedAt: {
+      allowNull: true,
+      type: Sequelize.DATE
+    },
   }),
   down: (queryInterface, Sequelize) => queryInterface.dropTable('Books') // eslint-disable-line
 };

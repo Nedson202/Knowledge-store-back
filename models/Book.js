@@ -19,15 +19,31 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    author: {
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    image: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    pageCount: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    authors: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: false
+    },
+    downloadable: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: true
     },
     genre: {
-      type: DataTypes.STRING,
+      type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: false
     },
-  }, {});
+  }, { paranoid: true });
 
   Book.associate = (models) => {
     Book.belongsTo(models.User, {
@@ -37,6 +53,11 @@ module.exports = (sequelize, DataTypes) => {
     Book.hasMany(models.Review, {
       foreignKey: 'bookId',
       as: 'bookReviews',
+      onDelete: 'cascade',
+    });
+    Book.hasMany(models.Favorite, {
+      foreignKey: 'bookId',
+      as: 'favoriteBook',
       onDelete: 'cascade',
     });
     // associations can be defined here

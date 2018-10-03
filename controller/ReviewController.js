@@ -1,5 +1,8 @@
 import models from '../models';
 import utils from '../utils';
+import stackTracer from '../helper/stackTracer';
+import { retrieveBook } from '../helper/elasticSearch';
+import BookController from './BookController';
 
 const { helper, validator } = utils;
 
@@ -10,20 +13,78 @@ class ReviewController {
       ...newData
     });
     try {
+      let retrievedBook;
       if (!authStatus) {
         throw new Error('Permission denied, you need to signup/login');
       }
-      const book = await models.Book.find({
-        where: {
-          id: newData.bookId
-        }
-      });
+      retrievedBook = await retrieveBook(newData.bookId);
+
+      if (retrievedBook) await BookController.addBookIfNotExist(retrievedBook);
+      if (!retrievedBook) {
+        retrievedBook = await models.Book.find({
+          where: {
+            id: newData.bookId
+          }
+        });
+      }
+      if (!retrievedBook) throw new Error('Book not available');
       newData.id = helper.generateId();
       newData.userId = authStatus.id;
       if (Object.keys(errors).length !== 0) {
         throw new Error(JSON.stringify(errors));
       }
-      return book && await models.Review.create(newData);
+      return retrievedBook && await models.Review.create(newData);
+    } catch (error) {
+      stackTracer(error);
+      return error;
+    }
+  }
+
+  static async editReview(data, authStatus) {
+    const {
+      review, rating, reviewId, like
+    } = data;
+    try {
+      if (!authStatus) {
+        throw new Error('Permission denied, you need to signup/login');
+      }
+      const editedReview = await models.Review.update(
+        {
+          review, rating, likes: models.sequelize.literal(`likes + ${like}`), liked: true
+        },
+        {
+          returning: true,
+          where: {
+            id: reviewId,
+            userId: authStatus.id
+          }
+        }
+      );
+      if (!editedReview) throw new Error('Review not found');
+      return editedReview;
+    } catch (error) {
+      stackTracer(error);
+      return error;
+    }
+  }
+
+  static async deleteReview(data, authStatus) {
+    const { reviewId } = data;
+    try {
+      if (!authStatus) {
+        throw new Error('Permission denied, you need to signup/login');
+      }
+      const deletedReview = await models.Review.destroy(
+        {
+          returning: true,
+          where: {
+            id: reviewId,
+            userId: authStatus.id
+          }
+        }
+      );
+      if (!deletedReview) throw new Error('Review not found');
+      return deletedReview;
     } catch (error) {
       return error;
     }
@@ -31,8 +92,14 @@ class ReviewController {
 
   static async getReview(reviewId) {
     try {
-      return await models.Review.findById(reviewId);
+      return await models.Review.findOne({
+        where: {
+          id: reviewId
+        },
+        order: [['createdAt', 'ASC']]
+      });
     } catch (error) {
+      stackTracer(error);
       return error;
     }
   }
@@ -47,12 +114,12 @@ class ReviewController {
         include: [{
           model: Users,
           as: 'reviewer',
-          attributes: ['username']
+          attributes: ['username', 'picture', 'avatarColor']
         }]
       });
-      if (reviews.length === 0) throw new Error('No reviews found');
-      return reviews;
+      return !reviews.length ? [] : reviews;
     } catch (error) {
+      stackTracer(error);
       return error;
     }
   }
@@ -72,9 +139,16 @@ class ReviewController {
         id: review.id,
         review: review.review,
         rating: review.rating,
-        reviewer: review.reviewer.username
+        userId: review.userId,
+        bookId: review.bookId,
+        reviewer: review.reviewer.username,
+        picture: review.reviewer.picture || '',
+        avatarColor: review.reviewer.avatarColor,
+        likes: review.likes,
+        createdAt: review.createdAt,
+        updatedAt: review.updatedAt,
       }));
-      return newReviews;
+      return newReviews || [];
     } catch (error) {
       return error;
     }

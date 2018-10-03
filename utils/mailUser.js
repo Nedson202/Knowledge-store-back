@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import models from '../models';
-import stackTracer from '../helper/stackTracer';
+import { logger } from '../helper/logger';
 
 const mailUser = async (user, token) => {
   const { username, email } = user;
@@ -11,6 +11,8 @@ const mailUser = async (user, token) => {
       pass: process.env.NODE_MAILER_PASS
     }
   });
+  const redirectUrl = process.env.NODE_ENV.match('production')
+    ? process.env.PROD_SERVER : 'http://localhost:3000';
   const mailOptions = {
     from: 'knowledgestore@gmail.com',
     to: email,
@@ -37,7 +39,7 @@ const mailUser = async (user, token) => {
             style="margin-bottom: 45px;"
           >Click on the button below to confirm your email address</p>
           <a
-          href="http://localhost:3000/verify-email?${token}" style="border: 1px solid black; padding: 10px; border-radius: 20px;
+          href="${redirectUrl}?verify-email=${token}" style="border: 1px solid black; padding: 10px; border-radius: 20px;
             color: #444444;
             cursor: pointer;
             width: 50%;
@@ -64,10 +66,14 @@ const mailUser = async (user, token) => {
   try {
     await transporter.sendMail(mailOptions, async (error) => {
       if (!error) {
-        const oneUser = await models.User.findOne({ where: { username } });
+        const oneUser = await models.User.findOne({
+          where: {
+            username: username.toLowerCase()
+          }
+        });
         await oneUser.update({ isEmailSent: 'true' });
       }
-      stackTracer(error);
+      logger.error(error);
     });
   } catch (error) {
     return error;

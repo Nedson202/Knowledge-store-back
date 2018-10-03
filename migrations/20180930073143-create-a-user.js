@@ -45,6 +45,9 @@ module.exports = {
     socialId: {
       type: Sequelize.STRING
     },
+    avatarColor: {
+      type: Sequelize.STRING
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

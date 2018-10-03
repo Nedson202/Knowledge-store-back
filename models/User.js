@@ -54,12 +54,21 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true
     },
+    avatarColor: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
   }, { paranoid: true });
 
   User.associate = (models) => {
     User.hasMany(models.Book, {
       foreignKey: 'userId',
       as: 'users',
+      onDelete: 'CASCADE'
+    });
+    User.hasMany(models.Review, {
+      foreignKey: 'userId',
+      as: 'reviewer',
       onDelete: 'CASCADE'
     });
     // associations can be defined here

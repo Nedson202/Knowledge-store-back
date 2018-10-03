@@ -7,12 +7,20 @@ import {
 } from 'graphql';
 import BookType from './books';
 // import AuthorType from './author';
-import UserType from './user';
 import ReviewType from './review';
 import Mutation from './mutations/index';
-import UserController from '../controller/UserController';
 import BookController from '../controller/BookController';
 import ReviewController from '../controller/ReviewController';
+import utils from '../utils';
+import GenreType from './genre';
+import GenreController from '../controller/GenreController';
+import UserType from './user';
+import UserController from '../controller/UserController';
+import BookFavoritesController from '../controller/BookFavoritesController';
+import GoogleBooks from '../controller/GooglBooks';
+import { updateBook } from '../helper/elasticSearch';
+
+const { helper } = utils;
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
@@ -21,64 +29,53 @@ const RootQuery = new GraphQLObjectType({
       type: BookType,
       args: {
         id: {
-          type: GraphQLID
+          type: GraphQLString
         }
       },
       resolve(parent, args) {
-        return BookController.getBook(args.id);
+        return GoogleBooks.retrieveBookProfile(args.id);
+        // return retrieveBook(args.id);
+        // return BookController.getBook(args.id);
       }
     },
     books: {
       type: new GraphQLList(BookType),
       resolve() {
-        return BookController.getBooks();
+        return GoogleBooks.completeSearch('', {
+          from: 10,
+          size: 20
+        });
+      }
+    },
+    // books: {
+    //   type: new GraphQLList(BookType),
+    //   resolve() {
+    //     return BookController.getBooks();
+    //   }
+    // },
+    getGenres: {
+      type: new GraphQLList(GenreType),
+      resolve() {
+        return GenreController.getGenres();
       }
     },
     usersBooks: {
       type: new GraphQLList(BookType),
-      args: {
-        userId: {
-          type: GraphQLString
-        }
-      },
-      resolve(parent, args) {
-        return BookController.getUsersBooks(args.userId);
+      resolve(parent, args, context) {
+        const { authorization } = context.headers;
+        const authorized = helper.authenticate(authorization);
+        return BookController.getUsersBooks(authorized);
       }
     },
-    user: {
-      type: UserType,
+    filterBooks: {
+      type: new GraphQLList(BookType),
       args: {
-        username: {
-          type: GraphQLString
-        },
-        password: {
+        search: {
           type: GraphQLString
         },
       },
       resolve(parent, args) {
-        return UserController.authenticateUser(args);
-      }
-    },
-    // author: {
-    //   type: AuthorType,
-    //   args: {
-    //     id: {
-    //       type: GraphQLID
-    //     }
-    //   },
-    //   resolve(parent, args) {
-    //     // return _.find(authors, {id: args.id})
-    //   }
-    // },
-    review: {
-      type: ReviewType,
-      args: {
-        bookId: {
-          type: GraphQLString
-        }
-      },
-      resolve() {
-        // return _.filter(reviews, {bookId: args.bookId})
+        return BookController.filterBooks(args);
       }
     },
     reviews: {
@@ -89,9 +86,93 @@ const RootQuery = new GraphQLObjectType({
         }
       },
       resolve(parent, args) {
-        // return _.filter(reviews, {bookId: parent.id})
-        // return reviews.filter(review => review.bookId === parent.id)[1]
         return ReviewController.getBookReviews(args.bookId);
+      }
+    },
+    fetchUsers: {
+      type: new GraphQLList(UserType),
+      args: {
+        type: {
+          type: GraphQLString
+        }
+      },
+      resolve(parent, args, context) {
+        const { authorization } = context.headers;
+        const authorized = helper.authenticate(authorization);
+        return UserController.getAllUsers(args, authorized);
+      }
+    },
+    sendVerificationEmail: {
+      type: UserType,
+      args: {
+        email: {
+          type: GraphQLString
+        }
+      },
+      resolve(parent, args) {
+        return UserController.sendVerificationEmail(args);
+      }
+    },
+    forgotPassword: {
+      type: UserType,
+      args: {
+        email: {
+          type: GraphQLString
+        }
+      },
+      resolve(parent, args) {
+        return UserController.forgotPassword(args);
+      }
+    },
+    favoriteBooks: {
+      type: new GraphQLList(BookType),
+      resolve(parent, args, context) {
+        const { authorization } = context.headers;
+        const authorized = helper.authenticate(authorization);
+        return BookFavoritesController.getFavorites(authorized);
+      }
+    },
+    searchBooks: {
+      type: new GraphQLList(BookType),
+      args: {
+        searchQuery: {
+          type: GraphQLString
+        },
+        from: {
+          type: GraphQLID
+        },
+        size: {
+          type: GraphQLID
+        }
+      },
+      resolve(parent, args) {
+        const { from, size } = args;
+        return GoogleBooks.completeSearch(args.searchQuery, {
+          from,
+          size
+        });
+        // return elasticItemSearch(args.searchQuery);
+        // return GoogleBooks.searchBooks(args.searchQuery);
+      }
+    },
+    updateBooks: {
+      type: new GraphQLList(BookType),
+      args: {
+        id: {
+          type: GraphQLString
+        },
+        name: {
+          type: GraphQLString
+        },
+        year: {
+          type: GraphQLString
+        }
+      },
+      resolve(parent, args) {
+        return updateBook(args);
+        // return GoogleBooks.completeSearch(args.searchQuery);
+        // return elasticItemSearch(args.searchQuery);
+        // return GoogleBooks.searchBooks(args);
       }
     },
   }

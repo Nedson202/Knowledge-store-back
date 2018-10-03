@@ -1,7 +1,6 @@
 import nodemailer from 'nodemailer';
 
-const emailHandler = async (payload) => {
-  const { username, email, token } = payload;
+const emailHandler = async ({ username, email, token }) => {
   try {
     const transporter = nodemailer.createTransport({
       service: process.env.NODE_MAILER_SERVICE,
@@ -10,6 +9,8 @@ const emailHandler = async (payload) => {
         pass: process.env.NODE_MAILER_PASS
       }
     });
+    const redirectUrl = process.env.NODE_ENV.match('production')
+      ? process.env.PROD_SERVER : 'http://localhost:3000';
     const mailOptions = {
       from: process.env.NODE_MAILER_USER,
       to: email,
@@ -36,7 +37,7 @@ const emailHandler = async (payload) => {
           <p>We learnt you lost your password.</p>
           <p>Do not worry because we have travelled far and wide to offer you the help needed.</p>
           <p>Use the button below to reset your password</p>
-          <a href="http://localhost:3000/password-reset?${token}" style="border: 1px solid #000;
+          <a href="${redirectUrl}/password-reset?token=${token}" style="border: 1px solid #000;
       padding: 15px;
       border-radius: 30px;
       color: #444444;
