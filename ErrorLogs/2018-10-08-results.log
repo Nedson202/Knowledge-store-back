@@ -60,3 +60,135 @@
 
 2018-10-08 11:55:54 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
 
+2018-10-08 22:38:23 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:47:07 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:47:59 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:48:05 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:48:07 [Logs!] error: Error: {"password":"Minimum password length is 6","email":"Email format is invalid"}
+    at Function._callee$ (/Users/albertsam/Downloads/the-knowledge-store-server/controller/UserController.js:16:51)
+    at tryCatch (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/regenerator-runtime/runtime.js:65:40)
+    at Generator.invoke [as _invoke] (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/regenerator-runtime/runtime.js:303:22)
+    at Generator.prototype.(anonymous function) [as next] (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/regenerator-runtime/runtime.js:117:21)
+    at step (/Users/albertsam/Downloads/the-knowledge-store-server/controller/UserController.js:31:191)
+    at /Users/albertsam/Downloads/the-knowledge-store-server/controller/UserController.js:31:437
+    at new Promise (<anonymous>)
+    at Function.<anonymous> (/Users/albertsam/Downloads/the-knowledge-store-server/controller/UserController.js:31:99)
+    at Function.addUser (/Users/albertsam/Downloads/the-knowledge-store-server/controller/UserController.js:104:21)
+    at resolve (/Users/albertsam/Downloads/the-knowledge-store-server/schema/mutations/index.js:97:31)
+    at resolveFieldValueOrError (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/execution/execute.js:479:18)
+    at resolveField (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/execution/execute.js:446:16)
+    at /Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/execution/execute.js:262:18
+    at /Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/jsutils/promiseReduce.js:32:10
+    at Array.reduce (<anonymous>)
+    at promiseReduce (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/jsutils/promiseReduce.js:29:17)
+    at executeFieldsSerially (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/execution/execute.js:259:37)
+    at executeOperation (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/execution/execute.js:237:55)
+    at executeImpl (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/execution/execute.js:85:14)
+    at execute (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/execution/execute.js:62:229)
+    at /Users/albertsam/Downloads/the-knowledge-store-server/node_modules/express-graphql/dist/index.js:165:37
+    at <anonymous>
+
+2018-10-08 22:48:42 [Logs!] error: Error: {"email":"Email format is invalid"}
+    at Function._callee$ (/Users/albertsam/Downloads/the-knowledge-store-server/controller/UserController.js:16:51)
+    at tryCatch (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/regenerator-runtime/runtime.js:65:40)
+    at Generator.invoke [as _invoke] (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/regenerator-runtime/runtime.js:303:22)
+    at Generator.prototype.(anonymous function) [as next] (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/regenerator-runtime/runtime.js:117:21)
+    at step (/Users/albertsam/Downloads/the-knowledge-store-server/controller/UserController.js:31:191)
+    at /Users/albertsam/Downloads/the-knowledge-store-server/controller/UserController.js:31:437
+    at new Promise (<anonymous>)
+    at Function.<anonymous> (/Users/albertsam/Downloads/the-knowledge-store-server/controller/UserController.js:31:99)
+    at Function.addUser (/Users/albertsam/Downloads/the-knowledge-store-server/controller/UserController.js:104:21)
+    at resolve (/Users/albertsam/Downloads/the-knowledge-store-server/schema/mutations/index.js:97:31)
+    at resolveFieldValueOrError (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/execution/execute.js:479:18)
+    at resolveField (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/execution/execute.js:446:16)
+    at /Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/execution/execute.js:262:18
+    at /Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/jsutils/promiseReduce.js:32:10
+    at Array.reduce (<anonymous>)
+    at promiseReduce (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/jsutils/promiseReduce.js:29:17)
+    at executeFieldsSerially (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/execution/execute.js:259:37)
+    at executeOperation (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/execution/execute.js:237:55)
+    at executeImpl (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/execution/execute.js:85:14)
+    at execute (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/graphql/execution/execute.js:62:229)
+    at /Users/albertsam/Downloads/the-knowledge-store-server/node_modules/express-graphql/dist/index.js:165:37
+    at <anonymous>
+
+2018-10-08 22:49:23 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:49:45 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:49:56 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:49:59 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:50:19 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:50:23 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:50:26 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:50:27 [Logs!] error: SequelizeUniqueConstraintError: User with username exists
+    at Query.formatError (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/sequelize/lib/dialects/postgres/query.js:325:18)
+    at query.catch.err (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/sequelize/lib/dialects/postgres/query.js:86:18)
+    at tryCatcher (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/util.js:16:23)
+    at Promise._settlePromiseFromHandler (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/promise.js:512:31)
+    at Promise._settlePromise (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/promise.js:569:18)
+    at Promise._settlePromise0 (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/promise.js:614:10)
+    at Promise._settlePromises (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/promise.js:690:18)
+    at _drainQueueStep (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/async.js:138:12)
+    at _drainQueue (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/async.js:131:9)
+    at Async._drainQueues (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/async.js:147:5)
+    at Immediate.Async.drainQueues (/Users/albertsam/Downloads/the-knowledge-store-server/node_modules/bluebird/js/release/async.js:17:14)
+    at runCallback (timers.js:794:20)
+    at tryOnImmediate (timers.js:752:5)
+    at processImmediate [as _immediateCallback] (timers.js:729:5)
+
+2018-10-08 22:52:13 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:52:18 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:52:20 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:52:34 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:52:54 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:53:03 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:53:10 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:55:50 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:56:09 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:56:13 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:56:24 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:56:27 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:56:36 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:56:57 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:57:50 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:57:56 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:58:00 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:58:04 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:58:09 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:58:13 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:58:19 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:58:31 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+
+2018-10-08 22:58:37 [Logs!] info: App running on DEVELOPMENT mode and listening on port 4000 ...
+

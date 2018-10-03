@@ -7,7 +7,6 @@ import {
   GraphQLList,
   GraphQLInt,
 } from 'graphql';
-import log4js from 'log4js';
 import BookType from '../books';
 import AuthorType from '../author';
 import UserType from '../user';
@@ -95,6 +94,35 @@ export const Mutation = new GraphQLObjectType({
       },
       resolve(parent, args) {
         return UserController.addUser(args)
+      }
+    },
+    toggleAdmin: {
+      type: UserType,
+      args: {
+        userId: {
+          type: GraphQLString
+        },
+        adminAction: {
+          type: GraphQLString
+        }
+      },
+      resolve(parent, args, context) {
+        const { authorization } = context.headers;
+        const authorized = helper.authenticate(authorization);
+        return UserController.toggleAdmin(args, authorized);
+      }
+    },
+    deleteUser: {
+      type: UserType,
+      args: {
+        userId: {
+          type: GraphQLString
+        }
+      },
+      resolve(parent, args, context) {
+        const { authorization } = context.headers;
+        const authorized = helper.authenticate(authorization);
+        return UserController.deleteUser(args, authorized);
       }
     },
     changePassword: {

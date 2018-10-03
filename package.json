@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "babel-node index.js",
+    "start": "babel-node app.js",
     "start:dev": "nodemon --exec babel-node app.js",
     "revert:migrate": "sequelize db:migrate:undo:all && sequelize db:migrate",
     "test": ""

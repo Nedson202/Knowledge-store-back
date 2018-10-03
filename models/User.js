@@ -31,8 +31,9 @@ module.exports = (sequelize, DataTypes) => {
     role: {
       type: DataTypes.ENUM,
       values: [
-        'admin',
         'user',
+        'admin',
+        'super'
       ],
       allowNull: false,
       defaultValue: 'user'
@@ -52,8 +53,8 @@ module.exports = (sequelize, DataTypes) => {
     socialId: {
       type: DataTypes.STRING,
       allowNull: true
-    }
-  }, {});
+    },
+  }, { paranoid: true });
 
   User.associate = models => {
     User.hasMany(models.Book, {

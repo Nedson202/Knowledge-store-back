@@ -20,3 +20,5 @@ logs
 package-lock.json
 yarn-error.log
 
+# error reporter
+ErrorLogs
