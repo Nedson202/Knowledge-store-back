@@ -5,21 +5,25 @@ import logger from '../helper/logger';
 import stackTracer from '../helper/stackTracer';
 import mailUser from '../utils/mailUser';
 
-const { helper, validator, emailHandler } = utils;
+const { helper, validator: { validateSignup }, emailHandler } = utils;
 
 class UserController {
   static async addUser(user) {
-    const { username, email, password } = user;
+    const { username, email, password, socialId } = user;
     try {
-      const errors = validator.validateSignup({
-        username, email, password
+      const errors = validateSignup({
+        username,
+        email,
+        password
       });
-      if (Object.keys(errors).length !== 0) throw new Error(JSON.stringify(errors));
+      if (Object.keys(errors).length !== 0)
+        throw new Error(JSON.stringify(errors));
       const user = await models.User.create({
         id: helper.generateId(),
         username,
         email,
         password: bcrypt.hashSync(password, 10),
+        socialId
       });
       const payload = {
         id: user.id,
@@ -30,7 +34,7 @@ class UserController {
       mailUser(payload, token)
       payload.token = token;
       return payload;
-    } catch(error) {
+    } catch (error) {
       return error;
     }
   }
@@ -53,12 +57,12 @@ class UserController {
       }
       const payload = {
         id: user.id,
-        username,
+        username
       };
       const token = helper.generateToken(payload);
       payload.token = token;
       return payload;
-    } catch(error) {
+    } catch (error) {
       stackTracer(error);
       return error;
     }
@@ -68,7 +72,8 @@ class UserController {
     const { email } = user;
     try {
       const errors = validator.validateEmail({ email });
-      if (Object.keys(errors).length !== 0) throw new Error(JSON.stringify(errors))
+      if (Object.keys(errors).length !== 0)
+        throw new Error(JSON.stringify(errors));
       const user = await models.User.find({
         where: {
           email
@@ -76,17 +81,17 @@ class UserController {
       });
       const payload = {
         id: user.id,
-        email,
+        email
       };
       const token = helper.generateToken(payload);
       payload.token = token;
-      payload.username = user.username
+      payload.username = user.username;
       await emailHandler(payload);
       return {
         message: 'Password reset link has been sent to your email.',
         token
       };
-    } catch(error) {
+    } catch (error) {
       return error;
     }
   }
@@ -94,19 +99,20 @@ class UserController {
   static async changePassword(data, authStatus) {
     const { oldPassword, newPassword } = data;
     try {
-      if (!authStatus) throw new Error('Permission denied, you need to signup/login');
+      if (!authStatus)
+        throw new Error('Permission denied, you need to signup/login');
       const { id } = authStatus;
       const user = await UserController.findUser(false, id);
-      if (user && bcrypt.compareSync((oldPassword), user.password)) {
+      if (user && bcrypt.compareSync(oldPassword, user.password)) {
         await user.update({
           password: bcrypt.hashSync(newPassword, 10)
         });
         return {
-          message: 'Password change was successful.',
+          message: 'Password change was successful.'
         };
       }
       throw new Error('Sorry passwords do not match');
-    } catch(error) {
+    } catch (error) {
       return error;
     }
   }
@@ -127,7 +133,23 @@ class UserController {
       });
       if (!user) throw new Error('User not found');
       return user;
-    } catch(error) {
+    } catch (error) {
+      return error;
+    }
+  }
+
+  static async checkUserExists(socialId) {
+    try {
+      const user = await models.User.find({
+        where: {
+          socialId
+        }
+      });
+      if (!user) {
+        return {}
+      }
+      return user;
+    } catch (error) {
       return error;
     }
   }

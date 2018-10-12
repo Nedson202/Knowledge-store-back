@@ -49,6 +49,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 'false'
     },
+    socialId: {
+      type: DataTypes.STRING,
+      allowNull: true
+    }
   }, {});
 
   User.associate = models => {

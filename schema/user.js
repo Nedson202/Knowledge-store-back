@@ -23,6 +23,9 @@ const UserType = new GraphQLObjectType({
     },
     message: {
       type: GraphQLString
+    },
+    socialId: {
+      type: GraphQLString
     }
   })
 });
