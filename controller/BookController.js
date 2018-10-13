@@ -1,32 +1,38 @@
 import models from '../models';
 import utils from '../utils';
-import logger from '../helper/logger';
+import stackTracer from '../helper/stackTracer';
 
 const { helper, validator } = utils;
 
 class BookController {
   static async addBook(data, authStatus) {
-    data.id = helper.generateId();
-    data.userId = authStatus.id;
+    const newData = data;
+    newData.id = helper.generateId();
+    newData.userId = authStatus.id;
     const errors = validator.validateAddBook({
-      ...data
+      ...newData
     });
     try {
-      if (!authStatus) throw new Error('Permission denied, you need to signup/login');
-      if (Object.keys(errors).length !== 0) throw new Error(JSON.stringify(errors));
-      return await models.Book.create(data);
+      if (!authStatus) {
+        throw new Error('Permission denied, you need to signup/login');
+      }
+      if (Object.keys(errors).length !== 0) {
+        throw new Error(JSON.stringify(errors));
+      }
+      return await models.Book.create(newData);
     } catch (error) {
-      logger.error(error);
+      stackTracer(error);
       return error;
     }
   }
+
   static async getBooks() {
     try {
       const books = await models.Book.findAll();
       if (!books) throw new Error('No books available');
       return books;
     } catch (error) {
-      logger.error(process.cwd(), error);
+      stackTracer(error);
       return error;
     }
   }
@@ -39,8 +45,9 @@ class BookController {
         }
       });
       if (!usersBooks) throw new Error('you have no books yet');
-      return usersBooks
+      return usersBooks;
     } catch (error) {
+      stackTracer(error);
       return error;
     }
   }
@@ -51,22 +58,28 @@ class BookController {
       if (!book) throw new Error('No book found');
       return book;
     } catch (error) {
+      stackTracer(error);
       return error;
     }
   }
 
   static async updateBook(data, authStatus) {
     try {
-      if (!authStatus) throw new Error('Permission denied, you need to signup/login');
+      if (!authStatus) {
+        throw new Error('Permission denied, you need to signup/login');
+      }
       const book = await BookController.getBook(data.bookId);
       if (!book.userId) throw new Error('No book found');
-      if (authStatus.id !== book.userId) throw new Error('Permission denied, you need to signup/login');
+      if (authStatus.id !== book.userId) {
+        throw new Error('Permission denied, you need to signup/login');
+      }
       const updatedBook = await book.update({
         ...data
       });
-      updatedBook.message = 'Book successfully deleted'
+      updatedBook.message = 'Book successfully deleted';
       return updatedBook;
     } catch (error) {
+      stackTracer(error);
       return error;
     }
   }

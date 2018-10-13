@@ -11,9 +11,7 @@ class Utils {
   }
 
   static authenticate(token) {
-    return jwt.verify(token, process.env.SECRET, (err, decoded) => {
-      return decoded;
-    });
+    return jwt.verify(token, process.env.SECRET, (err, decoded) => decoded);
   }
 }
 

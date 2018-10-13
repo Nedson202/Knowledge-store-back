@@ -2,14 +2,12 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLFloat,
-  GraphQLID,
+  GraphQLInt,
   GraphQLList
 } from 'graphql';
-import _ from 'lodash';
 import AuthorType from './author';
 import ReviewType from './review';
 import ReviewController from '../controller/ReviewController';
-import utils from '../utils';
 
 const BookType = new GraphQLObjectType({
   name: 'Book',
@@ -27,20 +25,20 @@ const BookType = new GraphQLObjectType({
       type: GraphQLString
     },
     year: {
-      type: GraphQLString
+      type: GraphQLInt
     },
     message: {
       type: GraphQLString
     },
     authors: {
       type: new GraphQLList(AuthorType),
-      resolve(parent, args) {
+      resolve() {
         // return _.filter(authors, {bookId: parent.id})
       }
     },
     reviews: {
       type: new GraphQLList(ReviewType),
-      resolve(parent, args) {
+      resolve(parent) {
         // return _.filter(reviews, {bookId: parent.id})
         // return reviews.filter(review => review.bookId === parent.id)[1]
         return ReviewController.getBookReviews(parent.id);
@@ -48,7 +46,7 @@ const BookType = new GraphQLObjectType({
     },
     averageRating: {
       type: GraphQLFloat,
-      resolve(parent, args) {
+      resolve(parent) {
         return ReviewController.getAverageRating(parent.id);
       }
     }

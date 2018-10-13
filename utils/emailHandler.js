@@ -14,7 +14,8 @@ const emailHandler = async (payload) => {
       from: process.env.NODE_MAILER_USER,
       to: email,
       subject: 'Lorester\'s Bookstore - Password reset help is here',
-      html: `<div style="width:600px;  display:block; margin-left: auto; margin-right: auto;
+      html: `<div
+      style="width:600px;  display:block; margin-left: auto; margin-right: auto;
       border-radius:5px;
       color:black;
       display: grid;
@@ -44,10 +45,16 @@ const emailHandler = async (payload) => {
       display: block;
       margin-left: auto;
       margin-right: auto;
-      text-align: center; text-decoration: none" onMouseOver="this.style.backgroundColor='#eae9e9', this.style.boxShadow='1px 2px 2px rgba(0, 0, 0, 0.2)'" onMouseOut="this.style.backgroundColor='#F5F5F5', this.style.boxShadow='none'">RESET PASSWORD</a>
+      text-align: center;
+      text-decoration: none"
+      onMouseOver="this.style.backgroundColor='#eae9e9',
+      this.style.boxShadow='1px 2px 2px rgba(0, 0, 0, 0.2)'"
+      onMouseOut="this.style.backgroundColor='#F5F5F5',
+      this.style.boxShadow='none'">RESET PASSWORD</a>
         </div>
         <div style="padding-top: 20px !important;">
-          <em>If you didn't request for this, please ignore. Link will expire in 2 hours</em>
+          <em>If you didn't request for this, please ignore.
+          Link will expire in 2 hours</em>
         </div>
       </div>
       <div style="height: 60px;
@@ -62,7 +69,7 @@ const emailHandler = async (payload) => {
       if (err) throw new Error('Email Not Sent!');
       return info.messageId;
     });
-  } catch(error) {
+  } catch (error) {
     return error;
   }
 };

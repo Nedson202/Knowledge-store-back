@@ -4,14 +4,12 @@ import {
   GraphQLSchema,
   GraphQLID,
   GraphQLList,
-  GraphQLInt,
 } from 'graphql';
-import _ from 'lodash';
 import BookType from './books';
-import AuthorType from './author';
+// import AuthorType from './author';
 import UserType from './user';
 import ReviewType from './review';
-import { Mutation } from './mutations/index';
+import Mutation from './mutations/index';
 import UserController from '../controller/UserController';
 import BookController from '../controller/BookController';
 import ReviewController from '../controller/ReviewController';
@@ -32,7 +30,7 @@ const RootQuery = new GraphQLObjectType({
     },
     books: {
       type: new GraphQLList(BookType),
-      resolve(parent, args) {
+      resolve() {
         return BookController.getBooks();
       }
     },
@@ -61,17 +59,17 @@ const RootQuery = new GraphQLObjectType({
         return UserController.authenticateUser(args);
       }
     },
-    author: {
-      type: AuthorType,
-      args: {
-        id: {
-          type: GraphQLID
-        }
-      },
-      resolve(parent, args) {
-        // return _.find(authors, {id: args.id})
-      }
-    },
+    // author: {
+    //   type: AuthorType,
+    //   args: {
+    //     id: {
+    //       type: GraphQLID
+    //     }
+    //   },
+    //   resolve(parent, args) {
+    //     // return _.find(authors, {id: args.id})
+    //   }
+    // },
     review: {
       type: ReviewType,
       args: {
@@ -79,7 +77,7 @@ const RootQuery = new GraphQLObjectType({
           type: GraphQLString
         }
       },
-      resolve(parent, args) {
+      resolve() {
         // return _.filter(reviews, {bookId: args.bookId})
       }
     },
@@ -104,4 +102,4 @@ const graphqlSchema = new GraphQLSchema({
   mutation: Mutation
 });
 
-export default graphqlSchema
+export default graphqlSchema;

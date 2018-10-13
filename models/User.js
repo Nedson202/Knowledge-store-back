@@ -40,13 +40,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     isVerified: {
       type: DataTypes.ENUM,
-      values: [ 'false', 'true' ],
+      values: ['false', 'true'],
       allowNull: false,
       defaultValue: 'false'
     },
     isEmailSent: {
       type: DataTypes.ENUM,
-      values: [ 'false', 'true' ],
+      values: ['false', 'true'],
       allowNull: false,
       defaultValue: 'false'
     },
@@ -56,7 +56,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, { paranoid: true });
 
-  User.associate = models => {
+  User.associate = (models) => {
     User.hasMany(models.Book, {
       foreignKey: 'userId',
       as: 'users',

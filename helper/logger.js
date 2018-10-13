@@ -7,13 +7,15 @@ const { createLogger, transports, format } = winston;
 
 const logPath = 'ErrorLogs';
 
-const { combine, timestamp, label, printf } = format;
+const {
+  combine, timestamp, label, printf
+} = format;
 
-const myFormat = printf(info => {
-  return `${info.timestamp} [${info.label}] ${info.level}: ${info.message}`;
-});
+const myFormat = printf(info => `${info.timestamp} [${info.label}] ${info.level}: ${info.message}`); /* eslint-disable-line */
 
-fs.existsSync(logPath) || fs.mkdirSync(logPath);
+if (!fs.existsSync(logPath)) {
+  fs.mkdirSync(logPath);
+}
 
 const { NODE_ENV } = process.env;
 

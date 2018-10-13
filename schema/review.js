@@ -1,10 +1,8 @@
 import {
   GraphQLObjectType,
   GraphQLString,
-  GraphQLList,
-  GraphQLID
+  GraphQLFloat
 } from 'graphql';
-import _ from 'lodash';
 
 const ReviewType = new GraphQLObjectType({
   name: 'Review',
@@ -19,7 +17,7 @@ const ReviewType = new GraphQLObjectType({
       type: GraphQLString
     },
     rating: {
-      type: GraphQLID
+      type: GraphQLFloat
     }
   })
 });

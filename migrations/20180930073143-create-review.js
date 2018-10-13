@@ -38,5 +38,5 @@ module.exports = {
       },
     }
   }),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('Reviews') // eslint-disable-line no-unused-vars
+  down: (queryInterface, Sequelize) => queryInterface.dropTable('Reviews') // eslint-disable-line
 };

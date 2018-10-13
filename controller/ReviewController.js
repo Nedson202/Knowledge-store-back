@@ -5,20 +5,25 @@ const { helper, validator } = utils;
 
 class ReviewController {
   static async addReview(data, authStatus) {
-    const errors = validator.validateAddBook({
-        ...data
+    const newData = data;
+    const errors = validator.validateAddReview({
+      ...newData
+    });
+    try {
+      if (!authStatus) {
+        throw new Error('Permission denied, you need to signup/login');
+      }
+      const book = await models.Book.find({
+        where: {
+          id: newData.bookId
+        }
       });
-      try {
-        if (!authStatus) throw new Error('Permission denied, you need to signup/login');
-        const book = await models.Book.find({
-          where: {
-            id: data.bookId
-          }
-        });
-        data.id = helper.generateId();
-        data.userId = authStatus.id;
-      if (Object.keys(errors).length !== 0) throw new Error(JSON.stringify(errors));
-      return book && await models.Review.create(data);
+      newData.id = helper.generateId();
+      newData.userId = authStatus.id;
+      if (Object.keys(errors).length !== 0) {
+        throw new Error(JSON.stringify(errors));
+      }
+      return book && await models.Review.create(newData);
     } catch (error) {
       return error;
     }
@@ -63,14 +68,12 @@ class ReviewController {
 
   static async flattenFetchedReviews(reviews) {
     try {
-      const newReviews = reviews.length && reviews.map(review => {
-        return {
-          id: review.id,
-          review: review.review,
-          rating: review.rating,
-          reviewer: review.reviewer.username
-        }
-      })
+      const newReviews = reviews.length && reviews.map(review => ({
+        id: review.id,
+        review: review.review,
+        rating: review.rating,
+        reviewer: review.reviewer.username
+      }));
       return newReviews;
     } catch (error) {
       return error;
@@ -80,7 +83,10 @@ class ReviewController {
   static async getAverageRating(bookId) {
     const reviews = await ReviewController.retrieveReviews(bookId);
     const totalReviews = reviews.length;
-    const averageRating = totalReviews && reviews.reduce((totalRating, value) => totalRating + value.rating, 0) / totalReviews;
+    const averageRating = totalReviews
+      && reviews
+        .reduce((totalRating, value) => totalRating + value.rating, 0)
+        / totalReviews;
     return averageRating || 0;
   }
 }

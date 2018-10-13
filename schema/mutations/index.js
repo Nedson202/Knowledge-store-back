@@ -2,9 +2,7 @@
 import {
   GraphQLObjectType,
   GraphQLString,
-  GraphQLSchema,
   GraphQLID,
-  GraphQLList,
   GraphQLInt,
 } from 'graphql';
 import BookType from '../books';
@@ -16,11 +14,10 @@ import UserController from '../../controller/UserController';
 import BookController from '../../controller/BookController';
 import utils from '../../utils';
 import ReviewController from '../../controller/ReviewController';
-import logger from '../../helper/logger';
 
 const { helper } = utils;
 
-export const Mutation = new GraphQLObjectType({
+const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
     addBook: {
@@ -36,7 +33,7 @@ export const Mutation = new GraphQLObjectType({
           type: GraphQLString
         },
         year: {
-          type: GraphQLString
+          type: GraphQLInt
         }
       },
       resolve(parent, args, context) {
@@ -61,7 +58,6 @@ export const Mutation = new GraphQLObjectType({
       resolve(parent, args, context) {
         const { authorization } = context.headers;
         const authorized = helper.authenticate(authorization);
-        console.log(authorized)
         return ReviewController.addReview(args, authorized);
       }
     },
@@ -76,7 +72,7 @@ export const Mutation = new GraphQLObjectType({
         }
       },
       resolve(parent, args) {
-        return AuthorController.addAuthor(args)
+        return AuthorController.addAuthor(args);
       }
     },
     addUser: {
@@ -93,7 +89,7 @@ export const Mutation = new GraphQLObjectType({
         }
       },
       resolve(parent, args) {
-        return UserController.addUser(args)
+        return UserController.addUser(args);
       }
     },
     toggleAdmin: {
@@ -149,7 +145,7 @@ export const Mutation = new GraphQLObjectType({
         }
       },
       resolve(parent, args) {
-        return UserController.forgotPassword(args)
+        return UserController.forgotPassword(args);
       }
     },
     updateBook: {
@@ -179,3 +175,5 @@ export const Mutation = new GraphQLObjectType({
     }
   }
 });
+
+export default Mutation;

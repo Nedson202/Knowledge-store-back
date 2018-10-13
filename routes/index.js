@@ -10,11 +10,11 @@ router.get('/google', passport.authenticate('google', {
 
 // callback route for google to redirect to
 router.get('/google/redirect',
-  passport.authenticate('google', { session: false, failureRedirect: '/auth/google/fail' }),
-    (req, res) => {
-      res.send(req.user);
-    }
-)
+  passport.authenticate('google',
+    { session: false, failureRedirect: '/auth/google/fail' }),
+  (req, res) => {
+    res.send(req.user);
+  });
 
 // auth with facebook
 router.get('/facebook', passport.authenticate('facebook', {
@@ -22,10 +22,10 @@ router.get('/facebook', passport.authenticate('facebook', {
 }));
 
 router.get('/facebook/redirect',
-  passport.authenticate('facebook', { session: false, failureRedirect: '/login' }),
-    (req, res) => {
-      res.send(req.user);
-    }
-);
+  passport.authenticate('facebook',
+    { session: false, failureRedirect: '/login' }),
+  (req, res) => {
+    res.send(req.user);
+  });
 
 export default router;

@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {});
 
-  Author.associate = models => {
+  Author.associate = () => {
     // associations can be defined here
   };
   return Author;

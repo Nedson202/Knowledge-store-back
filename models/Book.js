@@ -1,4 +1,5 @@
-'use strict';
+
+
 module.exports = (sequelize, DataTypes) => {
   const Book = sequelize.define('Book', {
     id: {
@@ -28,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {});
 
-  Book.associate = models => {
+  Book.associate = (models) => {
     Book.belongsTo(models.User, {
       foreignKey: 'userId',
       as: 'bookOwner'

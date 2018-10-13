@@ -1,5 +1,5 @@
 import models from '../models';
-import Utils from '../utils/helper'
+import Utils from '../utils/helper';
 
 class AuthorController {
   static async addAuthor(author) {
@@ -9,7 +9,7 @@ class AuthorController {
         name: author.name,
         age: author.age
       });
-    } catch(error) {
+    } catch (error) {
       throw new Error(error);
     }
   }
