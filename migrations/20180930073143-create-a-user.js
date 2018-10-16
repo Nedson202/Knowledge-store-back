@@ -23,9 +23,25 @@ module.exports = {
         type: Sequelize.STRING
       },
       role: {
-        type: Sequelize.ENUM('user', 'admin'),
+        type: Sequelize.ENUM,
+        values: [
+          'admin',
+          'user',
+        ],
         allowNull: false,
         defaultValue: 'user'
+      },
+      isVerified: {
+        type: Sequelize.ENUM,
+        values: [ 'false', 'true' ],
+        allowNull: false,
+        defaultValue: 'false'
+      },
+      isEmailSent: {
+        type: Sequelize.ENUM,
+        values: [ 'false', 'true' ],
+        allowNull: false,
+        defaultValue: 'false'
       },
       createdAt: {
         allowNull: false,

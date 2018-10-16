@@ -3,13 +3,13 @@ import models from '../models';
 import utils from '../utils';
 import logger from '../helper/logger';
 import stackTracer from '../helper/stackTracer';
+import mailUser from '../utils/mailUser';
 
 const { helper, validator, emailHandler } = utils;
 
 class UserController {
   static async addUser(user) {
     const { username, email, password } = user;
-    console.log(user)
     try {
       const errors = validator.validateSignup({
         username, email, password
@@ -27,6 +27,7 @@ class UserController {
         email
       };
       const token = helper.generateToken(payload);
+      mailUser(payload, token)
       payload.token = token;
       return payload;
     } catch(error) {
@@ -38,12 +39,13 @@ class UserController {
     const { username, password } = user;
     try {
       const errors = validator.validateData({username, password});
-      if (errors) throw new Error(JSON.stringify(errors))
+      if (Object.keys(errors).length !== 0) throw new Error(JSON.stringify(errors));
       const user = await models.User.find({
         where: {
           username
         }
       });
+      if (user.username && !user.isVerified) throw new Error('Sorry, this account is not verified yet');
       if (!(user && bcrypt.compareSync((password), user.password))) {
         throw new Error(
           'Unauthorised, check your username or password'

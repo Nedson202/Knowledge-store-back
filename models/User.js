@@ -29,10 +29,26 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     role: {
-      type: DataTypes.ENUM('user', 'admin'),
+      type: DataTypes.ENUM,
+      values: [
+        'admin',
+        'user',
+      ],
       allowNull: false,
       defaultValue: 'user'
-    }
+    },
+    isVerified: {
+      type: DataTypes.ENUM,
+      values: [ 'false', 'true' ],
+      allowNull: false,
+      defaultValue: 'false'
+    },
+    isEmailSent: {
+      type: DataTypes.ENUM,
+      values: [ 'false', 'true' ],
+      allowNull: false,
+      defaultValue: 'false'
+    },
   }, {});
 
   User.associate = models => {
