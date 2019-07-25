@@ -1,0 +1,75 @@
+{
+  "addons": [
+    "bonsai"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "BONSAI_URL": {
+      "required": true
+    },
+    "DATABASE_URL": {
+      "required": true
+    },
+    "FACEBOOK_APPID": {
+      "required": true
+    },
+    "FACEBOOK_APPSECRET": {
+      "required": true
+    },
+    "FACEBOOK_CALLBACKURL": {
+      "required": true
+    },
+    "FAKE_PASSWORD": {
+      "required": true
+    },
+    "GOOGLE_BOOKS_KEY": {
+      "required": true
+    },
+    "GOOGLE_CALLBACKURL": {
+      "required": true
+    },
+    "GOOGLE_CLIENTID": {
+      "required": true
+    },
+    "GOOGLE_CLIENTSECRET": {
+      "required": true
+    },
+    "NODE_ENV": {
+      "required": true
+    },
+    "NODE_MAILER_PASS": {
+      "required": true
+    },
+    "NODE_MAILER_SERVICE": {
+      "required": true
+    },
+    "NODE_MAILER_USER": {
+      "required": true
+    },
+    "NPM_CONFIG_PRODUCTION": {
+      "required": true
+    },
+    "PROD_SERVER": {
+      "required": true
+    },
+    "SECRET": {
+      "required": true
+    },
+    "SUPER_ADMIN": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "name": "Knowledge-store-back",
+  "scripts": {
+  },
+  "stack": "heroku-18"
+}
