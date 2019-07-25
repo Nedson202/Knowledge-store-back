@@ -33,8 +33,6 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parent, args) {
         return GoogleBooks.retrieveBookProfile(args.id);
-        // return retrieveBook(args.id);
-        // return BookController.getBook(args.id);
       }
     },
     books: {

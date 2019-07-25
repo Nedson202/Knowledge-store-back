@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 import models from '../models';
 import logger from './initLogger';
+import { production } from './default';
 
 const mailUser = async (user, token) => {
   const { username, email } = user;
@@ -11,7 +12,7 @@ const mailUser = async (user, token) => {
       pass: process.env.NODE_MAILER_PASS
     }
   });
-  const redirectUrl = process.env.NODE_ENV.match('production')
+  const redirectUrl = process.env.NODE_ENV.match(production)
     ? process.env.PROD_SERVER : 'http://localhost:3000';
   const mailOptions = {
     from: 'knowledgestore@gmail.com',

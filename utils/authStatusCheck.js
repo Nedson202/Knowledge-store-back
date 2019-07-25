@@ -1,6 +1,8 @@
+import { authStatusPermission } from './default';
+
 const authStatusCheck = (authStatus) => {
   if (!authStatus) {
-    throw new Error('Permission denied, you need to signup/login');
+    throw new Error(authStatusPermission);
   }
 };
 

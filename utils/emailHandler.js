@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { production, emailNotSentMessage } from './default';
 
 const emailHandler = async ({ username, email, token }) => {
   try {
@@ -9,7 +10,7 @@ const emailHandler = async ({ username, email, token }) => {
         pass: process.env.NODE_MAILER_PASS
       }
     });
-    const redirectUrl = process.env.NODE_ENV.match('production')
+    const redirectUrl = process.env.NODE_ENV.match(production)
       ? process.env.PROD_SERVER : 'http://localhost:3000';
     const mailOptions = {
       from: process.env.NODE_MAILER_USER,
@@ -67,7 +68,7 @@ const emailHandler = async ({ username, email, token }) => {
     </div>`
     };
     await transporter.sendMail(mailOptions, (err, info) => {
-      if (err) throw new Error('Email Not Sent!');
+      if (err) throw new Error(emailNotSentMessage);
       return info.messageId;
     });
   } catch (error) {

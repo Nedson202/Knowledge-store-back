@@ -1,12 +1,18 @@
 import elasticSearch from 'elasticsearch';
 import { stackLogger } from 'info-logger';
 import logger from '../utils/initLogger';
+import {
+  info, elasticClientAlive, elasticClientRunning, booksIndex,
+  errorCreatingIndex, indexCreated, production, noIndex, elasticMapping,
+  phrasePrefix, multimatchFields, bookUpdatedMessage, bookAddedMessage,
+  indexDeleted,
+} from '../utils/default';
 
-const host = process.env.NODE_ENV.match('production')
+const host = process.env.NODE_ENV.match(production)
   ? process.env.BONSAI_URL : process.env.ELASTIC_LOCAL;
 const elasticClient = new elasticSearch.Client({
   hosts: [host],
-  log: 'info'
+  log: info
 });
 
 elasticClient.ping({
@@ -15,53 +21,43 @@ elasticClient.ping({
   if (error) {
     stackLogger(error);
   } else {
-    logger.info('-- Elastic client is still alive --');
+    logger.info(elasticClientAlive);
   }
 });
 
 const checkHealthStatus = () => {
   elasticClient.cluster.health({}, (error, resp) => {
     if (error) stackLogger(error);
-    logger.info('-- Elastic client is up and running --', resp);
+    logger.info(elasticClientRunning, resp);
   });
 };
 
 const createIndex = () => {
   elasticClient.indices.create({
-    index: 'books'
+    index: booksIndex
   }, (error, resp, status) => {
     if (error) {
       stackLogger(error);
-      logger.info('-- An Error Occurred creating index', error);
+      logger.info(errorCreatingIndex, error);
     } else {
-      logger.info('-- Index successfully created', resp, status);
+      logger.info(indexCreated, resp, status);
     }
   });
 };
 
 elasticClient.indices.exists({
-  index: 'books'
+  index: booksIndex
 }, (error, resp) => {
-  if (error) logger.info('-- An Error Occurred in indexExists', error);
+  if (error) logger.info(noIndex, error);
   if (!resp) {
     createIndex();
   }
 });
 
 const createMapping = () => elasticClient.indices.putMapping({
-  index: 'books',
+  index: booksIndex,
   type: 'book',
-  body: {
-    properties: {
-      title: { type: 'text' },
-      content: { type: 'text' },
-      suggest: {
-        type: 'completion',
-        analyzer: 'simple',
-        search_analyzer: 'standard',
-      }
-    }
-  }
+  body: elasticMapping
 });
 
 const getIndexStatus = () => elasticClient.cat.indices({ v: true })
@@ -71,25 +67,25 @@ const getIndexStatus = () => elasticClient.cat.indices({ v: true })
 const deleteIndex = (index) => {
   elasticClient.indices.delete({ index }, (error, resp, status) => {
     if (error) return stackLogger(error);
-    logger.info('-- Index successfully deleted', resp, status);
+    logger.info(indexDeleted, resp, status);
   });
 };
 
 const addDocument = (index, type) => {
   elasticClient.index({
-    index: 'books',
+    index: booksIndex,
     id: index.id,
     type,
     body: index
   }, (error, resp) => {
     if (error) return stackLogger(error);
-    logger.info('---Book added successfully---', resp);
+    logger.info(bookAddedMessage, resp);
   });
 };
 
 const retrieveBook = async (id) => {
   const book = await elasticClient.get({
-    index: 'books',
+    index: booksIndex,
     type: 'book',
     id,
   }).then(result => result._source) // eslint-disable-line
@@ -109,13 +105,13 @@ const updateBook = async (data) => {
   };
 
   elasticClient.update({
-    index: 'books',
+    index: booksIndex,
     type: 'book',
     id,
     body
   }, (error, resp) => {
     if (error) return stackLogger(error);
-    logger.info('---Book updated successfully---', resp);
+    logger.info(bookUpdatedMessage, resp);
   });
 };
 
@@ -132,7 +128,7 @@ const deleteBook = (index, id, type) => {
 
 const getSuggestions = (input) => {
   elasticClient.search({
-    index: 'books',
+    index: booksIndex,
     type: 'book',
     body: {
       docsuggest: {
@@ -151,15 +147,15 @@ const getSuggestions = (input) => {
 
 const elasticBulkCreate = (bulk) => {
   const data = [];
-  bulk.forEach((city) => {
+  bulk.forEach((item) => {
     data.push({
       index: {
-        _index: 'books',
+        _index: booksIndex,
         _type: 'book',
-        _id: city.id
+        _id: item.id
       }
     });
-    data.push(city);
+    data.push(item);
   });
 
   elasticClient.bulk({ body: data }, (error) => {
@@ -177,8 +173,8 @@ const elasticItemSearch = async (query, paginateData) => {
   const multiMatch = {
     multi_match: {
       query,
-      type: 'phrase_prefix',
-      fields: ['id', 'name', 'description', 'authors', 'genres', 'year', 'userId']
+      type: phrasePrefix,
+      fields: multimatchFields
     }
   };
 
@@ -188,7 +184,7 @@ const elasticItemSearch = async (query, paginateData) => {
     query: !query || !query.length ? matchAll : multiMatch
   };
 
-  const hits = await elasticClient.search({ index: 'books', body, type: 'book' })
+  const hits = await elasticClient.search({ index: booksIndex, body, type: 'book' })
     .then(results => results.hits.hits.map(result => result._source)) // eslint-disable-line
     .catch((error) => {
       stackLogger(error);

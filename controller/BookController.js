@@ -3,6 +3,11 @@ import models from '../models';
 import utils from '../utils';
 import { addDocument } from '../elasticSearch/elasticSearch';
 import authStatusCheck from '../utils/authStatusCheck';
+import {
+  bookLabel, bookReviewsLabel, noBookMessage,
+  bookUpdatedMessage, noBookCreated, bookDeletedMessage,
+  permissionDenied, authStatusPermission, noBookFound
+} from '../utils/default';
 
 const { helper, validator } = utils;
 
@@ -20,7 +25,7 @@ class BookController {
         throw new Error(JSON.stringify(errors));
       }
       const createdBook = await models.Book.create(newData);
-      addDocument(newData, 'book');
+      addDocument(newData, bookLabel);
       return createdBook;
     } catch (error) {
       stackLogger(error);
@@ -42,10 +47,10 @@ class BookController {
       const books = await models.Book.findAll({
         include: [{
           model: models.Review,
-          as: 'bookReviews',
+          as: bookReviewsLabel,
         }]
       });
-      if (!books.length) throw new Error('No books available');
+      if (!books.length) throw new Error(noBookMessage);
       return books;
     } catch (error) {
       stackLogger(error);
@@ -74,7 +79,7 @@ class BookController {
           userId: authStatus.id
         }
       });
-      if (!usersBooks) throw new Error('you have no books yet');
+      if (!usersBooks) throw new Error(noBookCreated);
       return usersBooks;
     } catch (error) {
       stackLogger(error);
@@ -85,7 +90,7 @@ class BookController {
   static async getBook(bookId) {
     try {
       const book = await models.Book.findById(bookId);
-      if (!book) throw new Error('No book found');
+      if (!book) throw new Error(noBookMessage);
       return book;
     } catch (error) {
       stackLogger(error);
@@ -131,7 +136,7 @@ class BookController {
           ]
         }
       });
-      if (!books) throw new Error('No books available');
+      if (!books) throw new Error(noBookMessage);
       return books;
     } catch (error) {
       stackLogger(error);
@@ -147,13 +152,13 @@ class BookController {
         },
         include: [{
           model: models.Book,
-          as: 'book',
+          as: bookLabel,
         }]
       }).map((value) => {
         value.get({ plain: true });
         return value.book;
       });
-      if (!books) throw new Error('No books available');
+      if (!books) throw new Error(noBookMessage);
       return books;
     } catch (error) {
       stackLogger(error);
@@ -164,17 +169,17 @@ class BookController {
   static async updateBook(data, authStatus) {
     try {
       if (!authStatus) {
-        throw new Error('Permission denied, you need to signup/login');
+        throw new Error(authStatusPermission);
       }
       const book = await BookController.getBook(data.bookId);
-      if (!book.userId) throw new Error('No book found');
+      if (!book.userId) throw new Error(noBookFound);
       if (authStatus.id !== book.userId) {
-        throw new Error('Permission denied');
+        throw new Error(permissionDenied);
       }
       const updatedBook = await book.update({
         ...data
       });
-      updatedBook.message = 'Book successfully updated';
+      updatedBook.message = bookUpdatedMessage;
       return updatedBook;
     } catch (error) {
       stackLogger(error);
@@ -185,16 +190,16 @@ class BookController {
   static async deleteBook(data, authStatus) {
     try {
       if (!authStatus) {
-        throw new Error('Permission denied, you need to signup/login');
+        throw new Error(authStatusPermission);
       }
       const book = await BookController.getBook(data.bookId);
-      if (!book.userId) throw new Error('No book found');
+      if (!book.userId) throw new Error(noBookFound);
       if (authStatus.id !== book.userId) {
-        throw new Error('Permission denied');
+        throw new Error(permissionDenied);
       }
       await book.destroy();
       return {
-        message: 'Book successfully deleted'
+        message: bookDeletedMessage,
       };
     } catch (error) {
       stackLogger(error);
