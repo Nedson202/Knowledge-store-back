@@ -1,7 +1,6 @@
 import elasticSearch from 'elasticsearch';
 import { stackLogger } from 'info-logger';
 import logger from '../utils/initLogger';
-// eslint-disable-next-line import/no-cycle
 
 const host = process.env.NODE_ENV.match('production')
   ? process.env.BONSAI_URL : process.env.ELASTIC_LOCAL;
