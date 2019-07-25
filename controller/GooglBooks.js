@@ -4,21 +4,13 @@ import {
   elasticItemSearch, elasticBulkCreate, retrieveBook, addDocument
 } from '../elasticSearch/elasticSearch';
 import utils from '../utils';
+import { bookLabel, googleBookOptions } from '../utils/default';
 
 const { helper } = utils;
 
 class GoogleBooks {
   static async searchBooks(searchQuery) {
-    const options = {
-      key: process.env.GOOGLE_BOOKS_KEY,
-      field: 'title',
-      offset: 0,
-      limit: 40,
-      zoom: 0,
-      type: 'books',
-      order: 'relevance',
-      lang: 'en'
-    };
+    const options = googleBookOptions;
 
     let query;
 
@@ -104,7 +96,7 @@ class GoogleBooks {
       if (!searchResult) {
         const result = await models.Book.findById(bookId);
         searchResult = result.dataValues;
-        if (searchResult) addDocument(searchResult, 'book');
+        if (searchResult) addDocument(searchResult, bookLabel);
       }
       return searchResult;
     } catch (error) {

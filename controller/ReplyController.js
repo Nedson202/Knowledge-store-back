@@ -1,5 +1,9 @@
 import models from '../models';
 import utils from '../utils';
+import {
+  noReply, authStatusPermission, userAttributes,
+  replierLabel
+} from '../utils/default';
 
 const { helper, validator } = utils;
 
@@ -11,7 +15,7 @@ class ReplyController {
     });
     try {
       if (!authStatus) {
-        throw new Error('Permission denied, you need to signup/login');
+        throw new Error(authStatusPermission);
       }
       const review = await models.Review.find({
         where: {
@@ -33,7 +37,7 @@ class ReplyController {
     const newData = data;
     try {
       if (!authStatus) {
-        throw new Error('Permission denied, you need to signup/login');
+        throw new Error(authStatusPermission);
       }
       const editedReply = await models.Reply.update(
         { reply: newData.reply },
@@ -45,7 +49,7 @@ class ReplyController {
           }
         }
       );
-      if (!editedReply) throw new Error('Reply not found');
+      if (!editedReply) throw new Error(noReply);
       return editedReply;
     } catch (error) {
       return error;
@@ -56,7 +60,7 @@ class ReplyController {
     const { replyId } = data;
     try {
       if (!authStatus) {
-        throw new Error('Permission denied, you need to signup/login');
+        throw new Error(authStatusPermission);
       }
       const deletedReply = await models.Reply.destroy(
         {
@@ -67,7 +71,7 @@ class ReplyController {
           }
         }
       );
-      if (!deletedReply) throw new Error('Reply not found');
+      if (!deletedReply) throw new Error(noReply);
       return deletedReply;
     } catch (error) {
       return error;
@@ -91,11 +95,11 @@ class ReplyController {
         },
         include: [{
           model: Users,
-          as: 'replier',
-          attributes: ['username', 'picture', 'avatarColor']
+          as: replierLabel,
+          attributes: userAttributes
         }]
       });
-      if (replies.length === 0) throw new Error('No reply found');
+      if (replies.length === 0) throw new Error(noReply);
       return replies;
     } catch (error) {
       return error;

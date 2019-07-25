@@ -3,6 +3,11 @@ import models from '../models';
 import utils from '../utils';
 import { retrieveBook } from '../elasticSearch/elasticSearch';
 import BookController from './BookController';
+import {
+  authStatusPermission, noReview, userAttributes, reviewerLabel,
+  reviewOrder,
+  noBookFound
+} from '../utils/default';
 
 const { helper, validator } = utils;
 
@@ -15,7 +20,7 @@ class ReviewController {
     try {
       let retrievedBook;
       if (!authStatus) {
-        throw new Error('Permission denied, you need to signup/login');
+        throw new Error(authStatusPermission);
       }
       retrievedBook = await retrieveBook(newData.bookId);
 
@@ -27,7 +32,7 @@ class ReviewController {
           }
         });
       }
-      if (!retrievedBook) throw new Error('Book not available');
+      if (!retrievedBook) throw new Error(noBookFound);
       newData.id = helper.generateId();
       newData.userId = authStatus.id;
       if (Object.keys(errors).length !== 0) {
@@ -46,7 +51,7 @@ class ReviewController {
     } = data;
     try {
       if (!authStatus) {
-        throw new Error('Permission denied, you need to signup/login');
+        throw new Error(authStatusPermission);
       }
       const editedReview = await models.Review.update(
         {
@@ -60,7 +65,7 @@ class ReviewController {
           }
         }
       );
-      if (!editedReview) throw new Error('Review not found');
+      if (!editedReview) throw new Error(noReview);
       return editedReview;
     } catch (error) {
       stackLogger(error);
@@ -72,7 +77,7 @@ class ReviewController {
     const { reviewId } = data;
     try {
       if (!authStatus) {
-        throw new Error('Permission denied, you need to signup/login');
+        throw new Error(authStatusPermission);
       }
       const deletedReview = await models.Review.destroy(
         {
@@ -83,7 +88,7 @@ class ReviewController {
           }
         }
       );
-      if (!deletedReview) throw new Error('Review not found');
+      if (!deletedReview) throw new Error(noReview);
       return deletedReview;
     } catch (error) {
       return error;
@@ -96,7 +101,7 @@ class ReviewController {
         where: {
           id: reviewId
         },
-        order: [['createdAt', 'ASC']]
+        order: [reviewOrder]
       });
     } catch (error) {
       stackLogger(error);
@@ -113,8 +118,8 @@ class ReviewController {
         },
         include: [{
           model: Users,
-          as: 'reviewer',
-          attributes: ['username', 'picture', 'avatarColor']
+          as: reviewerLabel,
+          attributes: userAttributes
         }]
       });
       return !reviews.length ? [] : reviews;

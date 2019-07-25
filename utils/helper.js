@@ -2,6 +2,7 @@ import shortid from 'shortid';
 import randomColor from 'randomcolor';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import { darkLuminosity, colorFormat } from './default';
 
 class Utils {
   static generateId() {
@@ -25,8 +26,8 @@ class Utils {
 
   static colorGenerator() {
     return randomColor({
-      luminosity: 'dark',
-      format: 'rgba',
+      luminosity: darkLuminosity,
+      format: colorFormat,
       alpha: 0.5
     });
   }

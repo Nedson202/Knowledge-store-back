@@ -1,3 +1,10 @@
+import {
+  usernameRequired, minimumPasswordLength, invalidEmailMessage,
+  passwordPatternMessage, bookNameRequired, genreIsRequired,
+  publishedYearRequired, bookAuthorRequired, bookIdRequired, reviewRequired,
+  ratingRequired, ratingSizeMessage, replyRequired, reviewIdRequired
+} from './default';
+
 class Validator {
   static validateData(data) {
     const { username, password } = data;
@@ -5,15 +12,14 @@ class Validator {
     const pattern = /^[A-Za-z0-9!@#$%^&*()_]{6,20}$/;
     try {
       if (!username || !username.trim()) {
-        validationError.username = 'Username is required';
+        validationError.username = usernameRequired;
       }
       if (!password || !password.trim() || password.length < 6) {
-        validationError.password = 'Minimum password length is 6';
+        validationError.password = minimumPasswordLength;
       }
       if (!pattern.test(password)) {
         validationError
-          .password = `Password must include lowercase,
-          uppercase, and special characters`;
+          .password = passwordPatternMessage;
       }
       throw validationError;
     } catch (error) {
@@ -27,7 +33,7 @@ class Validator {
     const pattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; // eslint-disable-line
     try {
       if (!email || !email.trim() || !pattern.test(email)) {
-        validationError.email = 'Email format is invalid';
+        validationError.email = invalidEmailMessage;
       }
       throw validationError;
     } catch (error) {
@@ -53,13 +59,13 @@ class Validator {
     } = data;
     const validationError = {};
     try {
-      if (!name || !name.trim()) validationError.name = 'book name is required';
-      if (!genre.length) validationError.genre = 'genre is required';
+      if (!name || !name.trim()) validationError.name = bookNameRequired;
+      if (!genre.length) validationError.genre = genreIsRequired;
       if (!year || !year.trim()) {
-        validationError.year = 'book published year is required';
+        validationError.year = publishedYearRequired;
       }
       if (!author.length) {
-        validationError.author = 'book author(s) is required';
+        validationError.author = bookAuthorRequired;
       }
       throw validationError;
     } catch (error) {
@@ -74,16 +80,16 @@ class Validator {
     const validationError = {};
     try {
       if (!bookId || !bookId.trim()) {
-        validationError.bookId = 'bookId is required';
+        validationError.bookId = bookIdRequired;
       }
       if (!review || !review.trim()) {
-        validationError.review = 'review is required';
+        validationError.review = reviewRequired;
       }
       if (!rating || !rating.trim()) {
-        validationError.rating = 'Rating is required';
+        validationError.rating = ratingRequired;
       }
       if (rating >= 5.0) {
-        validationError.rating = 'Rating can not be more than 5.0';
+        validationError.rating = ratingSizeMessage;
       }
       throw validationError;
     } catch (error) {
@@ -98,10 +104,10 @@ class Validator {
     const validationError = {};
     try {
       if (!reviewId || !reviewId.trim()) {
-        validationError.reviewId = 'reviewId is required';
+        validationError.reviewId = reviewIdRequired;
       }
       if (!reply || !reply.trim()) {
-        validationError.reply = 'review is required';
+        validationError.reply = replyRequired;
       }
       throw validationError;
     } catch (error) {

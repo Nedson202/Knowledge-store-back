@@ -3,6 +3,11 @@ import { stackLogger } from 'info-logger';
 import models from '../models';
 import utils from '../utils';
 import mailUser from '../utils/mailUser';
+import {
+  authStatusPermission, userUnauthorizedMessage,
+  resetLinkMessage, profileUpdated, noUser, userOrder, superRole,
+  oldPasswordIncorrect, resetSuccessful, resetFailed, adminRole
+} from '../utils/default';
 
 const { helper, validator, emailHandler } = utils;
 
@@ -51,11 +56,11 @@ class UserController {
         }
       });
 
-      if (!existingUser) throw new Error('Unauthorized, check your username or password');
+      if (!existingUser) throw new Error(userUnauthorizedMessage);
 
       if (!bcrypt.compareSync((password), existingUser.password)) {
         throw new Error(
-          'Unauthorized, check your username or password'
+          userUnauthorizedMessage
         );
       }
       const payload = helper.payloadSchema(existingUser);
@@ -82,7 +87,7 @@ class UserController {
       payload.username = user.username;
       await emailHandler(payload);
       return {
-        message: 'Password reset link has been sent to your email.',
+        message: resetLinkMessage,
         token
       };
     } catch (error) {
@@ -95,18 +100,18 @@ class UserController {
     const { email, username, picture: image } = data;
     try {
       if (!authStatus) {
-        throw new Error('Permission denied, you need to signup/login');
+        throw new Error(authStatusPermission);
       }
       const { id } = authStatus;
       const user = await UserController.findUser(null, id);
-      if (!user.role) throw new Error('User not found');
+      if (!user.role) throw new Error(noUser);
       const updatedUser = await user.update({
         email, username, picture: image || user.picture
       });
       const payload = helper.payloadSchema(updatedUser);
       const token = helper.generateToken(payload);
       payload.token = token;
-      payload.message = 'Profile successfully updated';
+      payload.message = profileUpdated;
       return payload;
     } catch (error) {
       stackLogger(error);
@@ -118,11 +123,11 @@ class UserController {
     const { oldPassword, newPassword } = data;
     try {
       if (!authStatus) {
-        throw new Error('Permission denied, you need to signup/login');
+        throw new Error(authStatusPermission);
       }
       const { id } = authStatus;
       const user = await UserController.findUser(null, id);
-      if (!user.role) throw new Error('User not found');
+      if (!user.role) throw new Error(noUser);
       if (bcrypt.compareSync((oldPassword), user.password)) {
         await user.update({
           password: bcrypt.hashSync(newPassword, 10)
@@ -131,7 +136,7 @@ class UserController {
           message: 'Password change was successful.',
         };
       }
-      throw new Error('Sorry the old password provided is incorrect');
+      throw new Error(oldPasswordIncorrect);
     } catch (error) {
       stackLogger(error);
       return error;
@@ -146,18 +151,18 @@ class UserController {
       const decodedValue = helper.authenticate(token);
       if (!decodedValue.email.match(email)) throw new Error('Operation denied');
       const user = await UserController.findUser(email, id);
-      if (!user.role) throw new Error('User not found');
+      if (!user.role) throw new Error(noUser);
       const passwordReset = await user.update({
         password: helper.passwordHash(password)
       });
       if (passwordReset) {
         const payload = {
           token: token.split(' ')[1],
-          message: 'Password reset was successful.',
+          message: resetSuccessful,
         };
         return payload;
       }
-      throw new Error('Password reset failed');
+      throw new Error(resetFailed);
     } catch (error) {
       stackLogger(error);
       return error;
@@ -168,7 +173,7 @@ class UserController {
     const { id } = data;
     try {
       const user = await UserController.findUser(null, id);
-      if (!user.role) throw new Error('User not found');
+      if (!user.role) throw new Error(noUser);
       await user.update({ isVerified: 'true' });
       const payload = user.dataValues;
       delete (payload.password);
@@ -187,7 +192,7 @@ class UserController {
     const { email } = data;
     try {
       const user = await UserController.findUser(email, null);
-      if (!user.role) throw new Error('User not found');
+      if (!user.role) throw new Error(noUser);
       const payload = user.dataValues;
       delete (payload.password);
       const token = helper.generateToken(payload);
@@ -215,7 +220,7 @@ class UserController {
           ]
         }
       });
-      if (!user) throw new Error('User not found');
+      if (!user) throw new Error(noUser);
       return user;
     } catch (error) {
       stackLogger(error);
@@ -243,19 +248,19 @@ class UserController {
     const { email, adminAction } = data;
     try {
       if (!authStatus) {
-        throw new Error('Permission denied, you need to signup/login');
+        throw new Error(authStatusPermission);
       }
       const { id } = authStatus;
       const verifySuperAdmin = await UserController
         .verifyAdmin(id, 'toggleAdmin');
       const user = await UserController.findUser(email, null);
       if (!user.role) throw new Error('Email provided is not registered');
-      if (user.role.match('admin') && adminAction === 'add') {
+      if (user.role.match(adminRole) && adminAction === 'add') {
         throw new Error('User is already an admin');
       }
       if (verifySuperAdmin) {
         await user.update({
-          role: adminAction === 'add' ? 'admin' : 'user'
+          role: adminAction === 'add' ? adminRole : 'user'
         });
         return {
           message: adminAction === 'add'
@@ -274,12 +279,12 @@ class UserController {
     const { userId } = data;
     try {
       if (!authStatus) {
-        throw new Error('Permission denied, you need to signup/login');
+        throw new Error(authStatusPermission);
       }
       const { id } = authStatus;
       const verifyAdmin = await UserController.verifyAdmin(id, 'deleteUser');
       const user = await UserController.findUser(null, userId);
-      if (!user.username) throw new Error('User not found');
+      if (!user.username) throw new Error(noUser);
       if (verifyAdmin) {
         await user.destroy();
         return {
@@ -301,10 +306,10 @@ class UserController {
       }
       switch (action) {
         case 'deleteUser':
-          if (user.role === 'super' || user.role === 'admin') return true;
+          if (user.role === superRole || user.role === adminRole) return true;
 
         case 'toggleAdmin':
-          if (user.role === 'super') return true;
+          if (user.role === superRole) return true;
         default:
           return false;
       }
@@ -317,19 +322,19 @@ class UserController {
     const { email } = data;
     try {
       if (!authStatus) {
-        throw new Error('Permission denied, you need to signup/login');
+        throw new Error(authStatusPermission);
       }
       if (!process.env.SUPER_ADMIN.includes(email)) {
         throw new Error('Permission denied, user cannot be elevated to super admin');
       }
       const user = await UserController.findUser(email, null);
-      if (user.role === 'super') {
+      if (user.role === superRole) {
         return {
           message: 'User is already a super admin'
         };
       }
       await user.update({
-        role: 'super'
+        role: superRole
       });
       return {
         message: 'User role successfully changed to super admin'
@@ -343,16 +348,16 @@ class UserController {
     const { type } = data;
     try {
       if (!authStatus) {
-        throw new Error('Permission denied, you need to signup/login');
+        throw new Error(authStatusPermission);
       }
-      if (!['admin', 'super'].includes(authStatus.role)) {
+      if (![adminRole, superRole].includes(authStatus.role)) {
         throw new Error('Permission denied, you are not an admin');
       }
       const users = await models.User.findAll({
         where: type === 'all' ? {} : {
           role: type
         },
-        order: [['id', 'ASC']]
+        order: [userOrder]
       });
       return users;
     } catch (error) {
