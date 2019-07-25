@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import models from '../models';
-import { logger } from '../helper/logger';
+import logger from './initLogger';
 
 const mailUser = async (user, token) => {
   const { username, email } = user;
@@ -39,7 +39,8 @@ const mailUser = async (user, token) => {
             style="margin-bottom: 45px;"
           >Click on the button below to confirm your email address</p>
           <a
-          href="${redirectUrl}?verify-email=${token}" style="border: 1px solid black; padding: 10px; border-radius: 20px;
+          href="${redirectUrl}?verify-email=${token}"
+          style="border: 1px solid black; padding: 10px; border-radius: 20px;
             color: #444444;
             cursor: pointer;
             width: 50%;

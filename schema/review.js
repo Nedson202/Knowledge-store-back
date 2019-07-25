@@ -43,8 +43,6 @@ const ReviewType = new GraphQLObjectType({
     replies: {
       type: new GraphQLList(ReplyType),
       resolve(parent) {
-        // return _.filter(reviews, {bookId: parent.id})
-        // return reviews.filter(review => review.bookId === parent.id)[1]
         return ReplyController.returnReplies(parent.id);
       }
     },

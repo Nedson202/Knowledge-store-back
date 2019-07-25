@@ -1,9 +1,8 @@
+import { stackLogger } from 'info-logger';
 import models from '../models';
 import utils from '../utils';
-import stackTracer from '../helper/stackTracer';
 import BookController from './BookController';
-import { retrieveBook } from '../helper/elasticSearch';
-// import { addDocument } from '../helper/elasticSearch';
+import { retrieveBook } from '../elasticSearch/elasticSearch';
 
 const { helper } = utils;
 
@@ -29,16 +28,13 @@ class BookFavoritesController {
         message: 'Book added to favorites'
       };
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
 
   static async checkFavorite(bookId) {
     try {
-      // if (!authStatus) {
-      //   throw new Error('Permission denied, you need to signup/login');
-      // }
       const favorite = await models.Favorite.findOne({
         where: {
           bookId
@@ -47,7 +43,7 @@ class BookFavoritesController {
       if (favorite) return true;
       return false;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -73,7 +69,7 @@ class BookFavoritesController {
       if (!books.length) return [];
       return books;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -91,13 +87,11 @@ class BookFavoritesController {
           bookId: books,
         },
       });
-      // if (!books.length) throw new Error('No books available');
       return {
         message: 'Book(s) removed from your list of favorites'
       };
-      // return books;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }

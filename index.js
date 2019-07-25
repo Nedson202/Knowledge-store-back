@@ -5,15 +5,19 @@ import cors from 'cors';
 import http from 'http';
 import https from 'https';
 import helmet from 'helmet';
-import { logger, requestLogger } from './helper/logger';
-import schema from './schema/schema';
+import { stackLogger } from 'info-logger';
+import requestLogger from './helper/requestLogger';
+import schema from './schema';
 import models from './models/index';
-import stackTracer from './helper/stackTracer';
 import passportSetup from './config/passportSetup'; // eslint-disable-line
 import authRoutes from './routes';
 import {
   checkHealthStatus, createMapping
-} from './helper/elasticSearch';
+} from './elasticSearch/elasticSearch';
+import logger from './utils/initLogger';
+
+// eslint-disable-next-line import/prefer-default-export
+// export const logger = createLogger('Error', 'log-result');
 
 const app = express();
 
@@ -48,11 +52,11 @@ app.use(
 app.use(requestLogger);
 
 process.on('unhandledRejection', (reason) => {
-  stackTracer(reason);
+  stackLogger(reason);
 });
 
 process.on('uncaughtException', (reason) => {
-  stackTracer(reason);
+  stackLogger(reason);
   process.exit(0);
 });
 
@@ -74,7 +78,7 @@ const httpProtocol = process.env.NODE_ENV.match('development') ? http : https;
 
 setInterval(() => {
   (() => {
-    httpProtocol.get(`${appUrl}/healthChecker`, () => {});
+    httpProtocol.get(`${appUrl}/healthChecker`, () => { });
   })();
 }, 1000 * 10 * 60);
 

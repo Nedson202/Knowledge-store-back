@@ -1,6 +1,7 @@
 import elasticSearch from 'elasticsearch';
-import { logger } from './logger';
-import stackTracer from './stackTracer';
+import { stackLogger } from 'info-logger';
+import logger from '../utils/initLogger';
+// eslint-disable-next-line import/no-cycle
 
 const host = process.env.NODE_ENV.match('production')
   ? process.env.BONSAI_URL : process.env.ELASTIC_LOCAL;
@@ -13,7 +14,7 @@ elasticClient.ping({
   requestTimeout: 30000,
 }, (error) => {
   if (error) {
-    stackTracer(error);
+    stackLogger(error);
   } else {
     logger.info('-- Elastic client is still alive --');
   }
@@ -21,7 +22,7 @@ elasticClient.ping({
 
 const checkHealthStatus = () => {
   elasticClient.cluster.health({}, (error, resp) => {
-    if (error) stackTracer(error);
+    if (error) stackLogger(error);
     logger.info('-- Elastic client is up and running --', resp);
   });
 };
@@ -31,7 +32,7 @@ const createIndex = () => {
     index: 'books'
   }, (error, resp, status) => {
     if (error) {
-      stackTracer(error);
+      stackLogger(error);
       logger.info('-- An Error Occurred creating index', error);
     } else {
       logger.info('-- Index successfully created', resp, status);
@@ -70,7 +71,7 @@ const getIndexStatus = () => elasticClient.cat.indices({ v: true })
 
 const deleteIndex = (index) => {
   elasticClient.indices.delete({ index }, (error, resp, status) => {
-    if (error) return stackTracer(error);
+    if (error) return stackLogger(error);
     logger.info('-- Index successfully deleted', resp, status);
   });
 };
@@ -82,7 +83,7 @@ const addDocument = (index, type) => {
     type,
     body: index
   }, (error, resp) => {
-    if (error) return stackTracer(error);
+    if (error) return stackLogger(error);
     logger.info('---Book added successfully---', resp);
   });
 };
@@ -92,10 +93,9 @@ const retrieveBook = async (id) => {
     index: 'books',
     type: 'book',
     id,
-    // body
   }).then(result => result._source) // eslint-disable-line
     .catch((error) => {
-      stackTracer(error);
+      stackLogger(error);
     });
 
   return book;
@@ -115,7 +115,7 @@ const updateBook = async (data) => {
     id,
     body
   }, (error, resp) => {
-    if (error) return stackTracer(error);
+    if (error) return stackLogger(error);
     logger.info('---Book updated successfully---', resp);
   });
 };
@@ -126,7 +126,7 @@ const deleteBook = (index, id, type) => {
     id,
     type
   }, (error, resp, status) => {
-    if (error) return stackTracer(error);
+    if (error) return stackLogger(error);
     logger.info('-- Deleted', resp, status);
   });
 };
@@ -145,7 +145,7 @@ const getSuggestions = (input) => {
       }
     }
   }, (error, resp) => {
-    if (error) return stackTracer(error);
+    if (error) return stackLogger(error);
     logger.info(resp);
   });
 };
@@ -164,7 +164,7 @@ const elasticBulkCreate = (bulk) => {
   });
 
   elasticClient.bulk({ body: data }, (error) => {
-    if (error) return stackTracer(error);
+    if (error) return stackLogger(error);
     logger.info('Successfully imported %s'.yellow, bulk.length);
   });
 };
@@ -192,7 +192,7 @@ const elasticItemSearch = async (query, paginateData) => {
   const hits = await elasticClient.search({ index: 'books', body, type: 'book' })
     .then(results => results.hits.hits.map(result => result._source)) // eslint-disable-line
     .catch((error) => {
-      stackTracer(error);
+      stackLogger(error);
     });
 
   return hits;

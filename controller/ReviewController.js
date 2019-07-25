@@ -1,7 +1,7 @@
+import { stackLogger } from 'info-logger';
 import models from '../models';
 import utils from '../utils';
-import stackTracer from '../helper/stackTracer';
-import { retrieveBook } from '../helper/elasticSearch';
+import { retrieveBook } from '../elasticSearch/elasticSearch';
 import BookController from './BookController';
 
 const { helper, validator } = utils;
@@ -35,7 +35,7 @@ class ReviewController {
       }
       return retrievedBook && await models.Review.create(newData);
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -63,7 +63,7 @@ class ReviewController {
       if (!editedReview) throw new Error('Review not found');
       return editedReview;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -99,7 +99,7 @@ class ReviewController {
         order: [['createdAt', 'ASC']]
       });
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -119,7 +119,7 @@ class ReviewController {
       });
       return !reviews.length ? [] : reviews;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -160,7 +160,7 @@ class ReviewController {
     const averageRating = totalReviews
       && reviews
         .reduce((totalRating, value) => totalRating + value.rating, 0)
-        / totalReviews;
+      / totalReviews;
     return averageRating || 0;
   }
 }

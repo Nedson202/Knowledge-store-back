@@ -1,13 +1,13 @@
+import { stackLogger } from 'info-logger';
 import models from '../models';
 import utils from '../utils';
-import stackTracer from '../helper/stackTracer';
-import { addDocument } from '../helper/elasticSearch';
+import { addDocument } from '../elasticSearch/elasticSearch';
+import authStatusCheck from '../utils/authStatusCheck';
 
 const { helper, validator } = utils;
 
 class BookController {
   static async addBook(data, authStatus) {
-    console.log(data);
     const newData = data;
     newData.id = helper.generateId();
     newData.userId = authStatus.id;
@@ -15,9 +15,7 @@ class BookController {
       ...newData
     });
     try {
-      if (!authStatus) {
-        throw new Error('Permission denied, you need to signup/login');
-      }
+      authStatusCheck(authStatus);
       if (Object.keys(errors).length !== 0) {
         throw new Error(JSON.stringify(errors));
       }
@@ -25,7 +23,7 @@ class BookController {
       addDocument(newData, 'book');
       return createdBook;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -50,22 +48,21 @@ class BookController {
       if (!books.length) throw new Error('No books available');
       return books;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
 
   static calculateBookRatings(reviews) {
-    // console.log(reviews);
     try {
       const totalReviews = reviews.length;
       const averageRating = totalReviews
-      && reviews
-        .reduce((totalRating, value) => totalRating + value.dataValues.rating, 0)
+        && reviews
+          .reduce((totalRating, value) => totalRating + value.dataValues.rating, 0)
         / totalReviews;
       return averageRating || 0;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -80,7 +77,7 @@ class BookController {
       if (!usersBooks) throw new Error('you have no books yet');
       return usersBooks;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -91,7 +88,7 @@ class BookController {
       if (!book) throw new Error('No book found');
       return book;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -137,7 +134,7 @@ class BookController {
       if (!books) throw new Error('No books available');
       return books;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -145,7 +142,6 @@ class BookController {
   static async filterBooksByRating(rating) {
     try {
       const books = await models.Review.findAll({
-        // raw: true,
         where: {
           rating: +rating
         },
@@ -160,7 +156,7 @@ class BookController {
       if (!books) throw new Error('No books available');
       return books;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -181,7 +177,7 @@ class BookController {
       updatedBook.message = 'Book successfully updated';
       return updatedBook;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -201,7 +197,7 @@ class BookController {
         message: 'Book successfully deleted'
       };
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }

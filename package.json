@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "babel-node app.js",
-    "start:dev": "nodemon --exec babel-node app.js",
+    "start": "babel-node index",
+    "start:dev": "nodemon --exec babel-node index",
     "revert:migrate": "sequelize db:migrate:undo:all && sequelize db:migrate && sequelize db:seed:all",
     "migrate": "sequelize db:migrate",
     "seed": "sequelize db:seed:all",
@@ -34,6 +34,7 @@
     "graphql": "^14.0.2",
     "graphql-iso-date": "^3.6.1",
     "helmet": "^3.15.0",
+    "info-logger": "^0.1.2",
     "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.11",
     "nodemailer": "^4.6.8",

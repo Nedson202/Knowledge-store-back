@@ -293,7 +293,6 @@ const Mutation = new GraphQLObjectType({
         const { authorization } = context.headers;
         const authorized = helper.authenticate(authorization);
         return UserController.resetPassword(args, authorized);
-        // .then(response => [response]);
       }
     },
     verifyEmail: {
