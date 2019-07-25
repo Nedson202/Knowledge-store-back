@@ -2,7 +2,7 @@ import googleBooks from 'google-books-search';
 import models from '../models';
 import {
   elasticItemSearch, elasticBulkCreate, retrieveBook, addDocument
-} from '../helper/elasticSearch';
+} from '../elasticSearch/elasticSearch';
 import utils from '../utils';
 
 const { helper } = utils;
@@ -10,7 +10,7 @@ const { helper } = utils;
 class GoogleBooks {
   static async searchBooks(searchQuery) {
     const options = {
-      key: 'AIzaSyC45ziFKQRFb7yefGvWgcqyC3JwQ9HLKJc',
+      key: process.env.GOOGLE_BOOKS_KEY,
       field: 'title',
       offset: 0,
       limit: 40,
@@ -83,7 +83,6 @@ class GoogleBooks {
     try {
       let more;
       const searchResult = await GoogleBooks.retrieveBookProfile(bookId);
-      // const searchResult = await retrieveBook(bookId);
       if (searchResult) {
         const { name, name: mainBookName } = searchResult;
         const moreBooks = await GoogleBooks.searchBooks(name);

@@ -18,7 +18,6 @@ router.get('/google/redirect', passport.authenticate('google',
 (req, res) => {
   const { token } = req.user;
   return res.redirect(`${redirectUrl}/?token=${token}`);
-  // return res.send(req.user);
 });
 
 // auth with facebook
@@ -30,7 +29,6 @@ router.get('/facebook/redirect',
   passport.authenticate('facebook',
     { session: false, failureRedirect: '/login' }),
   (req, res) => {
-    console.log(req.user);
     res.send(req.user);
   });
 

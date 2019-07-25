@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
+import { stackLogger } from 'info-logger';
 import models from '../models';
 import utils from '../utils';
-import stackTracer from '../helper/stackTracer';
 import mailUser from '../utils/mailUser';
 
 const { helper, validator, emailHandler } = utils;
@@ -33,7 +33,7 @@ class UserController {
       payload.token = token;
       return payload;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -53,10 +53,6 @@ class UserController {
 
       if (!existingUser) throw new Error('Unauthorized, check your username or password');
 
-      // const { isVerified } = existingUser;
-      // if (isVerified.match('false')) {
-      //   throw new Error('Sorry you need to verify your email');
-      // }
       if (!bcrypt.compareSync((password), existingUser.password)) {
         throw new Error(
           'Unauthorized, check your username or password'
@@ -67,7 +63,7 @@ class UserController {
       payload.token = token;
       return payload;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -90,7 +86,7 @@ class UserController {
         token
       };
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -113,7 +109,7 @@ class UserController {
       payload.message = 'Profile successfully updated';
       return payload;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -137,7 +133,7 @@ class UserController {
       }
       throw new Error('Sorry the old password provided is incorrect');
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -163,7 +159,7 @@ class UserController {
       }
       throw new Error('Password reset failed');
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -182,7 +178,7 @@ class UserController {
         message: 'Email verified successfully'
       };
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -200,7 +196,7 @@ class UserController {
         message: 'Verification email sent successfully'
       };
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -222,7 +218,7 @@ class UserController {
       if (!user) throw new Error('User not found');
       return user;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -269,7 +265,7 @@ class UserController {
       }
       throw new Error('Operation denied, you are not a super admin');
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -292,7 +288,7 @@ class UserController {
       }
       throw new Error('Permission denied, you are not an admin');
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -313,7 +309,7 @@ class UserController {
           return false;
       }
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
     }
   }
 
@@ -339,7 +335,7 @@ class UserController {
         message: 'User role successfully changed to super admin'
       };
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
     }
   }
 
@@ -360,28 +356,10 @@ class UserController {
       });
       return users;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
-  // static async sendVerificationEmail() {
-  //   const tomorrow = new Date('2018-10-16 01:37:57.388+01');
-  //   tomorrow.setDate(tomorrow.getDate() + 1);
-  //   const getTimeOfNewDate = new Date().getTime();
-  //   const getTimeOfIncrementedDate = tomorrow.getTime();
-
-  //   const incrementedDate = tomorrow.toLocaleDateString();
-
-  //   const newDate = new Date().toLocaleDateString();
-
-  //   const a = setInterval(() => {
-  //     console.log(incrementedDate, newDate);
-  //   }, 1000);
-
-  //   console.log(getTimeOfNewDate - getTimeOfIncrementedDate);
-
-  //   if (getTimeOfNewDate > getTimeOfIncrementedDate) clearInterval(a);
-  // }
 }
 
 export default UserController;

@@ -6,7 +6,6 @@ import {
   GraphQLList,
 } from 'graphql';
 import BookType from './books';
-// import AuthorType from './author';
 import ReviewType from './review';
 import Mutation from './mutations/index';
 import BookController from '../controller/BookController';
@@ -18,7 +17,7 @@ import UserType from './user';
 import UserController from '../controller/UserController';
 import BookFavoritesController from '../controller/BookFavoritesController';
 import GoogleBooks from '../controller/GooglBooks';
-import { updateBook } from '../helper/elasticSearch';
+import { updateBook } from '../elasticSearch/elasticSearch';
 
 const { helper } = utils;
 
@@ -47,12 +46,6 @@ const RootQuery = new GraphQLObjectType({
         });
       }
     },
-    // books: {
-    //   type: new GraphQLList(BookType),
-    //   resolve() {
-    //     return BookController.getBooks();
-    //   }
-    // },
     getGenres: {
       type: new GraphQLList(GenreType),
       resolve() {
@@ -151,8 +144,6 @@ const RootQuery = new GraphQLObjectType({
           from,
           size
         });
-        // return elasticItemSearch(args.searchQuery);
-        // return GoogleBooks.searchBooks(args.searchQuery);
       }
     },
     updateBooks: {
@@ -170,9 +161,6 @@ const RootQuery = new GraphQLObjectType({
       },
       resolve(parent, args) {
         return updateBook(args);
-        // return GoogleBooks.completeSearch(args.searchQuery);
-        // return elasticItemSearch(args.searchQuery);
-        // return GoogleBooks.searchBooks(args);
       }
     },
   }

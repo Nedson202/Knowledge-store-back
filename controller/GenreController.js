@@ -1,6 +1,6 @@
+import { stackLogger } from 'info-logger';
 import models from '../models';
 import utils from '../utils';
-import stackTracer from '../helper/stackTracer';
 
 const { helper, validator } = utils;
 
@@ -26,7 +26,7 @@ class GenreController {
       }
       return review && await models.Reply.create(newData);
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -50,7 +50,7 @@ class GenreController {
       if (!editedReply) throw new Error('Reply not found');
       return editedReply;
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
@@ -61,7 +61,7 @@ class GenreController {
         order: [['genre', 'ASC']]
       });
     } catch (error) {
-      stackTracer(error);
+      stackLogger(error);
       return error;
     }
   }
