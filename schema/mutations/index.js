@@ -300,6 +300,9 @@ const Mutation = new GraphQLObjectType({
       args: {
         id: {
           type: GraphQLString
+        },
+        OTP: {
+          type: GraphQLString
         }
       },
       resolve(parent, args) {

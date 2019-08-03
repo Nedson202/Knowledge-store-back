@@ -8,6 +8,15 @@ import {
 const { helper, validator } = utils;
 
 class ReplyController {
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @param {*} authStatus
+   * @returns
+   * @memberof ReplyController
+   */
   static async addReply(data, authStatus) {
     const newData = data;
     const errors = validator.validateAddReply({
@@ -33,6 +42,15 @@ class ReplyController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @param {*} authStatus
+   * @returns
+   * @memberof ReplyController
+   */
   static async editReply(data, authStatus) {
     const newData = data;
     try {
@@ -56,6 +74,15 @@ class ReplyController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @param {*} authStatus
+   * @returns
+   * @memberof ReplyController
+   */
   static async deleteReply(data, authStatus) {
     const { replyId } = data;
     try {
@@ -78,6 +105,14 @@ class ReplyController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} reviewId
+   * @returns
+   * @memberof ReplyController
+   */
   static async getReview(reviewId) {
     try {
       return await models.Review.findById(reviewId);
@@ -86,6 +121,14 @@ class ReplyController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} reviewId
+   * @returns
+   * @memberof ReplyController
+   */
   static async getReplies(reviewId) {
     const Users = models.User;
     try {
@@ -106,6 +149,14 @@ class ReplyController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} reviewId
+   * @returns
+   * @memberof ReplyController
+   */
   static async returnReplies(reviewId) {
     try {
       const reviews = await ReplyController.getReplies(reviewId);
@@ -115,9 +166,17 @@ class ReplyController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} replies
+   * @returns
+   * @memberof ReplyController
+   */
   static async flattenReplies(replies) {
     try {
-      const newReplies = replies.length && replies.map(reply => ({
+      const newReplies = replies.map(reply => ({
         id: reply.id,
         reply: reply.reply,
         replier: reply.replier.username,

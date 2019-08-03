@@ -58,6 +58,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true
     },
+    OTPSecret: {
+      type: DataTypes.STRING,
+      allowNull: true
+    }
   }, { paranoid: true });
 
   User.associate = (models) => {

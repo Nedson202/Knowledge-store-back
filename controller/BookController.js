@@ -12,6 +12,15 @@ import {
 const { helper, validator } = utils;
 
 class BookController {
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @param {*} authStatus
+   * @returns
+   * @memberof BookController
+   */
   static async addBook(data, authStatus) {
     const newData = data;
     newData.id = helper.generateId();
@@ -33,6 +42,13 @@ class BookController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} book
+   * @memberof BookController
+   */
   static async addBookIfNotExist(book) {
     await models.Book.findOrCreate({
       where: {
@@ -42,6 +58,13 @@ class BookController {
     });
   }
 
+  /**
+   *
+   *
+   * @static
+   * @returns
+   * @memberof BookController
+   */
   static async getBooks() {
     try {
       const books = await models.Book.findAll({
@@ -58,6 +81,14 @@ class BookController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} reviews
+   * @returns
+   * @memberof BookController
+   */
   static calculateBookRatings(reviews) {
     try {
       const totalReviews = reviews.length;
@@ -72,6 +103,14 @@ class BookController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} authStatus
+   * @returns
+   * @memberof BookController
+   */
   static async getUsersBooks(authStatus) {
     try {
       const usersBooks = await models.Book.findAll({
@@ -87,6 +126,14 @@ class BookController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} bookId
+   * @returns
+   * @memberof BookController
+   */
   static async getBook(bookId) {
     try {
       const book = await models.Book.findById(bookId);
@@ -98,6 +145,14 @@ class BookController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} query
+   * @returns
+   * @memberof BookController
+   */
   static async filterBooks(query) {
     const {
       search
@@ -144,6 +199,14 @@ class BookController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} rating
+   * @returns
+   * @memberof BookController
+   */
   static async filterBooksByRating(rating) {
     try {
       const books = await models.Review.findAll({
@@ -166,6 +229,15 @@ class BookController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @param {*} authStatus
+   * @returns
+   * @memberof BookController
+   */
   static async updateBook(data, authStatus) {
     try {
       if (!authStatus) {
@@ -187,6 +259,15 @@ class BookController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @param {*} authStatus
+   * @returns
+   * @memberof BookController
+   */
   static async deleteBook(data, authStatus) {
     try {
       if (!authStatus) {

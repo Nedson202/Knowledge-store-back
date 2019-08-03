@@ -9,6 +9,14 @@ import { bookLabel, googleBookOptions } from '../utils/default';
 const { helper } = utils;
 
 class GoogleBooks {
+  /**
+   *
+   *
+   * @static
+   * @param {*} searchQuery
+   * @returns
+   * @memberof GoogleBooks
+   */
   static async searchBooks(searchQuery) {
     const options = googleBookOptions;
 
@@ -58,6 +66,15 @@ class GoogleBooks {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} searchQuery
+   * @param {*} paginateData
+   * @returns
+   * @memberof GoogleBooks
+   */
   static async completeSearch(searchQuery, paginateData) {
     try {
       const searchResult = await elasticItemSearch(searchQuery, paginateData);
@@ -71,6 +88,14 @@ class GoogleBooks {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} bookId
+   * @returns
+   * @memberof GoogleBooks
+   */
   static async retrieveSingleBook(bookId) {
     try {
       let more;
@@ -89,6 +114,14 @@ class GoogleBooks {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} bookId
+   * @returns
+   * @memberof GoogleBooks
+   */
   static async retrieveBookProfile(bookId) {
     try {
       let searchResult;
@@ -104,6 +137,14 @@ class GoogleBooks {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} array
+   * @returns
+   * @memberof GoogleBooks
+   */
   static randomizeResult(array) {
     const arrayToShuffle = array;
     let currentIndex = array.length;

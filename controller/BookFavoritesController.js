@@ -11,6 +11,15 @@ import {
 const { helper } = utils;
 
 class BookFavoritesController {
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @param {*} authStatus
+   * @returns
+   * @memberof BookFavoritesController
+   */
   static async addToFavorites(data, authStatus) {
     const newData = data;
     try {
@@ -37,6 +46,14 @@ class BookFavoritesController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} bookId
+   * @returns
+   * @memberof BookFavoritesController
+   */
   static async checkFavorite(bookId) {
     try {
       const favorite = await models.Favorite.findOne({
@@ -52,6 +69,14 @@ class BookFavoritesController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} authStatus
+   * @returns
+   * @memberof BookFavoritesController
+   */
   static async getFavorites(authStatus) {
     try {
       if (!authStatus) {
@@ -78,6 +103,15 @@ class BookFavoritesController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @param {*} authStatus
+   * @returns
+   * @memberof BookFavoritesController
+   */
   static async removeFavorites(data, authStatus) {
     const { books } = data;
     try {
