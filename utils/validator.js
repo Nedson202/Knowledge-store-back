@@ -6,6 +6,14 @@ import {
 } from './default';
 
 class Validator {
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @returns
+   * @memberof Validator
+   */
   static validateData(data) {
     const { username, password } = data;
     const validationError = {};
@@ -27,6 +35,14 @@ class Validator {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @returns
+   * @memberof Validator
+   */
   static validateEmail(data) {
     const { email } = data;
     const validationError = {};
@@ -41,6 +57,14 @@ class Validator {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @returns
+   * @memberof Validator
+   */
   static validateSignup(data) {
     try {
       let validationError = {};
@@ -53,6 +77,14 @@ class Validator {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @returns
+   * @memberof Validator
+   */
   static validateAddBook(data) {
     const {
       name, author, genre, year
@@ -73,6 +105,14 @@ class Validator {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @returns
+   * @memberof Validator
+   */
   static validateAddReview(data) {
     const {
       bookId, review, rating
@@ -97,6 +137,14 @@ class Validator {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @returns
+   * @memberof Validator
+   */
   static validateAddReply(data) {
     const {
       reviewId, reply

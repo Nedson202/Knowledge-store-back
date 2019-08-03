@@ -12,6 +12,15 @@ import {
 const { helper, validator } = utils;
 
 class ReviewController {
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @param {*} authStatus
+   * @returns
+   * @memberof ReviewController
+   */
   static async addReview(data, authStatus) {
     const newData = data;
     const errors = validator.validateAddReview({
@@ -45,6 +54,15 @@ class ReviewController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @param {*} authStatus
+   * @returns
+   * @memberof ReviewController
+   */
   static async editReview(data, authStatus) {
     const {
       review, rating, reviewId, like
@@ -73,6 +91,15 @@ class ReviewController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @param {*} authStatus
+   * @returns
+   * @memberof ReviewController
+   */
   static async deleteReview(data, authStatus) {
     const { reviewId } = data;
     try {
@@ -95,6 +122,14 @@ class ReviewController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} reviewId
+   * @returns
+   * @memberof ReviewController
+   */
   static async getReview(reviewId) {
     try {
       return await models.Review.findOne({
@@ -109,6 +144,14 @@ class ReviewController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} bookId
+   * @returns
+   * @memberof ReviewController
+   */
   static async retrieveReviews(bookId) {
     const Users = models.User;
     try {
@@ -129,6 +172,14 @@ class ReviewController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} bookId
+   * @returns
+   * @memberof ReviewController
+   */
   static async getBookReviews(bookId) {
     try {
       const reviews = await ReviewController.retrieveReviews(bookId);
@@ -138,9 +189,17 @@ class ReviewController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} reviews
+   * @returns
+   * @memberof ReviewController
+   */
   static async flattenFetchedReviews(reviews) {
     try {
-      const newReviews = reviews.length && reviews.map(review => ({
+      const newReviews = reviews.map(review => ({
         id: review.id,
         review: review.review,
         rating: review.rating,
@@ -159,6 +218,14 @@ class ReviewController {
     }
   }
 
+  /**
+   *
+   *
+   * @static
+   * @param {*} bookId
+   * @returns
+   * @memberof ReviewController
+   */
   static async getAverageRating(bookId) {
     const reviews = await ReviewController.retrieveReviews(bookId);
     const totalReviews = reviews.length;

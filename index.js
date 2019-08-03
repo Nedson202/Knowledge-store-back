@@ -15,14 +15,15 @@ import {
   checkHealthStatus, createMapping
 } from './elasticSearch/elasticSearch';
 import logger from './utils/initLogger';
-
-// eslint-disable-next-line import/prefer-default-export
-// export const logger = createLogger('Error', 'log-result');
+import {
+  development, unhandledRejection,
+  uncaughtException, SIGTERM
+} from './utils/default';
 
 const app = express();
 
 const port = process.env.PORT || 4000;
-const appUrl = process.env.NODE_ENV.match('development')
+const appUrl = process.env.NODE_ENV.match(development)
   ? `http://localhost:${port}` : process.env.PROD_SERVER;
 
 // enable cross origin resource sharing
@@ -44,23 +45,23 @@ app.use(
   '/graphql',
   graphqlHTTP(req => ({
     schema,
-    graphiql: !!process.env.NODE_ENV.match('development'),
+    graphiql: !!process.env.NODE_ENV.match(development),
     context: req
   }))
 );
 
 app.use(requestLogger);
 
-process.on('unhandledRejection', (reason) => {
+process.on(unhandledRejection, (reason) => {
   stackLogger(reason);
 });
 
-process.on('uncaughtException', (reason) => {
+process.on(uncaughtException, (reason) => {
   stackLogger(reason);
   process.exit(0);
 });
 
-process.on('SIGTERM', () => {
+process.on(SIGTERM, () => {
   process.exit(0);
 });
 
@@ -74,7 +75,7 @@ app.listen(port,
     });
   });
 
-const httpProtocol = process.env.NODE_ENV.match('development') ? http : https;
+const httpProtocol = process.env.NODE_ENV.match(development) ? http : https;
 
 setInterval(() => {
   (() => {
