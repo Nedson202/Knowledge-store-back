@@ -8,9 +8,6 @@ const emailVerificationTemplate = ({
     margin: 0 auto;
     border-radius:5px;
     color:black;
-    display: grid;
-    grid-template-column: 1fr;
-    grid-gap: 2px;
     text-align: center; font-family: Times New Roman;"
     >
       <div

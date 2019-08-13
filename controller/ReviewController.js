@@ -136,7 +136,6 @@ class ReviewController {
         where: {
           id: reviewId
         },
-        order: [reviewOrder]
       });
     } catch (error) {
       stackLogger(error);
@@ -163,7 +162,8 @@ class ReviewController {
           model: Users,
           as: reviewerLabel,
           attributes: userAttributes
-        }]
+        }],
+        order: [reviewOrder],
       });
       return !reviews.length ? [] : reviews;
     } catch (error) {

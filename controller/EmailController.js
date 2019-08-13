@@ -4,9 +4,10 @@ import mailer from '../utils/mailer';
 import emailVerificationTemplate from '../EmailTemplates/emailVerification';
 import {
   production, devServer, verifyEmailSubject,
-  passwordResetSubject
+  passwordResetSubject, resendOTPSubject,
 } from '../utils/default';
 import passwordResetTemplate from '../EmailTemplates/passwordReset';
+import resendOTPTemplate from '../EmailTemplates/resentOTP';
 
 const redirectUrl = process.env.NODE_ENV.match(production)
   ? process.env.PROD_SERVER : devServer;
@@ -56,6 +57,27 @@ class EmailController {
         redirectUrl, username, OTP, token,
       });
       await mailer(emailTemplate, email, passwordResetSubject);
+    } catch (error) {
+      stackLogger(error);
+      return error;
+    }
+  }
+
+  /**
+   *
+   *
+   * @static
+   * @param {*} user
+   * @param {*} { token, OTP }
+   * @returns
+   * @memberof EmailController
+   */
+  static async newOTPRequestMail({ username, email }, OTP) {
+    try {
+      const emailTemplate = resendOTPTemplate({
+        username, OTP,
+      });
+      await mailer(emailTemplate, email, resendOTPSubject);
     } catch (error) {
       stackLogger(error);
       return error;

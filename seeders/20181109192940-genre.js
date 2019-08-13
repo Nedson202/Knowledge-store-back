@@ -3,7 +3,7 @@ module.exports = {
     [
       {
         id: '1',
-        genre: 'Science fiction',
+        genre: 'Fiction',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -75,7 +75,7 @@ module.exports = {
       },
       {
         id: '13',
-        genre: 'Religion, Spirituality & New Age',
+        genre: 'Religion, Spirituality',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -190,6 +190,36 @@ module.exports = {
       {
         id: '32',
         genre: 'Philosophy',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: '33',
+        genre: 'Military and War',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: '34',
+        genre: 'Anime',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: '35',
+        genre: 'Psychology',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: '36',
+        genre: 'Real Estate',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: '37',
+        genre: 'Sport',
         createdAt: new Date(),
         updatedAt: new Date(),
       },

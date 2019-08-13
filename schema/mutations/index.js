@@ -1,4 +1,3 @@
-
 import {
   GraphQLObjectType,
   GraphQLString,
@@ -63,11 +62,15 @@ const Mutation = new GraphQLObjectType({
         },
         rating: {
           type: GraphQLFloat
-        }
+        },
+        token: {
+          type: GraphQLString
+        },
       },
       resolve(parent, args, context) {
+        const { token } = args;
         const { authorization } = context.headers;
-        const authorized = helper.authenticate(authorization);
+        const authorized = helper.authenticate(token || authorization);
         return ReviewController.addReview(args, authorized);
       }
     },
@@ -257,6 +260,20 @@ const Mutation = new GraphQLObjectType({
         return UserController.editProfile(args, authorized);
       }
     },
+    removeProfilePicture: {
+      type: UserType,
+      args: {
+        token: {
+          type: GraphQLString
+        },
+      },
+      resolve(parent, args, context) {
+        const { token } = args;
+        const { authorization } = context.headers;
+        const authorized = helper.authenticate(authorization || token);
+        return UserController.removeProfilePicture(authorized);
+      }
+    },
     changePassword: {
       type: UserType,
       args: {
@@ -288,17 +305,18 @@ const Mutation = new GraphQLObjectType({
         token: {
           type: GraphQLString
         },
+        OTP: {
+          type: GraphQLString
+        }
       },
-      resolve(parent, args, context) {
-        const { authorization } = context.headers;
-        const authorized = helper.authenticate(authorization);
-        return UserController.resetPassword(args, authorized);
+      resolve(parent, args) {
+        return UserController.resetPassword(args);
       }
     },
     verifyEmail: {
       type: UserType,
       args: {
-        id: {
+        token: {
           type: GraphQLString
         },
         OTP: {
@@ -306,7 +324,38 @@ const Mutation = new GraphQLObjectType({
         }
       },
       resolve(parent, args) {
-        return UserController.verifyEmail(args);
+        const { token } = args;
+        const authorized = helper.authenticate(token);
+        return UserController.verifyEmail(args, authorized);
+      }
+    },
+    verifyForgotPasswordRequest: {
+      type: UserType,
+      args: {
+        OTP: {
+          type: GraphQLString
+        },
+        token: {
+          type: GraphQLString
+        },
+      },
+      resolve(parent, args) {
+        const { token } = args;
+        const authorized = helper.authenticate(token);
+        return UserController.verifyForgotPasswordOTP(args, authorized);
+      }
+    },
+    resendOTP: {
+      type: UserType,
+      args: {
+        token: {
+          type: GraphQLString
+        },
+      },
+      resolve(parent, args) {
+        const { token } = args;
+        const authorized = helper.authenticate(token);
+        return UserController.resendOTP(authorized);
       }
     },
     updateBook: {
@@ -372,7 +421,7 @@ const Mutation = new GraphQLObjectType({
         const authorized = helper.authenticate(authorization);
         return BookFavoritesController.removeFavorites(args, authorized);
       }
-    }
+    },
   }
 });
 

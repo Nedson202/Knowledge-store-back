@@ -31,6 +31,15 @@ const UserType = new GraphQLObjectType({
     socialId: {
       type: GraphQLString
     },
+    isVerified: {
+      type: GraphQLString
+    },
+    picture: {
+      type: GraphQLString
+    },
+    avatarColor: {
+      type: GraphQLString
+    },
     createdAt: {
       type: GraphQLDateTime
     },

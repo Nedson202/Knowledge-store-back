@@ -32,11 +32,19 @@ export const userDeletedMessage = 'User has been deleted';
 export const userIsAdmin = 'User is already an admin';
 export const notAnAdmin = 'Permission denied, you are not an admin';
 export const emailVerifiedMessage = 'Email verified successfully';
+export const emailVerificationFailed = 'Email verification failed';
+export const emailAlreadyVerified = 'Email already verified';
 export const OTPFailed = 'OTP verification failed';
-
+export const OTPSuccess = 'OTP verification successful';
+export const forgotPasswordOPDenied = 'Forgot password operation denied';
+export const resendOTPFailed = 'Resend OTP failed';
+export const resendOTPSuccess = 'New OTP sent to email';
+// sequelize
 export const genreOrder = ['genre', 'ASC'];
-export const reviewOrder = ['createdAt', 'ASC'];
+export const reviewOrder = ['createdAt', 'DESC'];
 export const userOrder = ['id', 'ASC'];
+export const userAttributes = ['username', 'picture', 'avatarColor'];
+
 export const googleBookOptions = {
   key: process.env.GOOGLE_BOOKS_KEY,
   field: 'title',
@@ -47,7 +55,6 @@ export const googleBookOptions = {
   order: 'relevance',
   lang: 'en'
 };
-export const userAttributes = ['username', 'picture', 'avatarColor'];
 
 // info-logger
 export const logFolderName = 'Error';
@@ -114,3 +121,4 @@ export const devServer = 'http://localhost:3000';
 
 export const verifyEmailSubject = 'Lorester\'s Bookstore - Verify Email';
 export const passwordResetSubject = 'Lorester\'s Bookstore - Password reset help is here';
+export const resendOTPSubject = 'Lorester\'s Bookstore - New OTP request';
