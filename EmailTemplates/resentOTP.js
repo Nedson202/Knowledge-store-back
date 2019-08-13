@@ -1,6 +1,4 @@
-const passwordResetTemplate = ({
-  redirectUrl, username, OTP, token
-}) => {
+const resendOTPTemplate = ({ username, OTP }) => {
   const template = `
     <div
       style="width:450px;
@@ -20,24 +18,8 @@ const passwordResetTemplate = ({
       >Lorester's Bookstore</div>
 
       <div style="width: 400px; margin: auto;">
-        <p style="font-size: 20px;">Hello ${username}, we learnt you lost your password.</p>
-        <p>Use the button below to reset your password</p>
-        <a
-        href="${redirectUrl}/password-reset?token=${token}"
-        style="border: 1px solid #929292; padding: 10px; border-radius: 10px;
-          color: #444444;
-          cursor: pointer;
-          width: 50%;
-          display: block;
-          margin-left: auto;
-          margin-right: auto;
-          text-align: center;
-          text-decoration: none"
-          onMouseOver="this.style.boxShadow='1px 2px 2px rgba(0, 0, 0, 0.2)'"
-          onMouseOut="this.style.boxShadow='none'">Reset Password
-        </a>
-        <p>If you are using the mobile app, insert the following code into the
-          verification screen.</p>
+        <p style="font-size: 20px;">Hello ${username}, you requested for a new OTP.</p>
+        <p>Insert the following code into the verification screen.</p>
         <span
         style="font-size: 25px;"
         >
@@ -57,4 +39,4 @@ const passwordResetTemplate = ({
   return template;
 };
 
-export default passwordResetTemplate;
+export default resendOTPTemplate;

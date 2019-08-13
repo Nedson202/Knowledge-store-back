@@ -52,9 +52,15 @@ const RootQuery = new GraphQLObjectType({
     },
     usersBooks: {
       type: new GraphQLList(BookType),
+      args: {
+        token: {
+          type: GraphQLString
+        },
+      },
       resolve(parent, args, context) {
+        const { token } = args;
         const { authorization } = context.headers;
-        const authorized = helper.authenticate(authorization);
+        const authorized = helper.authenticate(token || authorization);
         return BookController.getUsersBooks(authorized);
       }
     },
@@ -117,9 +123,15 @@ const RootQuery = new GraphQLObjectType({
     },
     favoriteBooks: {
       type: new GraphQLList(BookType),
+      args: {
+        token: {
+          type: GraphQLString
+        },
+      },
       resolve(parent, args, context) {
+        const { token } = args;
         const { authorization } = context.headers;
-        const authorized = helper.authenticate(authorization);
+        const authorized = helper.authenticate(token || authorization);
         return BookFavoritesController.getFavorites(authorized);
       }
     },
@@ -161,6 +173,20 @@ const RootQuery = new GraphQLObjectType({
         return updateBook(args);
       }
     },
+    decodeToken: {
+      type: new GraphQLList(UserType),
+      args: {
+        token: {
+          type: GraphQLString
+        },
+      },
+      resolve(parent, args, context) {
+        const { token } = args;
+        const { authorization } = context.headers;
+        const decodedToken = helper.authenticate(authorization || token);
+        return [decodedToken];
+      }
+    }
   }
 });
 

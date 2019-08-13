@@ -7,7 +7,8 @@ import {
   oldPasswordIncorrect, resetSuccessful, resetFailed, adminRole,
   passwordChangeSuccessful, operationDenied, userDeletedMessage,
   userRole, emailSentMessage, userIsAdmin, notAnAdmin, emailVerifiedMessage,
-  OTPFailed,
+  OTPFailed, OTPSuccess, forgotPasswordOPDenied, resendOTPFailed,
+  resendOTPSuccess, emailVerificationFailed, emailAlreadyVerified,
 } from '../utils/default';
 import EmailController from './EmailController';
 
@@ -135,6 +136,71 @@ class UserController {
    * @returns
    * @memberof UserController
    */
+  static async verifyForgotPasswordOTP(data, authStatus) {
+    const { OTP } = data;
+    const { id } = authStatus;
+    let isOTPValid = false;
+    try {
+      if (!authStatus) {
+        throw new Error(forgotPasswordOPDenied);
+      }
+      const user = await UserController.findUser(null, id);
+      if (!user.role) throw new Error(noUser);
+      if (OTP) {
+        isOTPValid = helper.verifyOTP(OTP, user.OTPSecret);
+      }
+      if (OTP && !isOTPValid) {
+        return {
+          message: OTPFailed
+        };
+      }
+      await user.update({ OTPSecret: null });
+      const payload = user.dataValues;
+      delete (payload.password);
+      return {
+        message: OTPSuccess,
+      };
+    } catch (error) {
+      stackLogger(error);
+      return error;
+    }
+  }
+
+  /**
+   *
+   *
+   * @static
+   * @param {*} authStatus
+   * @returns
+   * @memberof UserController
+   */
+  static async resendOTP(authStatus) {
+    const { id, } = authStatus;
+    try {
+      if (!id) throw new Error(resendOTPFailed);
+      const user = await UserController.findUser(null, id);
+      if (!user.role) throw new Error(noUser);
+      const { OTP, secret } = utils.helper.generateOTP();
+      await user.update({ OTPSecret: secret });
+      EmailController.newOTPRequestMail(authStatus, OTP);
+      return {
+        message: resendOTPSuccess,
+      };
+    } catch (error) {
+      stackLogger(error);
+      return error;
+    }
+  }
+
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @param {*} authStatus
+   * @returns
+   * @memberof UserController
+   */
   static async editProfile(data, authStatus) {
     const { email, username, picture: image } = data;
     try {
@@ -145,7 +211,40 @@ class UserController {
       const user = await UserController.findUser(null, id);
       if (!user.role) throw new Error(noUser);
       const updatedUser = await user.update({
-        email, username, picture: image || user.picture
+        username: username || user.username,
+        email: email || user.email,
+        picture: image || user.picture
+      });
+      const payload = helper.payloadSchema(updatedUser);
+      const token = helper.generateToken(payload);
+      payload.token = token;
+      payload.message = profileUpdated;
+      return payload;
+    } catch (error) {
+      stackLogger(error);
+      return error;
+    }
+  }
+
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @param {*} authStatus
+   * @returns
+   * @memberof UserController
+   */
+  static async removeProfilePicture(authStatus) {
+    try {
+      if (!authStatus) {
+        throw new Error(authStatusPermission);
+      }
+      const { id, } = authStatus;
+      const user = await UserController.findUser(null, id);
+      if (!user.role) throw new Error(noUser);
+      const updatedUser = await user.update({
+        picture: '',
       });
       const payload = helper.payloadSchema(updatedUser);
       const token = helper.generateToken(payload);
@@ -234,16 +333,21 @@ class UserController {
    * @returns
    * @memberof UserController
    */
-  static async verifyEmail(data) {
-    const { id, OTP } = data;
+  static async verifyEmail(data, authStatus) {
+    const { OTP } = data;
+    const { id } = authStatus;
     let isOTPValid = false;
     try {
+      if (!authStatus) {
+        throw new Error(emailVerificationFailed);
+      }
       const user = await UserController.findUser(null, id);
       if (!user.role) throw new Error(noUser);
+      const isVerified = JSON.parse(user.isVerified);
+      if (isVerified) throw new Error(emailAlreadyVerified);
       if (OTP) {
         isOTPValid = helper.verifyOTP(OTP, user.OTPSecret);
       }
-
       if (OTP && !isOTPValid) {
         return {
           message: OTPFailed

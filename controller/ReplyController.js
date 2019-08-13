@@ -143,7 +143,7 @@ class ReplyController {
         }]
       });
       if (replies.length === 0) throw new Error(noReply);
-      return replies;
+      return !replies.length ? [] : replies;
     } catch (error) {
       return error;
     }
@@ -176,7 +176,7 @@ class ReplyController {
    */
   static async flattenReplies(replies) {
     try {
-      const newReplies = replies.map(reply => ({
+      const newReplies = replies.length && replies.map(reply => ({
         id: reply.id,
         reply: reply.reply,
         replier: reply.replier.username,

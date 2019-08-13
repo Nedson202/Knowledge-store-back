@@ -78,7 +78,6 @@ class GoogleBooks {
   static async completeSearch(searchQuery, paginateData) {
     try {
       const searchResult = await elasticItemSearch(searchQuery, paginateData);
-
       if (!searchResult.length) {
         return await GoogleBooks.searchBooks(searchQuery);
       }
