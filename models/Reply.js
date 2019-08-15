@@ -9,6 +9,8 @@ module.exports = (sequelize, DataTypes) => {
     likes: {
       type: DataTypes.INTEGER
     },
+    bookId: DataTypes.STRING,
+    userId: DataTypes.STRING,
   }, { paranoid: true });
 
   Reply.associate = (models) => {

@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.STRING
     },
-    review: DataTypes.STRING,
+    review: DataTypes.TEXT,
     rating: DataTypes.FLOAT,
     likes: DataTypes.INTEGER,
   }, { paranoid: true });
