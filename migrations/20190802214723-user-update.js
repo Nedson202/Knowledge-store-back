@@ -7,5 +7,5 @@ module.exports = {
       allowNull: true
     }),
 
-  down: (queryInterface, Sequelize) => queryInterface.removeColumn('OTPSecret', 'email') // eslint-disable-line
+  down: (queryInterface, Sequelize) => queryInterface.removeColumn('Users', 'OTPSecret') // eslint-disable-line
 };
