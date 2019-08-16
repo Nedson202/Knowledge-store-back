@@ -437,7 +437,7 @@ class UserController {
    */
   static async checkUserExists(socialId) {
     try {
-      const user = await models.User.find({
+      const user = await models.User.findOne({
         where: {
           socialId
         }
