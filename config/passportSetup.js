@@ -24,7 +24,7 @@ const saveUser = async (profile, done) => {
   const newUser = {
     username: profile.displayName,
     email: profile.emails[0].value,
-    password: '123eeR456',
+    password: process.env.FAKE_PASSWORD,
     socialId: profile.id,
     picture: profile.photos[0].value,
   };
