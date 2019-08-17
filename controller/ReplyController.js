@@ -26,7 +26,7 @@ class ReplyController {
       if (!authStatus) {
         throw new Error(authStatusPermission);
       }
-      const review = await models.Review.find({
+      const review = await models.Review.findOne({
         where: {
           id: newData.reviewId
         }
@@ -159,8 +159,8 @@ class ReplyController {
    */
   static async returnReplies(reviewId) {
     try {
-      const reviews = await ReplyController.getReplies(reviewId);
-      return await ReplyController.flattenReplies(reviews);
+      const replies = await ReplyController.getReplies(reviewId);
+      return await ReplyController.flattenReplies(replies);
     } catch (error) {
       return error;
     }
@@ -188,6 +188,7 @@ class ReplyController {
         createdAt: reply.createdAt,
         updatedAt: reply.updatedAt,
       }));
+
       return newReplies || [];
     } catch (error) {
       return error;
