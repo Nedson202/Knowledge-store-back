@@ -35,11 +35,7 @@ class ReviewController {
 
       if (retrievedBook) await BookController.addBookIfNotExist(retrievedBook);
       if (!retrievedBook) {
-        retrievedBook = await models.Book.find({
-          where: {
-            id: newData.bookId
-          }
-        });
+        retrievedBook = await BookController.getBook(newData.bookId);
       }
       if (!retrievedBook) throw new Error(noBookFound);
       newData.id = helper.generateId();

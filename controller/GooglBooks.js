@@ -1,10 +1,10 @@
 import googleBooks from 'google-books-search';
-import models from '../models';
 import {
   elasticItemSearch, elasticBulkCreate, retrieveBook, addDocument
 } from '../elasticSearch/elasticSearch';
 import utils from '../utils';
 import { bookLabel, googleBookOptions } from '../utils/default';
+import BookController from './BookController';
 
 const { helper } = utils;
 
@@ -126,8 +126,7 @@ class GoogleBooks {
       let searchResult;
       searchResult = await retrieveBook(bookId);
       if (!searchResult) {
-        const result = await models.Book.findById(bookId);
-        searchResult = result.dataValues;
+        searchResult = await BookController.getBook(bookId);
         if (searchResult) addDocument(searchResult, bookLabel);
       }
       return searchResult;

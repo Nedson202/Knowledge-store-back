@@ -27,7 +27,7 @@ module.exports = {
       type: Sequelize.TEXT
     },
     image: {
-      type: Sequelize.STRING
+      type: Sequelize.TEXT
     },
     pageCount: {
       type: Sequelize.STRING

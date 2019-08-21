@@ -5,7 +5,7 @@ import BookController from './BookController';
 import { retrieveBook } from '../elasticSearch/elasticSearch';
 import {
   authStatusPermission, favoriteBookLabel, addedToFavoriteMessage,
-  bookExistInFavorites, bookRemovedFromFavorites
+  bookRemovedFromFavorites
 } from '../utils/default';
 
 const { helper } = utils;
@@ -35,7 +35,13 @@ class BookFavoritesController {
           bookId: newData.bookId
         }
       });
-      if (favorite) throw new Error(bookExistInFavorites);
+      if (favorite) {
+        await favorite.destroy();
+
+        return {
+          message: bookRemovedFromFavorites,
+        };
+      }
       await models.Favorite.create(newData);
       return {
         message: addedToFavoriteMessage
