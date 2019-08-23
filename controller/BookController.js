@@ -136,7 +136,11 @@ class BookController {
    */
   static async getBook(bookId) {
     try {
-      const book = await models.Book.findById(bookId);
+      const book = await models.Book.findOne({
+        where: {
+          id: bookId,
+        },
+      });
       if (!book) throw new Error(noBookMessage);
       return book;
     } catch (error) {

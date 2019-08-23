@@ -21,7 +21,7 @@ module.exports = {
       },
       {
         id: '4',
-        genre: 'Action and Adventure',
+        genre: 'Action',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -75,7 +75,7 @@ module.exports = {
       },
       {
         id: '13',
-        genre: 'Religion, Spirituality',
+        genre: 'Religion',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -220,6 +220,18 @@ module.exports = {
       {
         id: '37',
         genre: 'Sport',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: '38',
+        genre: 'Adventure',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: '39',
+        genre: 'Spirituality',
         createdAt: new Date(),
         updatedAt: new Date(),
       },
