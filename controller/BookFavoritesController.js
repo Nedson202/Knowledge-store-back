@@ -60,15 +60,19 @@ class BookFavoritesController {
    * @returns
    * @memberof BookFavoritesController
    */
-  static async checkFavorite(bookId) {
+  static async checkFavorite(bookId, authStatus) {
     try {
+      if (!authStatus) {
+        return false;
+      }
+      const { id } = authStatus;
       const favorite = await models.Favorite.findOne({
         where: {
-          bookId
+          bookId,
+          userId: id,
         }
       });
       if (favorite) return true;
-      return false;
     } catch (error) {
       stackLogger(error);
       return error;
