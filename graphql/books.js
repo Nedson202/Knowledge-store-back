@@ -79,21 +79,10 @@ const BookType = new GraphQLObjectType({
     updatedAt: {
       type: GraphQLDateTime
     },
-    searchBooks: {
-      type: new GraphQLList(BookType),
-      args: {
-        searchQuery: {
-          type: GraphQLString
-        }
-      },
-      resolve(parent, args) {
-        return GoogleBooks.searchBooks(args, parent.id);
-      }
-    },
     moreBooks: {
       type: new GraphQLList(BookType),
       resolve(parent) {
-        return GoogleBooks.retrieveSingleBook(parent.id);
+        return GoogleBooks.retrieveMoreBooks(parent.id);
       }
     },
   })

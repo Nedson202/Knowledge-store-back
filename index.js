@@ -7,7 +7,7 @@ import https from 'https';
 import helmet from 'helmet';
 import { stackLogger } from 'info-logger';
 import requestLogger from './helper/requestLogger';
-import schema from './schema';
+import schema from './graphql';
 import models from './models/index';
 import passportSetup from './config/passportSetup'; // eslint-disable-line
 import authRoutes from './routes';
@@ -19,6 +19,7 @@ import {
   development, unhandledRejection,
   uncaughtException, SIGTERM
 } from './utils/default';
+import './redis';
 
 const app = express();
 

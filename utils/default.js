@@ -41,7 +41,7 @@ export const resendOTPFailed = 'Resend OTP failed';
 export const resendOTPSuccess = 'New OTP sent to email';
 // sequelize
 export const genreOrder = ['genre', 'ASC'];
-export const reviewOrder = ['createdAt', 'DESC'];
+export const descOrder = ['createdAt', 'DESC'];
 export const userOrder = ['id', 'ASC'];
 export const userAttributes = ['username', 'picture', 'avatarColor'];
 

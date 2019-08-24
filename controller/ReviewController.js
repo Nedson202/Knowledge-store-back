@@ -5,8 +5,7 @@ import { retrieveBook } from '../elasticSearch/elasticSearch';
 import BookController from './BookController';
 import {
   authStatusPermission, noReview, userAttributes, reviewerLabel,
-  reviewOrder,
-  noBookFound
+  noBookFound, descOrder
 } from '../utils/default';
 
 const { helper, validator } = utils;
@@ -147,7 +146,7 @@ class ReviewController {
    * @returns
    * @memberof ReviewController
    */
-  static async retrieveReviews(bookId) {
+  static async retrieveReviewsQuery(bookId) {
     const Users = models.User;
     try {
       const reviews = await models.Review.findAll({
@@ -159,7 +158,7 @@ class ReviewController {
           as: reviewerLabel,
           attributes: userAttributes
         }],
-        order: [reviewOrder],
+        order: [descOrder],
       });
       return !reviews.length ? [] : reviews;
     } catch (error) {
@@ -178,7 +177,7 @@ class ReviewController {
    */
   static async getBookReviews(bookId) {
     try {
-      const reviews = await ReviewController.retrieveReviews(bookId);
+      const reviews = await ReviewController.retrieveReviewsQuery(bookId);
       return await ReviewController.flattenFetchedReviews(reviews);
     } catch (error) {
       return error;
@@ -223,7 +222,7 @@ class ReviewController {
    * @memberof ReviewController
    */
   static async getAverageRating(bookId) {
-    const reviews = await ReviewController.retrieveReviews(bookId);
+    const reviews = await ReviewController.retrieveReviewsQuery(bookId);
     const totalReviews = reviews.length;
     const averageRating = totalReviews
       && reviews
