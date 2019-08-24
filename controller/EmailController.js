@@ -2,12 +2,12 @@ import { stackLogger } from 'info-logger';
 import models from '../models';
 import mailer from '../utils/mailer';
 import {
-  emailVerificationTemplate, passwordResetTemplate, resendOTPTemplate
-} from '../emailTemplates';
-import {
   production, devServer, verifyEmailSubject,
   passwordResetSubject, resendOTPSubject,
 } from '../utils/default';
+import {
+  passwordResetTemplate, emailVerificationTemplate, resendOTPTemplate
+} from '../emailTemplates';
 
 const redirectUrl = process.env.NODE_ENV.match(production)
   ? process.env.PROD_SERVER : devServer;
