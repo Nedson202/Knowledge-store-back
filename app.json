@@ -41,15 +41,6 @@
     "NODE_ENV": {
       "required": true
     },
-    "NODE_MAILER_PASS": {
-      "required": true
-    },
-    "NODE_MAILER_SERVICE": {
-      "required": true
-    },
-    "NODE_MAILER_USER": {
-      "required": true
-    },
     "NPM_CONFIG_PRODUCTION": {
       "required": true
     },
