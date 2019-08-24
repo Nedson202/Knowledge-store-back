@@ -2,7 +2,7 @@ import models from '../models';
 import utils from '../utils';
 import {
   noReply, authStatusPermission, userAttributes,
-  replierLabel
+  replierLabel,
 } from '../utils/default';
 
 const { helper, validator } = utils;
@@ -140,7 +140,7 @@ class ReplyController {
           model: Users,
           as: replierLabel,
           attributes: userAttributes
-        }]
+        }],
       });
       if (replies.length === 0) throw new Error(noReply);
       return !replies.length ? [] : replies;

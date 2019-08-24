@@ -6,7 +6,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING
     },
     likes: DataTypes.INTEGER,
-    reviewId: DataTypes.STRING,
     users: DataTypes.ARRAY(DataTypes.STRING)
   }, { paranoid: true });
 

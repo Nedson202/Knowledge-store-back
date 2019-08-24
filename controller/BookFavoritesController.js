@@ -2,7 +2,7 @@ import { stackLogger } from 'info-logger';
 import models from '../models';
 import utils from '../utils';
 import BookController from './BookController';
-import { retrieveBook } from '../elasticSearch/elasticSearch';
+import { retrieveBook } from '../elasticSearch';
 import {
   authStatusPermission, favoriteBookLabel, addedToFavoriteMessage,
   bookRemovedFromFavorites

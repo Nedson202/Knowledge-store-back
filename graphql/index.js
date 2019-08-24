@@ -17,7 +17,7 @@ import UserType from './user';
 import UserController from '../controller/UserController';
 import BookFavoritesController from '../controller/BookFavoritesController';
 import GoogleBooks from '../controller/GooglBooks';
-import { updateBook } from '../elasticSearch/elasticSearch';
+import { updateBook } from '../elasticSearch';
 
 const { helper } = utils;
 

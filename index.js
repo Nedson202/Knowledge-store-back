@@ -7,18 +7,19 @@ import https from 'https';
 import helmet from 'helmet';
 import { stackLogger } from 'info-logger';
 import requestLogger from './helper/requestLogger';
-import schema from './schema';
+import schema from './graphql';
 import models from './models/index';
-import passportSetup from './config/passportSetup'; // eslint-disable-line
+import './config/passportSetup';
 import authRoutes from './routes';
 import {
   checkHealthStatus, createMapping
-} from './elasticSearch/elasticSearch';
+} from './elasticSearch';
 import logger from './utils/initLogger';
 import {
   development, unhandledRejection,
   uncaughtException, SIGTERM
 } from './utils/default';
+import './redis';
 
 const app = express();
 

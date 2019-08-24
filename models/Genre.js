@@ -11,17 +11,5 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {});
 
-  // Book.associate = (models) => {
-  //   Book.belongsTo(models.User, {
-  //     foreignKey: 'userId',
-  //     as: 'bookOwner'
-  //   });
-  //   Book.hasMany(models.Review, {
-  //     foreignKey: 'bookId',
-  //     as: 'bookReviews',
-  //     onDelete: 'cascade',
-  //   });
-  //   // associations can be defined here
-  // };
   return Genre;
 };

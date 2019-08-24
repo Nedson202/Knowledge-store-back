@@ -1,7 +1,7 @@
 import { stackLogger } from 'info-logger';
 import models from '../models';
 import utils from '../utils';
-import { addDocument } from '../elasticSearch/elasticSearch';
+import { addDocument } from '../elasticSearch';
 import authStatusCheck from '../utils/authStatusCheck';
 import {
   bookLabel, bookReviewsLabel, noBookMessage,

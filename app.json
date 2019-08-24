@@ -56,6 +56,9 @@
     "PROD_SERVER": {
       "required": true
     },
+    "REDIS_URL": {
+      "required": true
+    },
     "SECRET": {
       "required": true
     },
@@ -69,7 +72,6 @@
     }
   },
   "name": "Knowledge-store-back",
-  "scripts": {
-  },
+  "scripts": {},
   "stack": "heroku-18"
 }

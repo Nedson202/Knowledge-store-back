@@ -1,10 +1,11 @@
 import googleBooks from 'google-books-search';
 import {
   elasticItemSearch, elasticBulkCreate, retrieveBook, addDocument
-} from '../elasticSearch/elasticSearch';
+} from '../elasticSearch';
 import utils from '../utils';
 import { bookLabel, googleBookOptions } from '../utils/default';
 import BookController from './BookController';
+import { addDataToRedis, getDataFromRedis } from '../redis';
 
 const { helper } = utils;
 
@@ -77,11 +78,24 @@ class GoogleBooks {
    */
   static async completeSearch(searchQuery, paginateData) {
     try {
-      const searchResult = await elasticItemSearch(searchQuery, paginateData);
+      const redisKey = `${searchQuery}:::${JSON.stringify(paginateData)}`;
+      let searchResult = await getDataFromRedis(redisKey) || [];
       if (!searchResult.length) {
-        return await GoogleBooks.searchBooks(searchQuery);
+        searchResult = await elasticItemSearch(searchQuery, paginateData) || [];
+        if (searchResult.length) addDataToRedis(redisKey, searchResult);
       }
-      return searchResult;
+      if (!searchResult.length) {
+        searchResult = await GoogleBooks.searchBooks(searchQuery || 'random');
+        if (searchResult.length) addDataToRedis(redisKey, searchResult);
+      }
+
+      if (!searchResult.length) {
+        return [];
+      }
+
+      const randomizeSearch = GoogleBooks.randomizeResult(searchResult);
+
+      return randomizeSearch;
     } catch (error) {
       throw new Error(error);
     }
@@ -95,9 +109,16 @@ class GoogleBooks {
    * @returns
    * @memberof GoogleBooks
    */
-  static async retrieveSingleBook(bookId) {
+  static async retrieveMoreBooks(bookId) {
     try {
       let more;
+      const redisKey = `${bookId}:::more-books`;
+      more = await getDataFromRedis(redisKey) || [];
+      if (more.length) {
+        const randomizedData = GoogleBooks.randomizeResult(more);
+        return randomizedData.slice(0, 4);
+      }
+
       const searchResult = await GoogleBooks.retrieveBookProfile(bookId);
       if (searchResult) {
         const { name, name: mainBookName } = searchResult;
@@ -106,8 +127,9 @@ class GoogleBooks {
           const filterBooks = moreBooks.filter(book => book.name !== mainBookName);
           more = GoogleBooks.randomizeResult(filterBooks);
         }
+        addDataToRedis(redisKey, more);
+        return more.slice(0, 4);
       }
-      return more;
     } catch (error) {
       throw new Error(error);
     }
@@ -123,11 +145,21 @@ class GoogleBooks {
    */
   static async retrieveBookProfile(bookId) {
     try {
-      let searchResult;
-      searchResult = await retrieveBook(bookId);
+      const redisKey = JSON.stringify(bookId);
+      let searchResult = await getDataFromRedis(redisKey) || {};
+      if (!searchResult.id) {
+        // query elasticsearch
+        searchResult = await retrieveBook(bookId);
+        addDataToRedis(redisKey, searchResult);
+      }
       if (!searchResult) {
+        // query pg database
         searchResult = await BookController.getBook(bookId);
-        if (searchResult) addDocument(searchResult, bookLabel);
+        if (searchResult) {
+          // add document to elasticsearch and redis
+          addDocument(searchResult, bookLabel);
+          addDataToRedis(redisKey, searchResult);
+        }
       }
       return searchResult;
     } catch (error) {
@@ -148,7 +180,6 @@ class GoogleBooks {
     let currentIndex = array.length;
     let temporaryValue;
     let randomIndex;
-    // While there remain elements to shuffle...
     while (currentIndex) {
       randomIndex = Math.floor(Math.random() * currentIndex);
       currentIndex -= 1;
@@ -156,7 +187,6 @@ class GoogleBooks {
       arrayToShuffle[currentIndex] = array[randomIndex];
       arrayToShuffle[randomIndex] = temporaryValue;
     }
-    arrayToShuffle.splice(4);
     return arrayToShuffle;
   }
 }

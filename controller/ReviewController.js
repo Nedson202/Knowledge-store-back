@@ -1,12 +1,11 @@
 import { stackLogger } from 'info-logger';
 import models from '../models';
 import utils from '../utils';
-import { retrieveBook } from '../elasticSearch/elasticSearch';
+import { retrieveBook } from '../elasticSearch';
 import BookController from './BookController';
 import {
   authStatusPermission, noReview, userAttributes, reviewerLabel,
-  reviewOrder,
-  noBookFound
+  noBookFound, descOrder
 } from '../utils/default';
 
 const { helper, validator } = utils;
@@ -63,14 +62,20 @@ class ReviewController {
     const {
       review, rating, reviewId, like
     } = data;
+    const editObject = {
+      review,
+      rating
+    };
     try {
       if (!authStatus) {
         throw new Error(authStatusPermission);
       }
+      if (like) {
+        editObject.liked = true;
+        editObject.likes = models.sequelize.literal(`likes + ${like}`);
+      }
       const editedReview = await models.Review.update(
-        {
-          review, rating, likes: models.sequelize.literal(`likes + ${like}`), liked: true
-        },
+        editObject,
         {
           returning: true,
           where: {
@@ -147,7 +152,7 @@ class ReviewController {
    * @returns
    * @memberof ReviewController
    */
-  static async retrieveReviews(bookId) {
+  static async retrieveReviewsQuery(bookId) {
     const Users = models.User;
     try {
       const reviews = await models.Review.findAll({
@@ -159,7 +164,7 @@ class ReviewController {
           as: reviewerLabel,
           attributes: userAttributes
         }],
-        order: [reviewOrder],
+        order: [descOrder],
       });
       return !reviews.length ? [] : reviews;
     } catch (error) {
@@ -178,7 +183,7 @@ class ReviewController {
    */
   static async getBookReviews(bookId) {
     try {
-      const reviews = await ReviewController.retrieveReviews(bookId);
+      const reviews = await ReviewController.retrieveReviewsQuery(bookId);
       return await ReviewController.flattenFetchedReviews(reviews);
     } catch (error) {
       return error;
@@ -223,7 +228,7 @@ class ReviewController {
    * @memberof ReviewController
    */
   static async getAverageRating(bookId) {
-    const reviews = await ReviewController.retrieveReviews(bookId);
+    const reviews = await ReviewController.retrieveReviewsQuery(bookId);
     const totalReviews = reviews.length;
     const averageRating = totalReviews
       && reviews
