@@ -2,62 +2,63 @@ import elasticSearch from 'elasticsearch';
 import { stackLogger } from 'info-logger';
 import logger from '../utils/initLogger';
 import {
-  info, elasticClientAlive, elasticClientRunning, booksIndex,
-  errorCreatingIndex, indexCreated, production, noIndex, elasticMapping,
-  phrasePrefix, multimatchFields, bookUpdatedMessage, bookAddedMessage,
-  indexDeleted,
-} from '../utils/default';
+  info, ELASTIC_CLIENT_ALIVE, ELASTIC_CLIENT_RUNNING, BOOKS_INDEX,
+  ERROR_CREATING_INDEX, INDEX_CREATED_MESSAGE, production, NO_INDEX, ELASTIC_SEARCH_MAPPING,
+  PHRASE_PREFIX, MULTI_MATCH_FIELDS, BOOK_UPDATED_MESSAGE, BOOK_ADDED_MESSAGE,
+  INDEX_DELETED_MESSAGE,
+} from '../settings/default';
 
 const host = process.env.NODE_ENV.match(production)
   ? process.env.BONSAI_URL : process.env.ELASTIC_LOCAL;
+
 const elasticClient = new elasticSearch.Client({
   hosts: [host],
   log: info
 });
 
 elasticClient.ping({
-  requestTimeout: 30000,
+  requestTimeout: 50000,
 }, (error) => {
   if (error) {
     stackLogger(error);
   } else {
-    logger.info(elasticClientAlive);
+    logger.info(ELASTIC_CLIENT_ALIVE);
   }
 });
 
 const checkHealthStatus = () => {
   elasticClient.cluster.health({}, (error, resp) => {
     if (error) stackLogger(error);
-    logger.info(elasticClientRunning, resp);
+    logger.info(ELASTIC_CLIENT_RUNNING, resp);
   });
 };
 
 const createIndex = () => {
   elasticClient.indices.create({
-    index: booksIndex
+    index: BOOKS_INDEX
   }, (error, resp, status) => {
     if (error) {
       stackLogger(error);
-      logger.info(errorCreatingIndex, error);
+      logger.info(ERROR_CREATING_INDEX, error);
     } else {
-      logger.info(indexCreated, resp, status);
+      logger.info(INDEX_CREATED_MESSAGE, resp, status);
     }
   });
 };
 
 elasticClient.indices.exists({
-  index: booksIndex
+  index: BOOKS_INDEX
 }, (error, resp) => {
-  if (error) logger.info(noIndex, error);
+  if (error) logger.info(NO_INDEX, error);
   if (!resp) {
     createIndex();
   }
 });
 
 const createMapping = () => elasticClient.indices.putMapping({
-  index: booksIndex,
+  index: BOOKS_INDEX,
   type: 'book',
-  body: elasticMapping
+  body: ELASTIC_SEARCH_MAPPING
 });
 
 const getIndexStatus = () => elasticClient.cat.indices({ v: true })
@@ -67,25 +68,25 @@ const getIndexStatus = () => elasticClient.cat.indices({ v: true })
 const deleteIndex = (index) => {
   elasticClient.indices.delete({ index }, (error, resp, status) => {
     if (error) return stackLogger(error);
-    logger.info(indexDeleted, resp, status);
+    logger.info(INDEX_DELETED_MESSAGE, resp, status);
   });
 };
 
 const addDocument = (index, type) => {
   elasticClient.index({
-    index: booksIndex,
+    index: BOOKS_INDEX,
     id: index.id,
     type,
     body: index
   }, (error, resp) => {
     if (error) return stackLogger(error);
-    logger.info(bookAddedMessage, resp);
+    logger.info(BOOK_ADDED_MESSAGE, resp);
   });
 };
 
 const retrieveBook = async (id) => {
   const book = await elasticClient.get({
-    index: booksIndex,
+    index: BOOKS_INDEX,
     type: 'book',
     id,
   }).then(result => result._source) // eslint-disable-line
@@ -105,13 +106,13 @@ const updateBook = async (data) => {
   };
 
   elasticClient.update({
-    index: booksIndex,
+    index: BOOKS_INDEX,
     type: 'book',
     id,
     body
   }, (error, resp) => {
     if (error) return stackLogger(error);
-    logger.info(bookUpdatedMessage, resp);
+    logger.info(BOOK_UPDATED_MESSAGE, resp);
   });
 };
 
@@ -128,7 +129,7 @@ const deleteBook = (index, id, type) => {
 
 const getSuggestions = (input) => {
   elasticClient.search({
-    index: booksIndex,
+    index: BOOKS_INDEX,
     type: 'book',
     body: {
       docsuggest: {
@@ -150,7 +151,7 @@ const elasticBulkCreate = (bulk) => {
   bulk.forEach((item) => {
     data.push({
       index: {
-        _index: booksIndex,
+        _index: BOOKS_INDEX,
         _type: 'book',
         _id: item.id
       }
@@ -173,8 +174,8 @@ const elasticItemSearch = async (query, paginateData) => {
   const multiMatch = {
     multi_match: {
       query,
-      type: phrasePrefix,
-      fields: multimatchFields
+      type: PHRASE_PREFIX,
+      fields: MULTI_MATCH_FIELDS
     }
   };
 
@@ -184,7 +185,7 @@ const elasticItemSearch = async (query, paginateData) => {
     query: !query || !query.length ? matchAll : multiMatch
   };
 
-  const hits = await elasticClient.search({ index: booksIndex, body, type: 'book' })
+  const hits = await elasticClient.search({ index: BOOKS_INDEX, body, type: 'book' })
     .then(results => results.hits.hits.map(result => result._source)) // eslint-disable-line
     .catch((error) => {
       stackLogger(error);

@@ -216,5 +216,18 @@ module.exports = {
       }
     ], {}),
   down: queryInterface => queryInterface
-    .bulkDelete('Books', new Date('2050-12-12'), {})
+    .bulkDelete('Books', {
+      id: [
+        'rV3LDQAAQBAJ',
+        'FX0MAQAAIAAJ',
+        'fLxfAwAAQBAJ',
+        'WCcBOvkZxI0C',
+        'co9TJrTjqrIC',
+        'cWsa2lz8QvYC',
+        'ddET09cVpF0C',
+        '-Jw_YgEACAAJ',
+        'm3orAQAAIAAJ',
+        'Vr52AAAAMAAJ',
+      ]
+    }, {})
 };

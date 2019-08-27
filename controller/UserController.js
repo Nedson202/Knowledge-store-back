@@ -2,15 +2,16 @@ import { stackLogger } from 'info-logger';
 import models from '../models';
 import utils from '../utils';
 import {
-  authStatusPermission, userUnauthorizedMessage,
-  resetLinkMessage, profileUpdated, noUser, userOrder, superRole,
-  oldPasswordIncorrect, resetSuccessful, resetFailed, adminRole,
-  passwordChangeSuccessful, operationDenied, userDeletedMessage,
-  userRole, emailSentMessage, userIsAdmin, notAnAdmin, emailVerifiedMessage,
-  OTPFailed, OTPSuccess, forgotPasswordOPDenied, resendOTPFailed,
-  resendOTPSuccess, emailVerificationFailed, emailAlreadyVerified,
-} from '../utils/default';
+  USER_UNAUTHORIZED,
+  RESET_LINK_MESSAGE, PROFILE_UPDATED, NO_USER, USER_ORDER, SUPER_ADMIN_ROLE,
+  OLD_PASSWORD_INCORRECT, RESET_SUCCESSFUL, RESET_FAILED, ADMIN_ROLE,
+  PASSWORD_CHANGE_SUCCESSFUL, OPERATION_DENIED, USER_DELETED_MESSAGE,
+  USER_ROLE, EMAIL_SENT_MESSAGE, USER_IS_ADMIN, NOT_AN_ADMIN, EMAIL_VERIFIED_MESSAGE,
+  OTP_FAILED, OTP_SUCCESS, FORGOT_PASSWORD_OP_DENIED, OTP_RESEND_FAILED,
+  OTP_RESEND_SUCCESS, EMAIL_VERIFICATION_FAILED, EMAIL_ALREADY_VERIFIED,
+} from '../settings/default';
 import EmailController from './EmailController';
+import authStatusCheck from '../utils/authStatusCheck';
 
 const { helper, validator } = utils;
 
@@ -76,11 +77,11 @@ class UserController {
           username: username.toLowerCase()
         }
       });
-      if (!existingUser) throw new Error(userUnauthorizedMessage);
+      if (!existingUser) throw new Error(USER_UNAUTHORIZED);
       const passwordMatch = helper.compareHash(password, existingUser.password);
       if (!passwordMatch) {
         throw new Error(
-          userUnauthorizedMessage
+          USER_UNAUTHORIZED
         );
       }
       const payload = helper.payloadSchema(existingUser);
@@ -109,7 +110,7 @@ class UserController {
         throw new Error(JSON.stringify(errors));
       }
       const user = await UserController.findUser(email);
-      if (!user.id) throw new Error(noUser);
+      if (!user.id) throw new Error(NO_USER);
       const payload = helper.payloadSchema(user);
       const token = helper.generateToken(payload, true);
       payload.token = token;
@@ -118,7 +119,7 @@ class UserController {
       await user.update({ OTPSecret: secret });
       EmailController.sendPasswordResetMail(payload, { token, OTP });
       return {
-        message: resetLinkMessage,
+        message: RESET_LINK_MESSAGE,
         token
       };
     } catch (error) {
@@ -142,23 +143,23 @@ class UserController {
     let isOTPValid = false;
     try {
       if (!authStatus) {
-        throw new Error(forgotPasswordOPDenied);
+        throw new Error(FORGOT_PASSWORD_OP_DENIED);
       }
       const user = await UserController.findUser(null, id);
-      if (!user.role) throw new Error(noUser);
+      if (!user.role) throw new Error(NO_USER);
       if (OTP) {
         isOTPValid = helper.verifyOTP(OTP, user.OTPSecret);
       }
       if (OTP && !isOTPValid) {
         return {
-          message: OTPFailed
+          message: OTP_FAILED
         };
       }
       await user.update({ OTPSecret: null });
       const payload = user.dataValues;
       delete (payload.password);
       return {
-        message: OTPSuccess,
+        message: OTP_SUCCESS,
       };
     } catch (error) {
       stackLogger(error);
@@ -177,14 +178,14 @@ class UserController {
   static async resendOTP(authStatus) {
     const { id, } = authStatus;
     try {
-      if (!id) throw new Error(resendOTPFailed);
+      if (!id) throw new Error(OTP_RESEND_FAILED);
       const user = await UserController.findUser(null, id);
-      if (!user.role) throw new Error(noUser);
+      if (!user.role) throw new Error(NO_USER);
       const { OTP, secret } = utils.helper.generateOTP();
       await user.update({ OTPSecret: secret });
       EmailController.newOTPRequestMail(authStatus, OTP);
       return {
-        message: resendOTPSuccess,
+        message: OTP_RESEND_SUCCESS,
       };
     } catch (error) {
       stackLogger(error);
@@ -204,12 +205,10 @@ class UserController {
   static async editProfile(data, authStatus) {
     const { email, username, picture: image } = data;
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
+      authStatusCheck(authStatus);
       const { id } = authStatus;
       const user = await UserController.findUser(null, id);
-      if (!user.role) throw new Error(noUser);
+      if (!user.role) throw new Error(NO_USER);
       const updatedUser = await user.update({
         username: username || user.username,
         email: email || user.email,
@@ -218,7 +217,7 @@ class UserController {
       const payload = helper.payloadSchema(updatedUser);
       const token = helper.generateToken(payload);
       payload.token = token;
-      payload.message = profileUpdated;
+      payload.message = PROFILE_UPDATED;
       return payload;
     } catch (error) {
       stackLogger(error);
@@ -237,19 +236,17 @@ class UserController {
    */
   static async removeProfilePicture(authStatus) {
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
+      authStatusCheck(authStatus);
       const { id, } = authStatus;
       const user = await UserController.findUser(null, id);
-      if (!user.role) throw new Error(noUser);
+      if (!user.role) throw new Error(NO_USER);
       const updatedUser = await user.update({
         picture: '',
       });
       const payload = helper.payloadSchema(updatedUser);
       const token = helper.generateToken(payload);
       payload.token = token;
-      payload.message = profileUpdated;
+      payload.message = PROFILE_UPDATED;
       return payload;
     } catch (error) {
       stackLogger(error);
@@ -269,21 +266,19 @@ class UserController {
   static async changePassword(data, authStatus) {
     const { oldPassword, newPassword } = data;
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
+      authStatusCheck(authStatus);
       const { id } = authStatus;
       const user = await UserController.findUser(null, id);
-      if (!user.role) throw new Error(noUser);
+      if (!user.role) throw new Error(NO_USER);
       const passwordMatch = helper.compareHash(oldPassword, user.password);
       if (!passwordMatch) {
-        throw new Error(oldPasswordIncorrect);
+        throw new Error(OLD_PASSWORD_INCORRECT);
       }
       await user.update({
         password: helper.passwordHash(newPassword)
       });
       return {
-        message: passwordChangeSuccessful,
+        message: PASSWORD_CHANGE_SUCCESSFUL,
       };
     } catch (error) {
       stackLogger(error);
@@ -305,18 +300,18 @@ class UserController {
     } = data;
     try {
       const decodedValue = helper.authenticate(token);
-      if (!decodedValue.email.match(email)) throw new Error(operationDenied);
+      if (!decodedValue.email.match(email)) throw new Error(OPERATION_DENIED);
       const user = await UserController.findUser(email, id);
-      if (!user.role) throw new Error(noUser);
+      if (!user.role) throw new Error(NO_USER);
       const passwordReset = await user.update({
         password: helper.passwordHash(password),
       });
       if (!passwordReset) {
-        throw new Error(resetFailed);
+        throw new Error(RESET_FAILED);
       }
       const payload = {
         token: token.split(' ')[1],
-        message: resetSuccessful,
+        message: RESET_SUCCESSFUL,
       };
       return payload;
     } catch (error) {
@@ -339,18 +334,18 @@ class UserController {
     let isOTPValid = false;
     try {
       if (!authStatus) {
-        throw new Error(emailVerificationFailed);
+        throw new Error(EMAIL_VERIFICATION_FAILED);
       }
       const user = await UserController.findUser(null, id);
-      if (!user.role) throw new Error(noUser);
+      if (!user.role) throw new Error(NO_USER);
       const isVerified = JSON.parse(user.isVerified);
-      if (isVerified) throw new Error(emailAlreadyVerified);
+      if (isVerified) throw new Error(EMAIL_ALREADY_VERIFIED);
       if (OTP) {
         isOTPValid = helper.verifyOTP(OTP, user.OTPSecret);
       }
       if (OTP && !isOTPValid) {
         return {
-          message: OTPFailed
+          message: OTP_FAILED
         };
       }
       await user.update({ isVerified: 'true', OTPSecret: null });
@@ -359,7 +354,7 @@ class UserController {
       const token = helper.generateToken(payload);
       return {
         token,
-        message: emailVerifiedMessage
+        message: EMAIL_VERIFIED_MESSAGE
       };
     } catch (error) {
       stackLogger(error);
@@ -383,7 +378,7 @@ class UserController {
         throw new Error(JSON.stringify(errors));
       }
       const user = await UserController.findUser(email, null);
-      if (!user.id) throw new Error(noUser);
+      if (!user.id) throw new Error(NO_USER);
       const payload = user.dataValues;
       delete (payload.password);
       const { OTP, secret } = utils.helper.generateOTP();
@@ -391,7 +386,7 @@ class UserController {
       const token = helper.generateToken(payload);
       await EmailController.sendEmailVerificationMail(payload, { token, OTP });
       return {
-        message: emailSentMessage
+        message: EMAIL_SENT_MESSAGE
       };
     } catch (error) {
       stackLogger(error);
@@ -419,7 +414,7 @@ class UserController {
       const user = await models.User.findOne({
         where: queryObject
       });
-      if (!user) throw new Error(noUser);
+      if (!user) throw new Error(NO_USER);
       return user;
     } catch (error) {
       stackLogger(error);
@@ -463,22 +458,20 @@ class UserController {
   static async toggleAdmin(data, authStatus) {
     const { email, adminAction } = data;
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
+      authStatusCheck(authStatus);
       const { id } = authStatus;
       const verifySuperAdmin = await UserController
         .verifyAdmin(id, 'toggleAdmin');
       const user = await UserController.findUser(email, null);
       if (!user.role) throw new Error('Email provided is not registered');
-      if (user.role.match(adminRole) && adminAction === 'add') {
-        throw new Error(userIsAdmin);
+      if (user.role.match(ADMIN_ROLE) && adminAction === 'add') {
+        throw new Error(USER_IS_ADMIN);
       }
       if (!verifySuperAdmin) {
         throw new Error('Operation denied, you are not a super admin');
       }
       await user.update({
-        role: adminAction === 'add' ? adminRole : userRole
+        role: adminAction === 'add' ? ADMIN_ROLE : USER_ROLE
       });
       return {
         message: adminAction === 'add'
@@ -503,19 +496,17 @@ class UserController {
   static async deleteUser(data, authStatus) {
     const { userId } = data;
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
+      authStatusCheck(authStatus);
       const { id } = authStatus;
       const verifyAdmin = await UserController.verifyAdmin(id, 'deleteUser');
       const user = await UserController.findUser(null, userId);
-      if (!user.username) throw new Error(noUser);
+      if (!user.username) throw new Error(NO_USER);
       if (!verifyAdmin) {
-        throw new Error(notAnAdmin);
+        throw new Error(NOT_AN_ADMIN);
       }
       await user.destroy();
       return {
-        message: userDeletedMessage
+        message: USER_DELETED_MESSAGE
       };
     } catch (error) {
       stackLogger(error);
@@ -536,14 +527,14 @@ class UserController {
     try {
       const user = await UserController.findUser(null, userId);
       if (!user.role) {
-        throw new Error(notAnAdmin);
+        throw new Error(NOT_AN_ADMIN);
       }
       switch (action) {
         case 'deleteUser':
-          if (user.role === superRole || user.role === adminRole) return true;
+          if (user.role === SUPER_ADMIN_ROLE || user.role === ADMIN_ROLE) return true;
 
         case 'toggleAdmin':
-          if (user.role === superRole) return true;
+          if (user.role === SUPER_ADMIN_ROLE) return true;
         default:
           return false;
       }
@@ -564,20 +555,18 @@ class UserController {
   static async addSuperAdmin(data, authStatus) {
     const { email } = data;
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
+      authStatusCheck(authStatus);
       if (!process.env.SUPER_ADMIN.includes(email)) {
         throw new Error('Permission denied, user cannot be elevated to super admin');
       }
       const user = await UserController.findUser(email, null);
-      if (user.role === superRole) {
+      if (user.role === SUPER_ADMIN_ROLE) {
         return {
           message: 'User is already a super admin'
         };
       }
       await user.update({
-        role: superRole
+        role: SUPER_ADMIN_ROLE
       });
       return {
         message: 'User role successfully changed to super admin'
@@ -599,17 +588,15 @@ class UserController {
   static async getAllUsers(data, authStatus) {
     const { type } = data;
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
-      if (![adminRole, superRole].includes(authStatus.role)) {
-        throw new Error(notAnAdmin);
+      authStatusCheck(authStatus);
+      if (![ADMIN_ROLE, SUPER_ADMIN_ROLE].includes(authStatus.role)) {
+        throw new Error(NOT_AN_ADMIN);
       }
       const users = await models.User.findAll({
         where: type === 'all' ? {} : {
           role: type
         },
-        order: [userOrder]
+        order: [USER_ORDER]
       });
       return users;
     } catch (error) {

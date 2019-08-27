@@ -3,7 +3,7 @@ import {
   elasticItemSearch, elasticBulkCreate, retrieveBook, addDocument
 } from '../elasticSearch';
 import utils from '../utils';
-import { bookLabel, googleBookOptions } from '../utils/default';
+import { BOOK_LABEL, GOOGLE_BOOK_OPTIONS } from '../settings/default';
 import BookController from './BookController';
 import { addDataToRedis, getDataFromRedis } from '../redis';
 
@@ -19,7 +19,7 @@ class GoogleBooks {
    * @memberof GoogleBooks
    */
   static async searchBooks(searchQuery) {
-    const options = googleBookOptions;
+    const options = GOOGLE_BOOK_OPTIONS;
 
     let query;
 
@@ -157,7 +157,7 @@ class GoogleBooks {
         searchResult = await BookController.getBook(bookId);
         if (searchResult) {
           // add document to elasticsearch and redis
-          addDocument(searchResult, bookLabel);
+          addDocument(searchResult, BOOK_LABEL);
           addDataToRedis(redisKey, searchResult);
         }
       }

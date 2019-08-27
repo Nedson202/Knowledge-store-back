@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { stackLogger } from 'info-logger';
-import { darkLuminosity, colorFormat } from './default';
+import { DARK_LUMINOSITY, COLOR_FORMAT } from '../settings/default';
 
 authenticator.options = {
   crypto,
@@ -57,8 +57,8 @@ class Utils {
    */
   static colorGenerator() {
     return randomColor({
-      luminosity: darkLuminosity,
-      format: colorFormat,
+      luminosity: DARK_LUMINOSITY,
+      format: COLOR_FORMAT,
       alpha: 0.5
     });
   }

@@ -4,9 +4,11 @@ import utils from '../utils';
 import { retrieveBook } from '../elasticSearch';
 import BookController from './BookController';
 import {
-  authStatusPermission, noReview, userAttributes, reviewerLabel,
-  noBookFound, descOrder
-} from '../utils/default';
+  NO_REVIEW, USER_QUERY_ATTRIBUTES, REVIEWER_LABEL,
+  NO_BOOK_FOUND, DESC_ORDER
+} from '../settings/default';
+import { getDataFromRedis } from '../redis';
+import authStatusCheck from '../utils/authStatusCheck';
 
 const { helper, validator } = utils;
 
@@ -27,16 +29,24 @@ class ReviewController {
     });
     try {
       let retrievedBook;
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
+      authStatusCheck(authStatus);
+
+      const { bookId } = newData;
+
+      const redisKey = JSON.stringify(bookId);
+      retrievedBook = await getDataFromRedis(redisKey) || {};
+      if (!retrievedBook) {
+        retrievedBook = await retrieveBook(newData.bookId);
       }
-      retrievedBook = await retrieveBook(newData.bookId);
 
       if (retrievedBook) await BookController.addBookIfNotExist(retrievedBook);
       if (!retrievedBook) {
-        retrievedBook = await BookController.getBook(newData.bookId);
+        retrievedBook = await BookController.getBook(bookId);
       }
-      if (!retrievedBook) throw new Error(noBookFound);
+      if (!retrievedBook) throw new Error(NO_BOOK_FOUND);
+      if (retrievedBook.userId === authStatus.id) {
+        throw new Error('You can not review your book');
+      }
       newData.id = helper.generateId();
       newData.userId = authStatus.id;
       if (Object.keys(errors).length !== 0) {
@@ -67,9 +77,7 @@ class ReviewController {
       rating
     };
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
+      authStatusCheck(authStatus);
       if (like) {
         editObject.liked = true;
         editObject.likes = models.sequelize.literal(`likes + ${like}`);
@@ -84,7 +92,7 @@ class ReviewController {
           }
         }
       );
-      if (!editedReview) throw new Error(noReview);
+      if (!editedReview) throw new Error(NO_REVIEW);
       return editedReview;
     } catch (error) {
       stackLogger(error);
@@ -104,9 +112,7 @@ class ReviewController {
   static async deleteReview(data, authStatus) {
     const { reviewId } = data;
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
+      authStatusCheck(authStatus);
       const deletedReview = await models.Review.destroy(
         {
           returning: true,
@@ -116,7 +122,7 @@ class ReviewController {
           }
         }
       );
-      if (!deletedReview) throw new Error(noReview);
+      if (!deletedReview) throw new Error(NO_REVIEW);
       return deletedReview;
     } catch (error) {
       return error;
@@ -161,10 +167,10 @@ class ReviewController {
         },
         include: [{
           model: Users,
-          as: reviewerLabel,
-          attributes: userAttributes
+          as: REVIEWER_LABEL,
+          attributes: USER_QUERY_ATTRIBUTES
         }],
-        order: [descOrder],
+        order: [DESC_ORDER],
       });
       return !reviews.length ? [] : reviews;
     } catch (error) {

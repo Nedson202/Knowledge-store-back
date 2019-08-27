@@ -4,10 +4,10 @@ import utils from '../utils';
 import { addDocument } from '../elasticSearch';
 import authStatusCheck from '../utils/authStatusCheck';
 import {
-  bookLabel, bookReviewsLabel, noBookMessage,
-  bookUpdatedMessage, noBookCreated, bookDeletedMessage,
-  permissionDenied, authStatusPermission, noBookFound
-} from '../utils/default';
+  BOOK_LABEL, BOOK_REVIEWS_LABEL, NO_BOOK_MESSAGE,
+  BOOK_UPDATED_MESSAGE, NO_BOOK_CREATED, BOOK_DELETED_MESSAGE,
+  PERMISSION_DENIED, NO_BOOK_FOUND
+} from '../settings/default';
 
 const { helper, validator } = utils;
 
@@ -34,7 +34,7 @@ class BookController {
         throw new Error(JSON.stringify(errors));
       }
       const createdBook = await models.Book.create(newData);
-      addDocument(newData, bookLabel);
+      addDocument(newData, BOOK_LABEL);
       return createdBook;
     } catch (error) {
       stackLogger(error);
@@ -70,10 +70,10 @@ class BookController {
       const books = await models.Book.findAll({
         include: [{
           model: models.Review,
-          as: bookReviewsLabel,
+          as: BOOK_REVIEWS_LABEL,
         }]
       });
-      if (!books.length) throw new Error(noBookMessage);
+      if (!books.length) throw new Error(NO_BOOK_MESSAGE);
       return books;
     } catch (error) {
       stackLogger(error);
@@ -113,12 +113,13 @@ class BookController {
    */
   static async getUsersBooks(authStatus) {
     try {
+      authStatusCheck(authStatus);
       const usersBooks = await models.Book.findAll({
         where: {
           userId: authStatus.id
         }
       });
-      if (!usersBooks) throw new Error(noBookCreated);
+      if (!usersBooks) throw new Error(NO_BOOK_CREATED);
       return usersBooks;
     } catch (error) {
       stackLogger(error);
@@ -141,7 +142,7 @@ class BookController {
           id: bookId,
         },
       });
-      if (!book) throw new Error(noBookMessage);
+      if (!book) throw new Error(NO_BOOK_MESSAGE);
       return book;
     } catch (error) {
       stackLogger(error);
@@ -195,7 +196,7 @@ class BookController {
           ]
         }
       });
-      if (!books) throw new Error(noBookMessage);
+      if (!books) throw new Error(NO_BOOK_MESSAGE);
       return books;
     } catch (error) {
       stackLogger(error);
@@ -219,13 +220,13 @@ class BookController {
         },
         include: [{
           model: models.Book,
-          as: bookLabel,
+          as: BOOK_LABEL,
         }]
       }).map((value) => {
         value.get({ plain: true });
         return value.book;
       });
-      if (!books) throw new Error(noBookMessage);
+      if (!books) throw new Error(NO_BOOK_MESSAGE);
       return books;
     } catch (error) {
       stackLogger(error);
@@ -244,18 +245,16 @@ class BookController {
    */
   static async updateBook(data, authStatus) {
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
+      authStatusCheck(authStatus);
       const book = await BookController.getBook(data.bookId);
-      if (!book.userId) throw new Error(noBookFound);
+      if (!book.userId) throw new Error(NO_BOOK_FOUND);
       if (authStatus.id !== book.userId) {
-        throw new Error(permissionDenied);
+        throw new Error(PERMISSION_DENIED);
       }
       const updatedBook = await book.update({
         ...data
       });
-      updatedBook.message = bookUpdatedMessage;
+      updatedBook.message = BOOK_UPDATED_MESSAGE;
       return updatedBook;
     } catch (error) {
       stackLogger(error);
@@ -274,17 +273,15 @@ class BookController {
    */
   static async deleteBook(data, authStatus) {
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
+      authStatusCheck(authStatus);
       const book = await BookController.getBook(data.bookId);
-      if (!book.userId) throw new Error(noBookFound);
+      if (!book.userId) throw new Error(NO_BOOK_FOUND);
       if (authStatus.id !== book.userId) {
-        throw new Error(permissionDenied);
+        throw new Error(PERMISSION_DENIED);
       }
       await book.destroy();
       return {
-        message: bookDeletedMessage,
+        message: BOOK_DELETED_MESSAGE,
       };
     } catch (error) {
       stackLogger(error);

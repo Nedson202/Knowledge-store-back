@@ -4,9 +4,9 @@ import utils from '../utils';
 import BookController from './BookController';
 import { retrieveBook } from '../elasticSearch';
 import {
-  authStatusPermission, favoriteBookLabel, addedToFavoriteMessage,
-  bookRemovedFromFavorites
-} from '../utils/default';
+  FAVORITE_BOOK_LABEL, ADDED_TO_FAVORITE, BOOK_REMOVED_FROM_FAVORITES
+} from '../settings/default';
+import authStatusCheck from '../utils/authStatusCheck';
 
 const { helper } = utils;
 
@@ -23,9 +23,7 @@ class BookFavoritesController {
   static async addToFavorites(data, authStatus) {
     const newData = data;
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
+      authStatusCheck(authStatus);
       const retrievedBook = await retrieveBook(newData.bookId);
       await BookController.addBookIfNotExist(retrievedBook);
       newData.id = helper.generateId();
@@ -39,12 +37,12 @@ class BookFavoritesController {
         await favorite.destroy();
 
         return {
-          message: bookRemovedFromFavorites,
+          message: BOOK_REMOVED_FROM_FAVORITES,
         };
       }
       await models.Favorite.create(newData);
       return {
-        message: addedToFavoriteMessage
+        message: ADDED_TO_FAVORITE
       };
     } catch (error) {
       stackLogger(error);
@@ -89,9 +87,7 @@ class BookFavoritesController {
    */
   static async getFavorites(authStatus) {
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
+      authStatusCheck(authStatus);
       const { id } = authStatus;
       const books = await models.Favorite.findAll({
         where: {
@@ -99,7 +95,7 @@ class BookFavoritesController {
         },
         include: [{
           model: models.Book,
-          as: favoriteBookLabel,
+          as: FAVORITE_BOOK_LABEL,
         }]
       }).map((value) => {
         value.get({ plain: true });
@@ -125,9 +121,7 @@ class BookFavoritesController {
   static async removeFavorites(data, authStatus) {
     const { books } = data;
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
+      authStatusCheck(authStatus);
       const { id } = authStatus;
       await models.Favorite.destroy({
         where: {
@@ -136,7 +130,7 @@ class BookFavoritesController {
         },
       });
       return {
-        message: bookRemovedFromFavorites
+        message: BOOK_REMOVED_FROM_FAVORITES
       };
     } catch (error) {
       stackLogger(error);
