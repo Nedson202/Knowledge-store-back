@@ -237,5 +237,5 @@ module.exports = {
       },
     ], {}),
   down: queryInterface => queryInterface
-    .bulkDelete('Genres', new Date('2050-12-12'), {})
+    .bulkDelete('Genres', null, {})
 };

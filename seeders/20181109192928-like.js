@@ -19,5 +19,5 @@ module.exports = {
       },
     ], {}),
   down: queryInterface => queryInterface
-    .bulkDelete('Likes', new Date('2050-12-12'), {})
+    .bulkDelete('Likes', null, {})
 };

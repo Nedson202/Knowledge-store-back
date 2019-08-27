@@ -59,5 +59,9 @@ module.exports = {
       },
     ], {}),
   down: queryInterface => queryInterface
-    .bulkDelete('Likes', new Date('2050-12-12'), {})
+    .bulkDelete('Favorites', {
+      id: [
+        '1', '2', '3', '4', '5', '6', '7', '8',
+      ]
+    }, {})
 };

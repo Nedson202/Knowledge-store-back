@@ -38,5 +38,5 @@ module.exports = {
       }
     ], {}),
   down: queryInterface => queryInterface
-    .bulkDelete('Users', new Date('2050-12-12'), {})
+    .bulkDelete('Users', { id: ['1', '2'] }, {})
 };

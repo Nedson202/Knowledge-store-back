@@ -17,7 +17,7 @@ const elasticClient = new elasticSearch.Client({
 });
 
 elasticClient.ping({
-  requestTimeout: 1,
+  requestTimeout: 50000,
 }, (error) => {
   if (error) {
     stackLogger(error);
