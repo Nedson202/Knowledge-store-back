@@ -2,15 +2,15 @@ import { stackLogger } from 'info-logger';
 import models from '../models';
 import mailer from '../utils/mailer';
 import {
-  production, devServer, verifyEmailSubject,
-  passwordResetSubject, resendOTPSubject,
-} from '../utils/default';
+  production, DEV_SERVER, VERIFY_EMAIL_SUBJECT,
+  PASSWORD_RESET_SUBJECT, RESENT_OTP_SUBJECT,
+} from '../settings/default';
 import {
   passwordResetTemplate, emailVerificationTemplate, resendOTPTemplate
 } from '../emailTemplates';
 
 const redirectUrl = process.env.NODE_ENV.match(production)
-  ? process.env.PROD_SERVER : devServer;
+  ? process.env.PROD_SERVER : DEV_SERVER;
 
 class EmailController {
   /**
@@ -28,7 +28,7 @@ class EmailController {
       const emailTemplate = emailVerificationTemplate({
         redirectUrl, username, OTP, token,
       });
-      await mailer(emailTemplate, email, verifyEmailSubject);
+      await mailer(emailTemplate, email, VERIFY_EMAIL_SUBJECT);
       const oneUser = await models.User.findOne({
         where: {
           username: username.toLowerCase()
@@ -56,7 +56,7 @@ class EmailController {
       const emailTemplate = passwordResetTemplate({
         redirectUrl, username, OTP, token,
       });
-      await mailer(emailTemplate, email, passwordResetSubject);
+      await mailer(emailTemplate, email, PASSWORD_RESET_SUBJECT);
     } catch (error) {
       stackLogger(error);
       return error;
@@ -77,7 +77,7 @@ class EmailController {
       const emailTemplate = resendOTPTemplate({
         username, OTP,
       });
-      await mailer(emailTemplate, email, resendOTPSubject);
+      await mailer(emailTemplate, email, RESENT_OTP_SUBJECT);
     } catch (error) {
       stackLogger(error);
       return error;

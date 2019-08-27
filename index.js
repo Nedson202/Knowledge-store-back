@@ -16,9 +16,9 @@ import {
 } from './elasticSearch';
 import logger from './utils/initLogger';
 import {
-  development, unhandledRejection,
-  uncaughtException, SIGTERM
-} from './utils/default';
+  development, UNHANDLED_EXCEPTION,
+  UNCAUGHT_EXCEPTION, SIGTERM
+} from './settings/default';
 import './redis';
 
 const app = express();
@@ -53,11 +53,11 @@ app.use(
 
 app.use(requestLogger);
 
-process.on(unhandledRejection, (reason) => {
+process.on(UNHANDLED_EXCEPTION, (reason) => {
   stackLogger(reason);
 });
 
-process.on(uncaughtException, (reason) => {
+process.on(UNCAUGHT_EXCEPTION, (reason) => {
   stackLogger(reason);
   process.exit(0);
 });

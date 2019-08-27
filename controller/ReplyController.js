@@ -1,9 +1,9 @@
 import models from '../models';
 import utils from '../utils';
 import {
-  noReply, authStatusPermission, userAttributes,
-  replierLabel,
-} from '../utils/default';
+  NO_REPLY, USER_QUERY_ATTRIBUTES, REPLIER_LABEL,
+} from '../settings/default';
+import authStatusCheck from '../utils/authStatusCheck';
 
 const { helper, validator } = utils;
 
@@ -23,9 +23,7 @@ class ReplyController {
       ...newData
     });
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
+      authStatusCheck(authStatus);
       const review = await models.Review.findOne({
         where: {
           id: newData.reviewId
@@ -54,9 +52,7 @@ class ReplyController {
   static async editReply(data, authStatus) {
     const newData = data;
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
+      authStatusCheck(authStatus);
       const editedReply = await models.Reply.update(
         { reply: newData.reply },
         {
@@ -67,7 +63,7 @@ class ReplyController {
           }
         }
       );
-      if (!editedReply) throw new Error(noReply);
+      if (!editedReply) throw new Error(NO_REPLY);
       return editedReply;
     } catch (error) {
       return error;
@@ -86,9 +82,7 @@ class ReplyController {
   static async deleteReply(data, authStatus) {
     const { replyId } = data;
     try {
-      if (!authStatus) {
-        throw new Error(authStatusPermission);
-      }
+      authStatusCheck(authStatus);
       const deletedReply = await models.Reply.destroy(
         {
           returning: true,
@@ -98,7 +92,7 @@ class ReplyController {
           }
         }
       );
-      if (!deletedReply) throw new Error(noReply);
+      if (!deletedReply) throw new Error(NO_REPLY);
       return deletedReply;
     } catch (error) {
       return error;
@@ -138,11 +132,11 @@ class ReplyController {
         },
         include: [{
           model: Users,
-          as: replierLabel,
-          attributes: userAttributes
+          as: REPLIER_LABEL,
+          attributes: USER_QUERY_ATTRIBUTES
         }],
       });
-      if (replies.length === 0) throw new Error(noReply);
+      if (replies.length === 0) throw new Error(NO_REPLY);
       return !replies.length ? [] : replies;
     } catch (error) {
       return error;

@@ -1,5 +1,5 @@
 import { createLogger } from 'info-logger';
-import { logFolderName, logFileName } from './default';
+import { LOG_FOLDER_NAME, LOG_FILE_NAME } from '../settings/default';
 
-const logger = createLogger(logFolderName, logFileName);
+const logger = createLogger(LOG_FOLDER_NAME, LOG_FILE_NAME);
 export default logger;
