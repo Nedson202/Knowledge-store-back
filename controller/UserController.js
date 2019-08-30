@@ -26,17 +26,19 @@ class UserController {
    */
   static async addUser(user) {
     const {
-      username, email, password, socialId, picture
+      username, email, password, socialId, picture, socialAuth = false
     } = user;
     try {
       const errors = validator.validateSignup({
         username, email, password
       });
+      let OTP;
+
       if (Object.keys(errors).length !== 0) {
         throw new Error(JSON.stringify(errors));
       }
-      const { OTP, secret } = utils.helper.generateOTP();
-      const newUser = await models.User.create({
+
+      const userObject = {
         id: helper.generateId(),
         username: username.toLowerCase(),
         email: email.toLowerCase(),
@@ -44,8 +46,17 @@ class UserController {
         socialId,
         picture,
         avatarColor: helper.colorGenerator(),
-        OTPSecret: secret,
-      });
+      };
+
+      if (socialAuth) {
+        userObject.isVerified = 'true';
+      } else {
+        const { OTP: generatedOTP, secret } = utils.helper.generateOTP();
+        OTP = generatedOTP;
+        userObject.OTPSecret = secret;
+      }
+
+      const newUser = await models.User.create(userObject);
       const payload = helper.payloadSchema(newUser);
       const token = helper.generateToken(payload);
       EmailController.sendEmailVerificationMail(payload, { token, OTP });
@@ -204,6 +215,7 @@ class UserController {
    */
   static async editProfile(data, authStatus) {
     const { email, username, picture: image } = data;
+
     try {
       authStatusCheck(authStatus);
       const { id } = authStatus;
