@@ -27,6 +27,8 @@ const saveUser = async (profile, done) => {
     password: process.env.FAKE_PASSWORD,
     socialId: profile.id,
     picture: profile.photos[0].value,
+    isVerified: 'true',
+    socialAuth: true,
   };
   UserController.addUser(newUser).then((user) => {
     done(null, user);

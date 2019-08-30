@@ -24,7 +24,12 @@ class EmailController {
    */
   static async sendEmailVerificationMail(user, { token, OTP }) {
     try {
-      const { username, email } = user;
+      const { username, email, isVerified } = user;
+      const userVerified = JSON.parse(isVerified);
+      if (userVerified) {
+        return;
+      }
+
       const emailTemplate = emailVerificationTemplate({
         redirectUrl, username, OTP, token,
       });
