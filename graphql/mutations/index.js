@@ -6,10 +6,8 @@ import {
   GraphQLList
 } from 'graphql';
 import BookType from '../books';
-import AuthorType from '../author';
 import UserType from '../user';
 import ReviewType from '../review';
-import AuthorController from '../../controller/AuthorController';
 import UserController from '../../controller/UserController';
 import BookController from '../../controller/BookController';
 import utils from '../../utils';
@@ -152,20 +150,6 @@ const Mutation = new GraphQLObjectType({
         const { authorization } = context.headers;
         const authorized = helper.authenticate(authorization);
         return ReplyController.deleteReply(args, authorized);
-      }
-    },
-    addAuthor: {
-      type: AuthorType,
-      args: {
-        name: {
-          type: GraphQLString
-        },
-        age: {
-          type: GraphQLInt
-        }
-      },
-      resolve(parent, args) {
-        return AuthorController.addAuthor(args);
       }
     },
     addUser: {

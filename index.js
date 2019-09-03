@@ -6,6 +6,8 @@ import http from 'http';
 import https from 'https';
 import helmet from 'helmet';
 import { stackLogger } from 'info-logger';
+import { Pool } from 'pg';
+
 import requestLogger from './helper/requestLogger';
 import schema from './graphql';
 import models from './models/index';
@@ -20,6 +22,11 @@ import {
   UNCAUGHT_EXCEPTION, SIGTERM
 } from './settings/default';
 import './redis';
+import config from './driver/config';
+
+const pool = new Pool(config);
+// eslint-disable-next-line import/prefer-default-export
+export const db = pool;
 
 const app = express();
 
