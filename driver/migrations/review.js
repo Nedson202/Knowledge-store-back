@@ -11,9 +11,9 @@ export const createReviewTable = async () => {
         likes INTEGER DEFAULT 0,
         "userId" varchar(128) REFERENCES "Users"(id),
         "bookId" varchar(128) REFERENCES "Books"(id),
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        deleted_at TIMESTAMP
+        "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "deletedAt" TIMESTAMP
       );
   `;
 

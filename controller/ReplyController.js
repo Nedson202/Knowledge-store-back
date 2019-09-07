@@ -1,11 +1,16 @@
-import models from '../models';
+// import models from '../models';
 import utils from '../utils';
 import {
-  NO_REPLY, USER_QUERY_ATTRIBUTES, REPLIER_LABEL,
+  NO_REPLY, /* USER_QUERY_ATTRIBUTES, REPLIER_LABEL, */
 } from '../settings/default';
 import authStatusCheck from '../utils/authStatusCheck';
+import ReplyRepository from '../repository/Reply';
+import ReviewRepository from '../repository/Review';
 
 const { helper, validator } = utils;
+
+const replyRepository = new ReplyRepository();
+const reviewRepository = new ReviewRepository();
 
 class ReplyController {
   /**
@@ -24,17 +29,25 @@ class ReplyController {
     });
     try {
       authStatusCheck(authStatus);
-      const review = await models.Review.findOne({
-        where: {
-          id: newData.reviewId
-        }
+      // const review = await models.Review.findOne({
+      //   where: {
+      //     id: newData.reviewId
+      //   }
+      // });
+
+      const review = await reviewRepository.findOne({
+        id: newData.reviewId,
       });
+
       newData.id = helper.generateId();
       newData.userId = authStatus.id;
       if (Object.keys(errors).length !== 0) {
         throw new Error(JSON.stringify(errors));
       }
-      return review && await models.Reply.create(newData);
+
+      return review && await replyRepository.create(newData);
+
+      // return review && await models.Reply.create(newData);
     } catch (error) {
       return error;
     }
@@ -53,17 +66,25 @@ class ReplyController {
     const newData = data;
     try {
       authStatusCheck(authStatus);
-      const editedReply = await models.Reply.update(
-        { reply: newData.reply },
-        {
-          returning: true,
-          where: {
-            id: newData.replyId,
-            userId: authStatus.id
-          }
-        }
-      );
-      if (!editedReply) throw new Error(NO_REPLY);
+      // const editedReply = await models.Reply.update(
+      //   { reply: newData.reply },
+      //   {
+      //     returning: true,
+      //     where: {
+      //       id: newData.replyId,
+      //       userId: authStatus.id
+      //     }
+      //   }
+      // );
+
+      const editedReply = await replyRepository.updateOne({
+        id: newData.replyId,
+        userId: authStatus.id
+      }, {
+        reply: newData.reply
+      });
+
+      if (!editedReply || !editedReply.id) throw new Error(NO_REPLY);
       return editedReply;
     } catch (error) {
       return error;
@@ -83,15 +104,21 @@ class ReplyController {
     const { replyId } = data;
     try {
       authStatusCheck(authStatus);
-      const deletedReply = await models.Reply.destroy(
-        {
-          returning: true,
-          where: {
-            id: replyId,
-            userId: authStatus.id
-          }
-        }
-      );
+      // const deletedReply = await models.Reply.destroy(
+      //   {
+      //     returning: true,
+      //     where: {
+      //       id: replyId,
+      //       userId: authStatus.id
+      //     }
+      //   }
+      // );
+
+      const deletedReply = await replyRepository.deleteOne({
+        id: replyId,
+        userId: authStatus.id,
+      });
+
       if (!deletedReply) throw new Error(NO_REPLY);
       return deletedReply;
     } catch (error) {
@@ -109,7 +136,11 @@ class ReplyController {
    */
   static async getReview(reviewId) {
     try {
-      return await models.Review.findById(reviewId);
+      return await reviewRepository.findOne({
+        reviewId
+      });
+
+      // return await models.Review.findById(reviewId);
     } catch (error) {
       return error;
     }
@@ -124,18 +155,23 @@ class ReplyController {
    * @memberof ReplyController
    */
   static async getReplies(reviewId) {
-    const Users = models.User;
+    // const Users = models.User;
     try {
-      const replies = await models.Reply.findAll({
-        where: {
-          reviewId
-        },
-        include: [{
-          model: Users,
-          as: REPLIER_LABEL,
-          attributes: USER_QUERY_ATTRIBUTES
-        }],
+      // const replies = await models.Reply.findAll({
+      //   where: {
+      //     reviewId
+      //   },
+      //   include: [{
+      //     model: Users,
+      //     as: REPLIER_LABEL,
+      //     attributes: USER_QUERY_ATTRIBUTES
+      //   }],
+      // });
+
+      const replies = await replyRepository.getAll({
+        reviewId,
       });
+
       if (replies.length === 0) throw new Error(NO_REPLY);
       return !replies.length ? [] : replies;
     } catch (error) {
@@ -173,9 +209,9 @@ class ReplyController {
       const newReplies = replies.length && replies.map(reply => ({
         id: reply.id,
         reply: reply.reply,
-        replier: reply.replier.username,
-        picture: reply.replier.picture || '',
-        avatarColor: reply.replier.avatarColor,
+        replier: reply.username,
+        picture: reply.picture || '',
+        avatarColor: reply.avatarColor,
         likes: reply.likes,
         userId: reply.userId,
         reviewId: reply.userId,

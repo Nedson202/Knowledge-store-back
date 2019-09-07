@@ -16,7 +16,7 @@ export const createUserTable = async () => {
     EXCEPTION
       WHEN duplicate_object THEN null;
     END $$;
-    
+
     CREATE TABLE IF NOT EXISTS
       "Users" (
         id varchar(128) PRIMARY KEY NOT NULL,
@@ -29,10 +29,15 @@ export const createUserTable = async () => {
         "isEmailSent" verified_status NOT NULL Default 'false',
         "socialId" varchar(128),
         "avatarColor" varchar(128),
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        deleted_at TIMESTAMP
+        "OTPSecret" varchar(128),
+        "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "deletedAt" TIMESTAMP
       );
+
+    ALTER TABLE "Users" ALTER COLUMN "isEmailSent" SET DATA TYPE text USING "isEmailSent"::text;
+
+    ALTER TABLE "Users" ALTER COLUMN "isVerified" SET DATA TYPE text USING "isVerified"::text;
   `;
 
   const queryConfig = {

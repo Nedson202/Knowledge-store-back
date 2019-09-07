@@ -15,9 +15,9 @@ export const createBookTable = async () => {
         image TEXT,
         "pageCount" varchar(128),
         "userId" varchar(128) REFERENCES "Users"(id),
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        deleted_at TIMESTAMP
+        "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "deletedAt" TIMESTAMP
       );
   `;
 

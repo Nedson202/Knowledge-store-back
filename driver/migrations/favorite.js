@@ -8,9 +8,9 @@ export const createFavoriteTable = async () => {
         id varchar(128) PRIMARY KEY NOT NULL,
         "bookId" varchar(128) REFERENCES "Books"(id),
         "userId" varchar(128) REFERENCES "Users"(id),
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        deleted_at TIMESTAMP
+        "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "deletedAt" TIMESTAMP
       );
   `;
 

@@ -1,15 +1,17 @@
 import { stackLogger } from 'info-logger';
-import models from '../models';
+// import models from '../models';
 import utils from '../utils';
 import { addDocument } from '../elasticSearch';
 import authStatusCheck from '../utils/authStatusCheck';
 import {
-  BOOK_LABEL, BOOK_REVIEWS_LABEL, NO_BOOK_MESSAGE,
+  BOOK_LABEL, NO_BOOK_MESSAGE,
   BOOK_UPDATED_MESSAGE, NO_BOOK_CREATED, BOOK_DELETED_MESSAGE,
   PERMISSION_DENIED, NO_BOOK_FOUND
 } from '../settings/default';
+import BookRepository from '../repository/Book';
 
 const { helper, validator } = utils;
+const bookRepository = new BookRepository();
 
 class BookController {
   /**
@@ -33,7 +35,8 @@ class BookController {
       if (Object.keys(errors).length !== 0) {
         throw new Error(JSON.stringify(errors));
       }
-      const createdBook = await models.Book.create(newData);
+      // const createdBook = await models.Book.create(newData);
+      const createdBook = await bookRepository.create(newData);
       addDocument(newData, BOOK_LABEL);
       return createdBook;
     } catch (error) {
@@ -49,36 +52,16 @@ class BookController {
    * @param {*} book
    * @memberof BookController
    */
-  static async addBookIfNotExist(book) {
-    await models.Book.findOrCreate({
-      where: {
-        id: book.id
-      },
-      defaults: book
-    });
-  }
-
-  /**
-   *
-   *
-   * @static
-   * @returns
-   * @memberof BookController
-   */
-  static async getBooks() {
-    try {
-      const books = await models.Book.findAll({
-        include: [{
-          model: models.Review,
-          as: BOOK_REVIEWS_LABEL,
-        }]
-      });
-      if (!books.length) throw new Error(NO_BOOK_MESSAGE);
-      return books;
-    } catch (error) {
-      stackLogger(error);
-      return error;
-    }
+  static async addBookIfNotExist(book, id) {
+    // await models.Book.findOrCreate({
+    //   where: {
+    //     id,
+    //   },
+    //   defaults: book
+    // });
+    await bookRepository.findOrCreate({
+      id
+    }, book);
   }
 
   /**
@@ -114,10 +97,13 @@ class BookController {
   static async getUsersBooks(authStatus) {
     try {
       authStatusCheck(authStatus);
-      const usersBooks = await models.Book.findAll({
-        where: {
-          userId: authStatus.id
-        }
+      // const usersBooks = await models.Book.findAll({
+      //   where: {
+      //     userId: authStatus.id
+      //   }
+      // });
+      const usersBooks = await bookRepository.findAll({
+        userId: authStatus.id
       });
       if (!usersBooks) throw new Error(NO_BOOK_CREATED);
       return usersBooks;
@@ -137,97 +123,16 @@ class BookController {
    */
   static async getBook(bookId) {
     try {
-      const book = await models.Book.findOne({
-        where: {
-          id: bookId,
-        },
+      // const book = await models.Book.findOne({
+      //   where: {
+      //     id: bookId,
+      //   },
+      // });
+      const book = await bookRepository.findOne({
+        id: bookId,
       });
       if (!book) throw new Error(NO_BOOK_MESSAGE);
       return book;
-    } catch (error) {
-      stackLogger(error);
-      return error;
-    }
-  }
-
-  /**
-   *
-   *
-   * @static
-   * @param {*} query
-   * @returns
-   * @memberof BookController
-   */
-  static async filterBooks(query) {
-    const {
-      search
-    } = query;
-    const rating = search.split('r:')[1];
-    try {
-      if (rating) {
-        const books = await BookController.filterBooksByRating(rating);
-        return books.filter((item, index, self) => index === self.findIndex(element => (
-          element.id === item.id
-        )));
-      }
-      const books = await models.Book.findAll({
-        where: {
-          $and: [
-            {
-              name: {
-                $iLike: `%${search}%`
-              }
-            },
-            {
-              genre: {
-                $iLike: `%${search}%`
-              }
-            },
-            {
-              year: {
-                $iLike: `%${search}%`
-              }
-            },
-            {
-              author: {
-                $iLike: `%${search}%`
-              }
-            }
-          ]
-        }
-      });
-      if (!books) throw new Error(NO_BOOK_MESSAGE);
-      return books;
-    } catch (error) {
-      stackLogger(error);
-      return error;
-    }
-  }
-
-  /**
-   *
-   *
-   * @static
-   * @param {*} rating
-   * @returns
-   * @memberof BookController
-   */
-  static async filterBooksByRating(rating) {
-    try {
-      const books = await models.Review.findAll({
-        where: {
-          rating: +rating
-        },
-        include: [{
-          model: models.Book,
-          as: BOOK_LABEL,
-        }]
-      }).map((value) => {
-        value.get({ plain: true });
-        return value.book;
-      });
-      if (!books) throw new Error(NO_BOOK_MESSAGE);
-      return books;
     } catch (error) {
       stackLogger(error);
       return error;
@@ -251,7 +156,12 @@ class BookController {
       if (authStatus.id !== book.userId) {
         throw new Error(PERMISSION_DENIED);
       }
-      const updatedBook = await book.update({
+      // const updatedBook = await book.update({
+      //   ...data
+      // });
+      const updatedBook = await bookRepository.updateOne({
+        id: book.id
+      }, {
         ...data
       });
       updatedBook.message = BOOK_UPDATED_MESSAGE;
@@ -273,13 +183,17 @@ class BookController {
    */
   static async deleteBook(data, authStatus) {
     try {
+      const { bookId } = data;
       authStatusCheck(authStatus);
-      const book = await BookController.getBook(data.bookId);
+      const book = await BookController.getBook(bookId);
       if (!book.userId) throw new Error(NO_BOOK_FOUND);
       if (authStatus.id !== book.userId) {
         throw new Error(PERMISSION_DENIED);
       }
-      await book.destroy();
+      // await book.destroy();
+      await bookRepository.deleteOne({
+        id: bookId,
+      });
       return {
         message: BOOK_DELETED_MESSAGE,
       };
