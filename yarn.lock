@@ -4634,6 +4634,11 @@ node-libs-browser@^2.2.1:
     util "^0.11.0"
     vm-browserify "^1.0.1"
 
+node-postgres@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/node-postgres/-/node-postgres-0.0.1.tgz#ff4fcbd5d46bde2e1168c83c2c1fd01a161b765e"
+  integrity sha512-K7dF/9OL2WpJcSHfcVtuw72oPwhrBHfPgbHyKutKyAQycDsPCOxAZVzW4qb0xZi/ycttOXdampGsCdUpqNZWaw==
+
 node-pre-gyp@0.12.0, node-pre-gyp@^0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.12.0.tgz#39ba4bb1439da030295f899e3b520b7785766149"

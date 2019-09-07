@@ -1,7 +1,8 @@
 import { stackLogger } from 'info-logger';
-import models from '../models';
-import { GENRE_ORDER } from '../settings/default';
 import { addDataToRedis, getDataFromRedis } from '../redis';
+import GenreRepository from '../repository/Genre';
+
+const genreRepository = new GenreRepository();
 
 class GenreController {
   /**
@@ -17,9 +18,8 @@ class GenreController {
       let bookGenres = await getDataFromRedis(redisKey) || [];
 
       if (!bookGenres.length) {
-        bookGenres = await models.Genre.findAll({
-          order: [GENRE_ORDER]
-        });
+        bookGenres = await genreRepository.getAll();
+
         addDataToRedis(redisKey, bookGenres);
       }
 

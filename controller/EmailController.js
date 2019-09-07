@@ -1,5 +1,5 @@
 import { stackLogger } from 'info-logger';
-import models from '../models';
+// import models from '../models';
 import mailer from '../utils/mailer';
 import {
   production, DEV_SERVER, VERIFY_EMAIL_SUBJECT,
@@ -8,9 +8,11 @@ import {
 import {
   passwordResetTemplate, emailVerificationTemplate, resendOTPTemplate
 } from '../emailTemplates';
+import UserRepository from '../repository/User';
 
 const redirectUrl = process.env.NODE_ENV.match(production)
   ? process.env.PROD_SERVER : DEV_SERVER;
+const userRepository = new UserRepository();
 
 class EmailController {
   /**
@@ -34,12 +36,16 @@ class EmailController {
         redirectUrl, username, OTP, token,
       });
       await mailer(emailTemplate, email, VERIFY_EMAIL_SUBJECT);
-      const oneUser = await models.User.findOne({
-        where: {
-          username: username.toLowerCase()
-        }
-      });
-      await oneUser.update({ isEmailSent: 'true' });
+
+      // const oneUser = await models.User.findOne({
+      //   where: {
+      //     username: username.toLowerCase()
+      //   }
+      // });
+
+      await userRepository.updateOne({
+        username: username.toLowerCase(),
+      }, { isEmailSent: 'true' });
     } catch (error) {
       stackLogger(error);
       return error;

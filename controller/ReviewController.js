@@ -1,16 +1,17 @@
 import { stackLogger } from 'info-logger';
-import models from '../models';
+// import models from '../models';
 import utils from '../utils';
 import { retrieveBook } from '../elasticSearch';
 import BookController from './BookController';
 import {
-  NO_REVIEW, USER_QUERY_ATTRIBUTES, REVIEWER_LABEL,
-  NO_BOOK_FOUND, DESC_ORDER
+  NO_REVIEW, NO_BOOK_FOUND,
 } from '../settings/default';
 import { getDataFromRedis } from '../redis';
 import authStatusCheck from '../utils/authStatusCheck';
+import ReviewRepository from '../repository/Review';
 
 const { helper, validator } = utils;
+const reviewRepository = new ReviewRepository();
 
 class ReviewController {
   /**
@@ -39,7 +40,7 @@ class ReviewController {
         retrievedBook = await retrieveBook(newData.bookId);
       }
 
-      if (retrievedBook) await BookController.addBookIfNotExist(retrievedBook);
+      if (retrievedBook) await BookController.addBookIfNotExist(retrievedBook, newData.bookId);
       if (!retrievedBook) {
         retrievedBook = await BookController.getBook(bookId);
       }
@@ -52,7 +53,10 @@ class ReviewController {
       if (Object.keys(errors).length !== 0) {
         throw new Error(JSON.stringify(errors));
       }
-      return retrievedBook && await models.Review.create(newData);
+
+      return retrievedBook && await reviewRepository.create(newData);
+
+      // return retrievedBook && await models.Review.create(newData);
     } catch (error) {
       stackLogger(error);
       return error;
@@ -70,7 +74,7 @@ class ReviewController {
    */
   static async editReview(data, authStatus) {
     const {
-      review, rating, reviewId, like
+      review, rating, reviewId,
     } = data;
     const editObject = {
       review,
@@ -78,20 +82,22 @@ class ReviewController {
     };
     try {
       authStatusCheck(authStatus);
-      if (like) {
-        editObject.liked = true;
-        editObject.likes = models.sequelize.literal(`likes + ${like}`);
-      }
-      const editedReview = await models.Review.update(
-        editObject,
-        {
-          returning: true,
-          where: {
-            id: reviewId,
-            userId: authStatus.id
-          }
-        }
-      );
+      // const editedReview = await models.Review.update(
+      //   editObject,
+      //   {
+      //     returning: true,
+      //     where: {
+      //       id: reviewId,
+      //       userId: authStatus.id
+      //     }
+      //   }
+      // );
+
+      const editedReview = await reviewRepository.updateOne({
+        id: reviewId,
+        userId: authStatus.id
+      }, editObject);
+
       if (!editedReview) throw new Error(NO_REVIEW);
       return editedReview;
     } catch (error) {
@@ -113,15 +119,21 @@ class ReviewController {
     const { reviewId } = data;
     try {
       authStatusCheck(authStatus);
-      const deletedReview = await models.Review.destroy(
-        {
-          returning: true,
-          where: {
-            id: reviewId,
-            userId: authStatus.id
-          }
-        }
-      );
+      // const deletedReview = await models.Review.destroy(
+      //   {
+      //     returning: true,
+      //     where: {
+      //       id: reviewId,
+      //       userId: authStatus.id
+      //     }
+      //   }
+      // );
+
+      const deletedReview = await reviewRepository.deleteOne({
+        id: reviewId,
+        userId: authStatus.id
+      });
+
       if (!deletedReview) throw new Error(NO_REVIEW);
       return deletedReview;
     } catch (error) {
@@ -139,11 +151,15 @@ class ReviewController {
    */
   static async getReview(reviewId) {
     try {
-      return await models.Review.findOne({
-        where: {
-          id: reviewId
-        },
+      return await reviewRepository.findOne({
+        id: reviewId
       });
+
+      // return await models.Review.findOne({
+      //   where: {
+      //     id: reviewId
+      //   },
+      // });
     } catch (error) {
       stackLogger(error);
       return error;
@@ -159,19 +175,24 @@ class ReviewController {
    * @memberof ReviewController
    */
   static async retrieveReviewsQuery(bookId) {
-    const Users = models.User;
+    // const Users = models.User;
     try {
-      const reviews = await models.Review.findAll({
-        where: {
-          bookId
-        },
-        include: [{
-          model: Users,
-          as: REVIEWER_LABEL,
-          attributes: USER_QUERY_ATTRIBUTES
-        }],
-        order: [DESC_ORDER],
+      // const reviews = await models.Review.findAll({
+      //   where: {
+      //     bookId
+      //   },
+      //   include: [{
+      //     model: Users,
+      //     as: REVIEWER_LABEL,
+      //     attributes: USER_QUERY_ATTRIBUTES
+      //   }],
+      //   order: [DESC_ORDER],
+      // });
+
+      const reviews = await reviewRepository.getAll({
+        bookId
       });
+
       return !reviews.length ? [] : reviews;
     } catch (error) {
       stackLogger(error);
@@ -212,9 +233,9 @@ class ReviewController {
         rating: review.rating,
         userId: review.userId,
         bookId: review.bookId,
-        reviewer: review.reviewer.username,
-        picture: review.reviewer.picture || '',
-        avatarColor: review.reviewer.avatarColor,
+        reviewer: review.username,
+        picture: review.picture || '',
+        avatarColor: review.avatarColor,
         likes: review.likes,
         createdAt: review.createdAt,
         updatedAt: review.updatedAt,

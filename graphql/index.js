@@ -64,17 +64,6 @@ const RootQuery = new GraphQLObjectType({
         return BookController.getUsersBooks(authorized);
       }
     },
-    filterBooks: {
-      type: new GraphQLList(BookType),
-      args: {
-        search: {
-          type: GraphQLString
-        },
-      },
-      resolve(parent, args) {
-        return BookController.filterBooks(args);
-      }
-    },
     reviews: {
       type: new GraphQLList(ReviewType),
       args: {

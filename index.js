@@ -6,9 +6,9 @@ import http from 'http';
 import https from 'https';
 import helmet from 'helmet';
 import { stackLogger } from 'info-logger';
+
 import requestLogger from './helper/requestLogger';
 import schema from './graphql';
-import models from './models/index';
 import './config/passportSetup';
 import authRoutes from './routes';
 import {
@@ -71,9 +71,6 @@ app.listen(port,
     logger.info(`
       App running on ${process.env.NODE_ENV.toUpperCase()}
       mode and listening on port ${port} ...\n`);
-    models.sequelize.sync({
-      logging: false
-    });
   });
 
 const httpProtocol = process.env.NODE_ENV.match(development) ? http : https;

@@ -1,9 +1,9 @@
 import { stackLogger } from 'info-logger';
-import models from '../models';
+// import models from '../models';
 import utils from '../utils';
 import {
   USER_UNAUTHORIZED,
-  RESET_LINK_MESSAGE, PROFILE_UPDATED, NO_USER, USER_ORDER, SUPER_ADMIN_ROLE,
+  RESET_LINK_MESSAGE, PROFILE_UPDATED, NO_USER, SUPER_ADMIN_ROLE,
   OLD_PASSWORD_INCORRECT, RESET_SUCCESSFUL, RESET_FAILED, ADMIN_ROLE,
   PASSWORD_CHANGE_SUCCESSFUL, OPERATION_DENIED, USER_DELETED_MESSAGE,
   USER_ROLE, EMAIL_SENT_MESSAGE, USER_IS_ADMIN, NOT_AN_ADMIN, EMAIL_VERIFIED_MESSAGE,
@@ -12,8 +12,10 @@ import {
 } from '../settings/default';
 import EmailController from './EmailController';
 import authStatusCheck from '../utils/authStatusCheck';
+import UserRepository from '../repository/User';
 
 const { helper, validator } = utils;
+const userRepository = new UserRepository();
 
 class UserController {
   /**
@@ -56,7 +58,9 @@ class UserController {
         userObject.OTPSecret = secret;
       }
 
-      const newUser = await models.User.create(userObject);
+      // const newUser = await models.User.create(userObject);
+      const newUser = await userRepository.create(userObject);
+
       const payload = helper.payloadSchema(newUser);
       const token = helper.generateToken(payload);
       EmailController.sendEmailVerificationMail(payload, { token, OTP });
@@ -83,11 +87,16 @@ class UserController {
       if (Object.keys(errors).length !== 0) {
         throw new Error(JSON.stringify(errors));
       }
-      const existingUser = await models.User.findOne({
-        where: {
-          username: username.toLowerCase()
-        }
+      // const existingUser = await models.User.findOne({
+      //   where: {
+      //     username: username.toLowerCase()
+      //   }
+      // });
+
+      const existingUser = await userRepository.findOne({
+        username: username.toLowerCase()
       });
+
       if (!existingUser) throw new Error(USER_UNAUTHORIZED);
       const passwordMatch = helper.compareHash(password, existingUser.password);
       if (!passwordMatch) {
@@ -127,7 +136,12 @@ class UserController {
       payload.token = token;
       payload.username = user.username;
       const { OTP, secret } = utils.helper.generateOTP();
-      await user.update({ OTPSecret: secret });
+      // await user.update({ OTPSecret: secret });
+
+      await userRepository.updateOne({
+        id: user.id
+      }, { OTPSecret: secret });
+
       EmailController.sendPasswordResetMail(payload, { token, OTP });
       return {
         message: RESET_LINK_MESSAGE,
@@ -166,9 +180,14 @@ class UserController {
           message: OTP_FAILED
         };
       }
-      await user.update({ OTPSecret: null });
-      const payload = user.dataValues;
-      delete (payload.password);
+
+      // await user.update({ OTPSecret: null });
+      await userRepository.updateOne({
+        id: user.id,
+      }, { OTPSecret: null });
+
+      // const payload = user.dataValues;
+      delete (user.password);
       return {
         message: OTP_SUCCESS,
       };
@@ -193,7 +212,13 @@ class UserController {
       const user = await UserController.findUser(null, id);
       if (!user.role) throw new Error(NO_USER);
       const { OTP, secret } = utils.helper.generateOTP();
-      await user.update({ OTPSecret: secret });
+
+      // await user.update({ OTPSecret: secret });
+
+      await userRepository.updateOne({
+        id: user.id,
+      }, { OTPSecret: secret });
+
       EmailController.newOTPRequestMail(authStatus, OTP);
       return {
         message: OTP_RESEND_SUCCESS,
@@ -221,11 +246,21 @@ class UserController {
       const { id } = authStatus;
       const user = await UserController.findUser(null, id);
       if (!user.role) throw new Error(NO_USER);
-      const updatedUser = await user.update({
+
+      // const updatedUser = await user.update({
+      //   username: username || user.username,
+      //   email: email || user.email,
+      //   picture: image || user.picture
+      // });
+
+      const updatedUser = await userRepository.updateOne({
+        id: user.id,
+      }, {
         username: username || user.username,
         email: email || user.email,
         picture: image || user.picture
       });
+
       const payload = helper.payloadSchema(updatedUser);
       const token = helper.generateToken(payload);
       payload.token = token;
@@ -252,9 +287,17 @@ class UserController {
       const { id, } = authStatus;
       const user = await UserController.findUser(null, id);
       if (!user.role) throw new Error(NO_USER);
-      const updatedUser = await user.update({
+
+      // const updatedUser = await user.update({
+      //   picture: '',
+      // });
+
+      const updatedUser = await userRepository.updateOne({
+        id: user.id,
+      }, {
         picture: '',
       });
+
       const payload = helper.payloadSchema(updatedUser);
       const token = helper.generateToken(payload);
       payload.token = token;
@@ -286,9 +329,16 @@ class UserController {
       if (!passwordMatch) {
         throw new Error(OLD_PASSWORD_INCORRECT);
       }
-      await user.update({
+      // await user.update({
+      //   password: helper.passwordHash(newPassword)
+      // });
+
+      await userRepository.updateOne({
+        id: user.id,
+      }, {
         password: helper.passwordHash(newPassword)
       });
+
       return {
         message: PASSWORD_CHANGE_SUCCESSFUL,
       };
@@ -315,9 +365,17 @@ class UserController {
       if (!decodedValue.email.match(email)) throw new Error(OPERATION_DENIED);
       const user = await UserController.findUser(email, id);
       if (!user.role) throw new Error(NO_USER);
-      const passwordReset = await user.update({
-        password: helper.passwordHash(password),
+
+      // const passwordReset = await user.update({
+      //   password: helper.passwordHash(password),
+      // });
+
+      const passwordReset = await userRepository.updateOne({
+        id: user.id,
+      }, {
+        password: helper.passwordHash(password)
       });
+
       if (!passwordReset) {
         throw new Error(RESET_FAILED);
       }
@@ -360,7 +418,12 @@ class UserController {
           message: OTP_FAILED
         };
       }
-      await user.update({ isVerified: 'true', OTPSecret: null });
+      // await user.update({ isVerified: 'true', OTPSecret: null });
+
+      await userRepository.updateOne({
+        id: user.id,
+      }, { isVerified: 'true', OTPSecret: null });
+
       const payload = user.dataValues;
       delete (payload.password);
       const token = helper.generateToken(payload);
@@ -394,7 +457,13 @@ class UserController {
       const payload = user.dataValues;
       delete (payload.password);
       const { OTP, secret } = utils.helper.generateOTP();
-      await user.update({ OTPSecret: secret });
+
+      // await user.update({ OTPSecret: secret });
+
+      await userRepository.updateOne({
+        id: user.id,
+      }, { OTPSecret: secret });
+
       const token = helper.generateToken(payload);
       await EmailController.sendEmailVerificationMail(payload, { token, OTP });
       return {
@@ -423,9 +492,12 @@ class UserController {
       queryObject.email = email;
     }
     try {
-      const user = await models.User.findOne({
-        where: queryObject
-      });
+      // const user = await models.User.findOne({
+      //   where: queryObject
+      // });
+
+      const user = await userRepository.findOne(queryObject);
+
       if (!user) throw new Error(NO_USER);
       return user;
     } catch (error) {
@@ -444,11 +516,16 @@ class UserController {
    */
   static async checkUserExists(socialId) {
     try {
-      const user = await models.User.findOne({
-        where: {
-          socialId
-        }
+      // const user = await models.User.findOne({
+      //   where: {
+      //     socialId
+      //   }
+      // });
+
+      const user = await userRepository.findOne({
+        socialId,
       });
+
       if (!user) {
         return {};
       }
@@ -482,9 +559,17 @@ class UserController {
       if (!verifySuperAdmin) {
         throw new Error('Operation denied, you are not a super admin');
       }
-      await user.update({
+
+      // await user.update({
+      //   role: adminAction === 'add' ? ADMIN_ROLE : USER_ROLE
+      // });
+
+      await userRepository.updateOne({
+        id: user.id,
+      }, {
         role: adminAction === 'add' ? ADMIN_ROLE : USER_ROLE
       });
+
       return {
         message: adminAction === 'add'
           ? 'User added successfully as an admin'
@@ -516,7 +601,12 @@ class UserController {
       if (!verifyAdmin) {
         throw new Error(NOT_AN_ADMIN);
       }
-      await user.destroy();
+      // await user.destroy();
+
+      await userRepository.deleteOne({
+        id: userId,
+      });
+
       return {
         message: USER_DELETED_MESSAGE
       };
@@ -577,9 +667,16 @@ class UserController {
           message: 'User is already a super admin'
         };
       }
-      await user.update({
+      // await user.update({
+      //   role: SUPER_ADMIN_ROLE
+      // });
+
+      await userRepository.updateOne({
+        id: user.id,
+      }, {
         role: SUPER_ADMIN_ROLE
       });
+
       return {
         message: 'User role successfully changed to super admin'
       };
@@ -604,12 +701,19 @@ class UserController {
       if (![ADMIN_ROLE, SUPER_ADMIN_ROLE].includes(authStatus.role)) {
         throw new Error(NOT_AN_ADMIN);
       }
-      const users = await models.User.findAll({
-        where: type === 'all' ? {} : {
-          role: type
-        },
-        order: [USER_ORDER]
-      });
+      // const users = await models.User.findAll({
+      //   where: type === 'all' ? {} : {
+      //     role: type
+      //   },
+      //   order: [USER_ORDER]
+      // });
+
+      const queryObject = type === 'all' ? {} : {
+        role: type
+      };
+
+      const users = await userRepository.getAllUsers(queryObject);
+
       return users;
     } catch (error) {
       stackLogger(error);

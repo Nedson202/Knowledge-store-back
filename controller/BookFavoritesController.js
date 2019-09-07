@@ -1,14 +1,16 @@
 import { stackLogger } from 'info-logger';
-import models from '../models';
+// import models from '../models';
 import utils from '../utils';
 import BookController from './BookController';
 import { retrieveBook } from '../elasticSearch';
 import {
-  FAVORITE_BOOK_LABEL, ADDED_TO_FAVORITE, BOOK_REMOVED_FROM_FAVORITES
+  ADDED_TO_FAVORITE, BOOK_REMOVED_FROM_FAVORITES
 } from '../settings/default';
 import authStatusCheck from '../utils/authStatusCheck';
+import FavoritesRepository from '../repository/Favorite';
 
 const { helper } = utils;
+const favoritesRepository = new FavoritesRepository();
 
 class BookFavoritesController {
   /**
@@ -25,22 +27,30 @@ class BookFavoritesController {
     try {
       authStatusCheck(authStatus);
       const retrievedBook = await retrieveBook(newData.bookId);
-      await BookController.addBookIfNotExist(retrievedBook);
+      await BookController.addBookIfNotExist(retrievedBook, newData.bookId);
       newData.id = helper.generateId();
       newData.userId = authStatus.id;
-      const favorite = await models.Favorite.findOne({
-        where: {
-          bookId: newData.bookId
-        }
-      });
+      // const favorite = await models.Favorite.findOne({
+      //   where: {
+      //     bookId: newData.bookId,
+      //     userId: authStatus.id,
+      //   }
+      // });
+      const queryObject = {
+        bookId: newData.bookId,
+        userId: authStatus.id,
+      };
+      const favorite = await favoritesRepository.findOne(queryObject);
       if (favorite) {
-        await favorite.destroy();
+        // await favorite.destroy();
+        await favoritesRepository.deleteOne(queryObject);
 
         return {
           message: BOOK_REMOVED_FROM_FAVORITES,
         };
       }
-      await models.Favorite.create(newData);
+      await favoritesRepository.create(newData);
+      // await models.Favorite.create(newData);
       return {
         message: ADDED_TO_FAVORITE
       };
@@ -64,12 +74,18 @@ class BookFavoritesController {
         return false;
       }
       const { id } = authStatus;
-      const favorite = await models.Favorite.findOne({
-        where: {
-          bookId,
-          userId: id,
-        }
-      });
+      // const favorite = await models.Favorite.findOne({
+      //   where: {
+      //     bookId,
+      //     userId: id,
+      //   }
+      // });
+      const queryObject = {
+        bookId,
+        userId: id,
+      };
+      const favorite = await favoritesRepository.findOne(queryObject);
+
       if (favorite) return true;
     } catch (error) {
       stackLogger(error);
@@ -89,17 +105,20 @@ class BookFavoritesController {
     try {
       authStatusCheck(authStatus);
       const { id } = authStatus;
-      const books = await models.Favorite.findAll({
-        where: {
-          userId: id
-        },
-        include: [{
-          model: models.Book,
-          as: FAVORITE_BOOK_LABEL,
-        }]
-      }).map((value) => {
-        value.get({ plain: true });
-        return value.favoriteBook;
+      // const books = await models.Favorite.findAll({
+      //   where: {
+      //     userId: id
+      //   },
+      //   include: [{
+      //     model: models.Book,
+      //     as: FAVORITE_BOOK_LABEL,
+      //   }]
+      // }).map((value) => {
+      //   value.get({ plain: true });
+      //   return value.favoriteBook;
+      // });
+      const books = await favoritesRepository.getFavoriteBooks({
+        userId: id,
       });
       if (!books.length) return [];
       return books;
@@ -123,12 +142,17 @@ class BookFavoritesController {
     try {
       authStatusCheck(authStatus);
       const { id } = authStatus;
-      await models.Favorite.destroy({
-        where: {
-          userId: id,
-          bookId: books,
-        },
-      });
+      // await models.Favorite.destroy({
+      //   where: {
+      //     userId: id,
+      //     bookId: books,
+      //   },
+      // });
+
+      await favoritesRepository.deleteMany({
+        userId: id,
+      }, { bookId: books, });
+
       return {
         message: BOOK_REMOVED_FROM_FAVORITES
       };
