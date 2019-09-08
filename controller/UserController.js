@@ -1,5 +1,4 @@
 import { stackLogger } from 'info-logger';
-// import models from '../models';
 import utils from '../utils';
 import {
   USER_UNAUTHORIZED,
@@ -58,7 +57,6 @@ class UserController {
         userObject.OTPSecret = secret;
       }
 
-      // const newUser = await models.User.create(userObject);
       const newUser = await userRepository.create(userObject);
 
       const payload = helper.payloadSchema(newUser);
@@ -87,11 +85,6 @@ class UserController {
       if (Object.keys(errors).length !== 0) {
         throw new Error(JSON.stringify(errors));
       }
-      // const existingUser = await models.User.findOne({
-      //   where: {
-      //     username: username.toLowerCase()
-      //   }
-      // });
 
       const existingUser = await userRepository.findOne({
         username: username.toLowerCase()
@@ -136,7 +129,6 @@ class UserController {
       payload.token = token;
       payload.username = user.username;
       const { OTP, secret } = utils.helper.generateOTP();
-      // await user.update({ OTPSecret: secret });
 
       await userRepository.updateOne({
         id: user.id
@@ -181,12 +173,10 @@ class UserController {
         };
       }
 
-      // await user.update({ OTPSecret: null });
       await userRepository.updateOne({
         id: user.id,
       }, { OTPSecret: null });
 
-      // const payload = user.dataValues;
       delete (user.password);
       return {
         message: OTP_SUCCESS,
@@ -212,8 +202,6 @@ class UserController {
       const user = await UserController.findUser(null, id);
       if (!user.role) throw new Error(NO_USER);
       const { OTP, secret } = utils.helper.generateOTP();
-
-      // await user.update({ OTPSecret: secret });
 
       await userRepository.updateOne({
         id: user.id,
@@ -246,12 +234,6 @@ class UserController {
       const { id } = authStatus;
       const user = await UserController.findUser(null, id);
       if (!user.role) throw new Error(NO_USER);
-
-      // const updatedUser = await user.update({
-      //   username: username || user.username,
-      //   email: email || user.email,
-      //   picture: image || user.picture
-      // });
 
       const updatedUser = await userRepository.updateOne({
         id: user.id,
@@ -287,10 +269,6 @@ class UserController {
       const { id, } = authStatus;
       const user = await UserController.findUser(null, id);
       if (!user.role) throw new Error(NO_USER);
-
-      // const updatedUser = await user.update({
-      //   picture: '',
-      // });
 
       const updatedUser = await userRepository.updateOne({
         id: user.id,
@@ -329,9 +307,6 @@ class UserController {
       if (!passwordMatch) {
         throw new Error(OLD_PASSWORD_INCORRECT);
       }
-      // await user.update({
-      //   password: helper.passwordHash(newPassword)
-      // });
 
       await userRepository.updateOne({
         id: user.id,
@@ -365,10 +340,6 @@ class UserController {
       if (!decodedValue.email.match(email)) throw new Error(OPERATION_DENIED);
       const user = await UserController.findUser(email, id);
       if (!user.role) throw new Error(NO_USER);
-
-      // const passwordReset = await user.update({
-      //   password: helper.passwordHash(password),
-      // });
 
       const passwordReset = await userRepository.updateOne({
         id: user.id,
@@ -418,7 +389,6 @@ class UserController {
           message: OTP_FAILED
         };
       }
-      // await user.update({ isVerified: 'true', OTPSecret: null });
 
       await userRepository.updateOne({
         id: user.id,
@@ -458,8 +428,6 @@ class UserController {
       delete (payload.password);
       const { OTP, secret } = utils.helper.generateOTP();
 
-      // await user.update({ OTPSecret: secret });
-
       await userRepository.updateOne({
         id: user.id,
       }, { OTPSecret: secret });
@@ -492,10 +460,6 @@ class UserController {
       queryObject.email = email;
     }
     try {
-      // const user = await models.User.findOne({
-      //   where: queryObject
-      // });
-
       const user = await userRepository.findOne(queryObject);
 
       if (!user) throw new Error(NO_USER);
@@ -516,12 +480,6 @@ class UserController {
    */
   static async checkUserExists(socialId) {
     try {
-      // const user = await models.User.findOne({
-      //   where: {
-      //     socialId
-      //   }
-      // });
-
       const user = await userRepository.findOne({
         socialId,
       });
@@ -560,10 +518,6 @@ class UserController {
         throw new Error('Operation denied, you are not a super admin');
       }
 
-      // await user.update({
-      //   role: adminAction === 'add' ? ADMIN_ROLE : USER_ROLE
-      // });
-
       await userRepository.updateOne({
         id: user.id,
       }, {
@@ -601,7 +555,6 @@ class UserController {
       if (!verifyAdmin) {
         throw new Error(NOT_AN_ADMIN);
       }
-      // await user.destroy();
 
       await userRepository.deleteOne({
         id: userId,
@@ -667,9 +620,6 @@ class UserController {
           message: 'User is already a super admin'
         };
       }
-      // await user.update({
-      //   role: SUPER_ADMIN_ROLE
-      // });
 
       await userRepository.updateOne({
         id: user.id,
@@ -701,12 +651,6 @@ class UserController {
       if (![ADMIN_ROLE, SUPER_ADMIN_ROLE].includes(authStatus.role)) {
         throw new Error(NOT_AN_ADMIN);
       }
-      // const users = await models.User.findAll({
-      //   where: type === 'all' ? {} : {
-      //     role: type
-      //   },
-      //   order: [USER_ORDER]
-      // });
 
       const queryObject = type === 'all' ? {} : {
         role: type

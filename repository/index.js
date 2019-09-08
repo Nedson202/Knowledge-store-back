@@ -1,4 +1,4 @@
-import { dbQuery } from '../driver';
+import { dbQuery } from '../database';
 
 class BaseRepository {
   constructor(model) {

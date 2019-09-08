@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import config from '../driver/config';
+import config from '../database/config';
 import logger from './initLogger';
 
 let dbConfig = config;

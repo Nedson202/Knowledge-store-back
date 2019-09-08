@@ -1,5 +1,4 @@
 import { stackLogger } from 'info-logger';
-// import models from '../models';
 import utils from '../utils';
 import { addDocument } from '../elasticSearch';
 import authStatusCheck from '../utils/authStatusCheck';
@@ -32,10 +31,9 @@ class BookController {
     });
     try {
       authStatusCheck(authStatus);
-      if (Object.keys(errors).length !== 0) {
+      if (Object.keys(errors).length) {
         throw new Error(JSON.stringify(errors));
       }
-      // const createdBook = await models.Book.create(newData);
       const createdBook = await bookRepository.create(newData);
       addDocument(newData, BOOK_LABEL);
       return createdBook;
@@ -53,12 +51,6 @@ class BookController {
    * @memberof BookController
    */
   static async addBookIfNotExist(book, id) {
-    // await models.Book.findOrCreate({
-    //   where: {
-    //     id,
-    //   },
-    //   defaults: book
-    // });
     await bookRepository.findOrCreate({
       id
     }, book);
@@ -76,8 +68,7 @@ class BookController {
     try {
       const totalReviews = reviews.length;
       const averageRating = totalReviews
-        && reviews
-          .reduce((totalRating, value) => totalRating + value.dataValues.rating, 0)
+        .reduce((totalRating, value) => totalRating + value.dataValues.rating, 0)
         / totalReviews;
       return averageRating || 0;
     } catch (error) {
@@ -97,11 +88,7 @@ class BookController {
   static async getUsersBooks(authStatus) {
     try {
       authStatusCheck(authStatus);
-      // const usersBooks = await models.Book.findAll({
-      //   where: {
-      //     userId: authStatus.id
-      //   }
-      // });
+
       const usersBooks = await bookRepository.findAll({
         userId: authStatus.id
       });
@@ -123,11 +110,6 @@ class BookController {
    */
   static async getBook(bookId) {
     try {
-      // const book = await models.Book.findOne({
-      //   where: {
-      //     id: bookId,
-      //   },
-      // });
       const book = await bookRepository.findOne({
         id: bookId,
       });
@@ -156,9 +138,6 @@ class BookController {
       if (authStatus.id !== book.userId) {
         throw new Error(PERMISSION_DENIED);
       }
-      // const updatedBook = await book.update({
-      //   ...data
-      // });
       const updatedBook = await bookRepository.updateOne({
         id: book.id
       }, {
@@ -190,7 +169,6 @@ class BookController {
       if (authStatus.id !== book.userId) {
         throw new Error(PERMISSION_DENIED);
       }
-      // await book.destroy();
       await bookRepository.deleteOne({
         id: bookId,
       });

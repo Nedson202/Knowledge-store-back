@@ -7,6 +7,7 @@ import {
   ERROR_CREATING_INDEX, INDEX_CREATED_MESSAGE, production, NO_INDEX, ELASTIC_SEARCH_MAPPING,
   PHRASE_PREFIX, MULTI_MATCH_FIELDS, BOOK_UPDATED_MESSAGE, BOOK_ADDED_MESSAGE,
   INDEX_DELETED_MESSAGE,
+  BOOK,
 } from '../settings/default';
 
 dotenv.config();
@@ -60,7 +61,7 @@ elasticClient.indices.exists({
 
 const createMapping = () => elasticClient.indices.putMapping({
   index: BOOKS_INDEX,
-  type: 'book',
+  type: BOOK,
   body: ELASTIC_SEARCH_MAPPING
 });
 
@@ -90,7 +91,7 @@ const addDocument = (index, type) => {
 const retrieveBook = async (id) => {
   const book = await elasticClient.get({
     index: BOOKS_INDEX,
-    type: 'book',
+    type: BOOK,
     id,
   }).then(result => result._source) // eslint-disable-line
     .catch((error) => {
@@ -110,7 +111,7 @@ const updateBook = async (data) => {
 
   elasticClient.update({
     index: BOOKS_INDEX,
-    type: 'book',
+    type: BOOK,
     id,
     body
   }, (error, resp) => {
@@ -133,7 +134,7 @@ const deleteBook = (index, id, type) => {
 const getSuggestions = (input) => {
   elasticClient.search({
     index: BOOKS_INDEX,
-    type: 'book',
+    type: BOOK,
     body: {
       docsuggest: {
         text: input,
@@ -155,7 +156,7 @@ const elasticBulkCreate = (bulk) => {
     data.push({
       index: {
         _index: BOOKS_INDEX,
-        _type: 'book',
+        _type: BOOK,
         _id: item.id
       }
     });
@@ -188,7 +189,7 @@ const elasticItemSearch = async (query, paginateData) => {
     query: !query || !query.length ? matchAll : multiMatch
   };
 
-  const hits = await elasticClient.search({ index: BOOKS_INDEX, body, type: 'book' })
+  const hits = await elasticClient.search({ index: BOOKS_INDEX, body, type: BOOK })
     .then(results => results.hits.hits.map(result => result._source)) // eslint-disable-line
     .catch((error) => {
       stackLogger(error);

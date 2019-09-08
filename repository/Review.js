@@ -1,5 +1,5 @@
 import BaseRepository from '.';
-import { dbQuery } from '../driver';
+import { dbQuery } from '../database';
 
 class ReviewRepository extends BaseRepository {
   constructor() {

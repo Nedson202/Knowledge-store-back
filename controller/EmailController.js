@@ -1,5 +1,4 @@
 import { stackLogger } from 'info-logger';
-// import models from '../models';
 import mailer from '../utils/mailer';
 import {
   production, DEV_SERVER, VERIFY_EMAIL_SUBJECT,
@@ -36,12 +35,6 @@ class EmailController {
         redirectUrl, username, OTP, token,
       });
       await mailer(emailTemplate, email, VERIFY_EMAIL_SUBJECT);
-
-      // const oneUser = await models.User.findOne({
-      //   where: {
-      //     username: username.toLowerCase()
-      //   }
-      // });
 
       await userRepository.updateOne({
         username: username.toLowerCase(),

@@ -1,4 +1,4 @@
-import { dbQuery } from '../driver';
+import { dbQuery } from '../database';
 import BaseRepository from '.';
 
 class UserRepository extends BaseRepository {
