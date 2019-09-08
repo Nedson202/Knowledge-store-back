@@ -40,12 +40,6 @@ export const FORGOT_PASSWORD_OP_DENIED = 'Forgot password operation denied';
 export const OTP_RESEND_FAILED = 'Resend OTP failed';
 export const OTP_RESEND_SUCCESS = 'New OTP sent to email';
 
-// sequelize
-export const GENRE_ORDER = ['genre', 'ASC'];
-export const DESC_ORDER = ['createdAt', 'DESC'];
-export const USER_ORDER = ['id', 'ASC'];
-export const USER_QUERY_ATTRIBUTES = ['username', 'picture', 'avatarColor'];
-
 export const GOOGLE_BOOK_OPTIONS = {
   key: process.env.GOOGLE_BOOKS_KEY,
   field: 'title',

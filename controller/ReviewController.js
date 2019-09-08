@@ -1,5 +1,4 @@
 import { stackLogger } from 'info-logger';
-// import models from '../models';
 import utils from '../utils';
 import { retrieveBook } from '../elasticSearch';
 import BookController from './BookController';
@@ -55,8 +54,6 @@ class ReviewController {
       }
 
       return retrievedBook && await reviewRepository.create(newData);
-
-      // return retrievedBook && await models.Review.create(newData);
     } catch (error) {
       stackLogger(error);
       return error;
@@ -82,16 +79,6 @@ class ReviewController {
     };
     try {
       authStatusCheck(authStatus);
-      // const editedReview = await models.Review.update(
-      //   editObject,
-      //   {
-      //     returning: true,
-      //     where: {
-      //       id: reviewId,
-      //       userId: authStatus.id
-      //     }
-      //   }
-      // );
 
       const editedReview = await reviewRepository.updateOne({
         id: reviewId,
@@ -119,15 +106,6 @@ class ReviewController {
     const { reviewId } = data;
     try {
       authStatusCheck(authStatus);
-      // const deletedReview = await models.Review.destroy(
-      //   {
-      //     returning: true,
-      //     where: {
-      //       id: reviewId,
-      //       userId: authStatus.id
-      //     }
-      //   }
-      // );
 
       const deletedReview = await reviewRepository.deleteOne({
         id: reviewId,
@@ -154,12 +132,6 @@ class ReviewController {
       return await reviewRepository.findOne({
         id: reviewId
       });
-
-      // return await models.Review.findOne({
-      //   where: {
-      //     id: reviewId
-      //   },
-      // });
     } catch (error) {
       stackLogger(error);
       return error;

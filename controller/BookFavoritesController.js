@@ -1,5 +1,4 @@
 import { stackLogger } from 'info-logger';
-// import models from '../models';
 import utils from '../utils';
 import BookController from './BookController';
 import { retrieveBook } from '../elasticSearch';
@@ -30,19 +29,12 @@ class BookFavoritesController {
       await BookController.addBookIfNotExist(retrievedBook, newData.bookId);
       newData.id = helper.generateId();
       newData.userId = authStatus.id;
-      // const favorite = await models.Favorite.findOne({
-      //   where: {
-      //     bookId: newData.bookId,
-      //     userId: authStatus.id,
-      //   }
-      // });
       const queryObject = {
         bookId: newData.bookId,
         userId: authStatus.id,
       };
       const favorite = await favoritesRepository.findOne(queryObject);
       if (favorite) {
-        // await favorite.destroy();
         await favoritesRepository.deleteOne(queryObject);
 
         return {
@@ -50,7 +42,6 @@ class BookFavoritesController {
         };
       }
       await favoritesRepository.create(newData);
-      // await models.Favorite.create(newData);
       return {
         message: ADDED_TO_FAVORITE
       };
@@ -74,12 +65,6 @@ class BookFavoritesController {
         return false;
       }
       const { id } = authStatus;
-      // const favorite = await models.Favorite.findOne({
-      //   where: {
-      //     bookId,
-      //     userId: id,
-      //   }
-      // });
       const queryObject = {
         bookId,
         userId: id,
@@ -105,18 +90,6 @@ class BookFavoritesController {
     try {
       authStatusCheck(authStatus);
       const { id } = authStatus;
-      // const books = await models.Favorite.findAll({
-      //   where: {
-      //     userId: id
-      //   },
-      //   include: [{
-      //     model: models.Book,
-      //     as: FAVORITE_BOOK_LABEL,
-      //   }]
-      // }).map((value) => {
-      //   value.get({ plain: true });
-      //   return value.favoriteBook;
-      // });
       const books = await favoritesRepository.getFavoriteBooks({
         userId: id,
       });
@@ -142,12 +115,6 @@ class BookFavoritesController {
     try {
       authStatusCheck(authStatus);
       const { id } = authStatus;
-      // await models.Favorite.destroy({
-      //   where: {
-      //     userId: id,
-      //     bookId: books,
-      //   },
-      // });
 
       await favoritesRepository.deleteMany({
         userId: id,

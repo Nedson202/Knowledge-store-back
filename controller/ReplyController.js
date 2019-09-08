@@ -1,8 +1,5 @@
-// import models from '../models';
 import utils from '../utils';
-import {
-  NO_REPLY, /* USER_QUERY_ATTRIBUTES, REPLIER_LABEL, */
-} from '../settings/default';
+import { NO_REPLY, } from '../settings/default';
 import authStatusCheck from '../utils/authStatusCheck';
 import ReplyRepository from '../repository/Reply';
 import ReviewRepository from '../repository/Review';
@@ -29,11 +26,6 @@ class ReplyController {
     });
     try {
       authStatusCheck(authStatus);
-      // const review = await models.Review.findOne({
-      //   where: {
-      //     id: newData.reviewId
-      //   }
-      // });
 
       const review = await reviewRepository.findOne({
         id: newData.reviewId,
@@ -46,8 +38,6 @@ class ReplyController {
       }
 
       return review && await replyRepository.create(newData);
-
-      // return review && await models.Reply.create(newData);
     } catch (error) {
       return error;
     }
@@ -66,17 +56,6 @@ class ReplyController {
     const newData = data;
     try {
       authStatusCheck(authStatus);
-      // const editedReply = await models.Reply.update(
-      //   { reply: newData.reply },
-      //   {
-      //     returning: true,
-      //     where: {
-      //       id: newData.replyId,
-      //       userId: authStatus.id
-      //     }
-      //   }
-      // );
-
       const editedReply = await replyRepository.updateOne({
         id: newData.replyId,
         userId: authStatus.id
@@ -104,15 +83,6 @@ class ReplyController {
     const { replyId } = data;
     try {
       authStatusCheck(authStatus);
-      // const deletedReply = await models.Reply.destroy(
-      //   {
-      //     returning: true,
-      //     where: {
-      //       id: replyId,
-      //       userId: authStatus.id
-      //     }
-      //   }
-      // );
 
       const deletedReply = await replyRepository.deleteOne({
         id: replyId,
@@ -134,40 +104,8 @@ class ReplyController {
    * @returns
    * @memberof ReplyController
    */
-  static async getReview(reviewId) {
-    try {
-      return await reviewRepository.findOne({
-        reviewId
-      });
-
-      // return await models.Review.findById(reviewId);
-    } catch (error) {
-      return error;
-    }
-  }
-
-  /**
-   *
-   *
-   * @static
-   * @param {*} reviewId
-   * @returns
-   * @memberof ReplyController
-   */
   static async getReplies(reviewId) {
-    // const Users = models.User;
     try {
-      // const replies = await models.Reply.findAll({
-      //   where: {
-      //     reviewId
-      //   },
-      //   include: [{
-      //     model: Users,
-      //     as: REPLIER_LABEL,
-      //     attributes: USER_QUERY_ATTRIBUTES
-      //   }],
-      // });
-
       const replies = await replyRepository.getAll({
         reviewId,
       });
