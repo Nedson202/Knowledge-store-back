@@ -1,3 +1,4 @@
+import { stackLogger } from 'info-logger';
 import { dbQuery } from '../database';
 
 class BaseRepository {
@@ -44,6 +45,7 @@ class BaseRepository {
       const result = await dbQuery(queryConfig);
       return result.rows[0];
     } catch (error) {
+      stackLogger(error);
       return error;
     }
   }
@@ -74,6 +76,7 @@ class BaseRepository {
       const data = result.rows[0];
       return data;
     } catch (error) {
+      stackLogger(error);
       return error;
     }
   }
@@ -102,6 +105,7 @@ class BaseRepository {
       const data = result.rows;
       return data;
     } catch (error) {
+      stackLogger(error);
       return error;
     }
   }
@@ -116,6 +120,7 @@ class BaseRepository {
 
       return data;
     } catch (error) {
+      stackLogger(error);
       return error;
     }
   }
@@ -167,6 +172,7 @@ class BaseRepository {
 
       return result.rows[0];
     } catch (error) {
+      stackLogger(error);
       return error;
     }
   }
@@ -197,6 +203,7 @@ class BaseRepository {
 
       return result.rowCount;
     } catch (error) {
+      stackLogger(error);
       return error;
     }
   }
@@ -237,6 +244,7 @@ class BaseRepository {
       const result = await dbQuery(queryConfig);
       return result.rowCount;
     } catch (error) {
+      stackLogger(error);
       return error;
     }
   }

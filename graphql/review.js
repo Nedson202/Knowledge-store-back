@@ -37,6 +37,9 @@ const ReviewType = new GraphQLObjectType({
     userId: {
       type: GraphQLString
     },
+    reviewsLikedBy: {
+      type: GraphQLString
+    },
     bookId: {
       type: GraphQLString
     },

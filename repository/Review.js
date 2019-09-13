@@ -8,10 +8,14 @@ class ReviewRepository extends BaseRepository {
 
   async getAll(findQuery) {
     let query = `
-      SELECT "${this.model}".*, "Users".username, "Users".picture, "Users"."avatarColor"
+      SELECT
+        "${this.model}".*, "Users".username, "Users".picture, "Users"."avatarColor",
+        "Likes".likes, "Likes"."users"
       FROM "${this.model}"
       LEFT OUTER JOIN "Users"
         ON "${this.model}"."userId" = "Users".id
+      LEFT OUTER JOIN "Likes"
+        ON "${this.model}"."id" = "Likes"."reviewId"
       WHERE "Users"."deletedAt" IS NULL
         AND "${this.model}"."deletedAt" IS NULL
     `;

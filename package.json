@@ -13,7 +13,7 @@
     "seed": "npm run undo:seed && npm run add:seed",
     "test": "",
     "dep-heroku-postbuild": "npm run migrate && npm run seed",
-    "heroku-postbuild": "npm run migrate && npm run seed"
+    "heroku-postbuild": "npm run undo:migrate && npm run migrate && npm run seed"
   },
   "keywords": [],
   "author": "",

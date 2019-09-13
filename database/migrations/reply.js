@@ -7,7 +7,6 @@ export const createReplyTable = async () => {
       "Replies" (
         id varchar(128) PRIMARY KEY NOT NULL,
         reply TEXT NOT NULL,
-        likes INTEGER DEFAULT 0,
         "reviewId" varchar(128) REFERENCES "Reviews"(id),
         "userId" varchar(128) REFERENCES "Users"(id),
         "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

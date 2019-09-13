@@ -1,13 +1,16 @@
+import { stackLogger } from 'info-logger';
 import utils from '../utils';
 import { NO_REPLY, } from '../settings/default';
 import authStatusCheck from '../utils/authStatusCheck';
 import ReplyRepository from '../repository/Reply';
 import ReviewRepository from '../repository/Review';
+import LikeRepository from '../repository/Like';
 
 const { helper, validator } = utils;
 
 const replyRepository = new ReplyRepository();
 const reviewRepository = new ReviewRepository();
+const likeRepository = new LikeRepository();
 
 class ReplyController {
   /**
@@ -39,6 +42,7 @@ class ReplyController {
 
       return review && await replyRepository.create(newData);
     } catch (error) {
+      stackLogger(error);
       return error;
     }
   }
@@ -66,6 +70,32 @@ class ReplyController {
       if (!editedReply || !editedReply.id) throw new Error(NO_REPLY);
       return editedReply;
     } catch (error) {
+      stackLogger(error);
+      return error;
+    }
+  }
+
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @param {*} authStatus
+   * @returns
+   * @memberof ReplyController
+   */
+  static async toggleLikeOnReply(data, authStatus) {
+    const {
+      replyId,
+    } = data;
+    try {
+      authStatusCheck(authStatus);
+
+      await likeRepository.toggleLike({
+        replyId
+      }, authStatus.id);
+    } catch (error) {
+      stackLogger(error);
       return error;
     }
   }
@@ -92,6 +122,7 @@ class ReplyController {
       if (!deletedReply) throw new Error(NO_REPLY);
       return deletedReply;
     } catch (error) {
+      stackLogger(error);
       return error;
     }
   }
@@ -113,6 +144,7 @@ class ReplyController {
       if (replies.length === 0) throw new Error(NO_REPLY);
       return !replies.length ? [] : replies;
     } catch (error) {
+      stackLogger(error);
       return error;
     }
   }
@@ -151,6 +183,7 @@ class ReplyController {
         picture: reply.picture || '',
         avatarColor: reply.avatarColor,
         likes: reply.likes,
+        repliesLikedBy: reply.users,
         userId: reply.userId,
         reviewId: reply.userId,
         createdAt: reply.createdAt,

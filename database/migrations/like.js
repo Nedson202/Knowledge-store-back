@@ -6,10 +6,10 @@ export const createLikeTable = async () => {
     CREATE TABLE IF NOT EXISTS
       "Likes" (
         id varchar(128) PRIMARY KEY NOT NULL,
-        users varchar(128) [],
+        users TEXT,
         likes INTEGER DEFAULT 0,
-        "reviewId" varchar(128) REFERENCES "Reviews"(id),
-        "replyId" varchar(128) REFERENCES "Replies"(id),
+        "reviewId" varchar(128),
+        "replyId" varchar(128),
         "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         "deletedAt" TIMESTAMP
