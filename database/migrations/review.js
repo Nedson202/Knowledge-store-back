@@ -8,7 +8,6 @@ export const createReviewTable = async () => {
         id varchar(128) PRIMARY KEY NOT NULL,
         review TEXT NOT NULL,
         rating FLOAT DEFAULT 0,
-        likes INTEGER DEFAULT 0,
         "userId" varchar(128) REFERENCES "Users"(id),
         "bookId" varchar(128) REFERENCES "Books"(id),
         "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

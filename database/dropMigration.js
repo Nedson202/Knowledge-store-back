@@ -15,10 +15,10 @@ import config from './config';
   const db = pool;
 
   dropGenreTable(db);
-  await dropLikeTable(db);
   await dropFavoriteTable(db);
   await dropReplyTable(db);
   await dropReviewTable(db);
+  await dropLikeTable(db);
   await dropBookTable(db);
   dropUserTable(db);
 })();

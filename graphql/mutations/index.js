@@ -107,6 +107,19 @@ const Mutation = new GraphQLObjectType({
         return ReviewController.deleteReview(args, authorized);
       }
     },
+    toggleLikeOnReview: {
+      type: ReviewType,
+      args: {
+        reviewId: {
+          type: GraphQLString
+        }
+      },
+      resolve(parent, args, context) {
+        const { authorization } = context.headers;
+        const authorized = helper.authenticate(authorization);
+        return ReviewController.toggleLikeOnReview(args, authorized);
+      }
+    },
     addReply: {
       type: ReplyType,
       args: {
@@ -137,6 +150,19 @@ const Mutation = new GraphQLObjectType({
         const { authorization } = context.headers;
         const authorized = helper.authenticate(authorization);
         return ReplyController.editReply(args, authorized);
+      }
+    },
+    toggleLikeOnReply: {
+      type: ReplyType,
+      args: {
+        replyId: {
+          type: GraphQLString
+        }
+      },
+      resolve(parent, args, context) {
+        const { authorization } = context.headers;
+        const authorized = helper.authenticate(authorization);
+        return ReplyController.toggleLikeOnReply(args, authorized);
       }
     },
     deleteReply: {

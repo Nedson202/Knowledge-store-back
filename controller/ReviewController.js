@@ -8,9 +8,11 @@ import {
 import { getDataFromRedis } from '../redis';
 import authStatusCheck from '../utils/authStatusCheck';
 import ReviewRepository from '../repository/Review';
+import LikeRepository from '../repository/Like';
 
 const { helper, validator } = utils;
 const reviewRepository = new ReviewRepository();
+const likeRepository = new LikeRepository();
 
 class ReviewController {
   /**
@@ -102,6 +104,31 @@ class ReviewController {
    * @returns
    * @memberof ReviewController
    */
+  static async toggleLikeOnReview(data, authStatus) {
+    const {
+      reviewId,
+    } = data;
+    try {
+      authStatusCheck(authStatus);
+
+      await likeRepository.toggleLike({
+        reviewId
+      }, authStatus.id);
+    } catch (error) {
+      stackLogger(error);
+      return error;
+    }
+  }
+
+  /**
+   *
+   *
+   * @static
+   * @param {*} data
+   * @param {*} authStatus
+   * @returns
+   * @memberof ReviewController
+   */
   static async deleteReview(data, authStatus) {
     const { reviewId } = data;
     try {
@@ -147,20 +174,7 @@ class ReviewController {
    * @memberof ReviewController
    */
   static async retrieveReviewsQuery(bookId) {
-    // const Users = models.User;
     try {
-      // const reviews = await models.Review.findAll({
-      //   where: {
-      //     bookId
-      //   },
-      //   include: [{
-      //     model: Users,
-      //     as: REVIEWER_LABEL,
-      //     attributes: USER_QUERY_ATTRIBUTES
-      //   }],
-      //   order: [DESC_ORDER],
-      // });
-
       const reviews = await reviewRepository.getAll({
         bookId
       });
@@ -209,6 +223,7 @@ class ReviewController {
         picture: review.picture || '',
         avatarColor: review.avatarColor,
         likes: review.likes,
+        reviewsLikedBy: review.users || '',
         createdAt: review.createdAt,
         updatedAt: review.updatedAt,
       }));

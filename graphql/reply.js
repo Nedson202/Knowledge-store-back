@@ -31,6 +31,9 @@ const ReplyType = new GraphQLObjectType({
     userId: {
       type: GraphQLString
     },
+    repliesLikedBy: {
+      type: GraphQLString
+    },
     reviewId: {
       type: GraphQLString
     },

@@ -4,10 +4,10 @@ import logger from '../../utils/initLogger';
 export const seedLikes = async () => {
   const query = `
     INSERT INTO "Likes"
-      (id, users, likes, "reviewId")
+      (id, users, likes)
     VALUES
-      ('1', '{"Weird parts"}', 30, '3'),
-      ('2', '{"Good doctor"}', 10, '1');
+      ('1', '["1", "2"]', 30),
+      ('2', '["1"]', 10);
   `;
 
   const queryConfig = {
