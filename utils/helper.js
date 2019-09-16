@@ -37,6 +37,7 @@ class Utils {
     const {
       id, username, email, role, picture, isVerified, avatarColor
     } = data;
+
     return {
       id,
       username,
@@ -86,8 +87,8 @@ class Utils {
    */
   static generateOTP() {
     const secret = authenticator.generateSecret();
-
     const OTP = authenticator.generate(secret);
+
     return {
       OTP,
       secret
@@ -109,6 +110,7 @@ class Utils {
       if (OTP && secret) {
         isValid = authenticator.check(OTP, secret);
       }
+
       return isValid;
     } catch (error) {
       stackLogger(error);

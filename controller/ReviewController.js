@@ -25,13 +25,14 @@ class ReviewController {
    * @memberof ReviewController
    */
   static async addReview(data, authStatus) {
+    authStatusCheck(authStatus);
+
     const newData = data;
     const errors = validator.validateAddReview({
       ...newData
     });
     try {
       let retrievedBook;
-      authStatusCheck(authStatus);
 
       const { bookId } = newData;
 
@@ -49,8 +50,10 @@ class ReviewController {
       if (retrievedBook.userId === authStatus.id) {
         throw new Error('You can not review your book');
       }
+
       newData.id = helper.generateId();
       newData.userId = authStatus.id;
+
       if (Object.keys(errors).length !== 0) {
         throw new Error(JSON.stringify(errors));
       }
@@ -72,6 +75,8 @@ class ReviewController {
    * @memberof ReviewController
    */
   static async editReview(data, authStatus) {
+    authStatusCheck(authStatus);
+
     const {
       review, rating, reviewId,
     } = data;
@@ -80,14 +85,13 @@ class ReviewController {
       rating
     };
     try {
-      authStatusCheck(authStatus);
-
       const editedReview = await reviewRepository.updateOne({
         id: reviewId,
         userId: authStatus.id
       }, editObject);
 
       if (!editedReview) throw new Error(NO_REVIEW);
+
       return editedReview;
     } catch (error) {
       stackLogger(error);
@@ -105,12 +109,12 @@ class ReviewController {
    * @memberof ReviewController
    */
   static async toggleLikeOnReview(data, authStatus) {
+    authStatusCheck(authStatus);
+
     const {
       reviewId,
     } = data;
     try {
-      authStatusCheck(authStatus);
-
       await likeRepository.toggleLike({
         reviewId
       }, authStatus.id);
@@ -130,16 +134,17 @@ class ReviewController {
    * @memberof ReviewController
    */
   static async deleteReview(data, authStatus) {
+    authStatusCheck(authStatus);
+
     const { reviewId } = data;
     try {
-      authStatusCheck(authStatus);
-
       const deletedReview = await reviewRepository.deleteOne({
         id: reviewId,
         userId: authStatus.id
       });
 
       if (!deletedReview) throw new Error(NO_REVIEW);
+
       return deletedReview;
     } catch (error) {
       return error;
@@ -197,6 +202,7 @@ class ReviewController {
   static async getBookReviews(bookId) {
     try {
       const reviews = await ReviewController.retrieveReviewsQuery(bookId);
+
       return await ReviewController.flattenFetchedReviews(reviews);
     } catch (error) {
       return error;
@@ -227,6 +233,7 @@ class ReviewController {
         createdAt: review.createdAt,
         updatedAt: review.updatedAt,
       }));
+
       return newReviews || [];
     } catch (error) {
       return error;
@@ -248,6 +255,7 @@ class ReviewController {
       && reviews
         .reduce((totalRating, value) => totalRating + value.rating, 0)
       / totalReviews;
+
     return averageRating || 0;
   }
 }

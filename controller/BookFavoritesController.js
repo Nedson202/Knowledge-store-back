@@ -22,11 +22,14 @@ class BookFavoritesController {
    * @memberof BookFavoritesController
    */
   static async addToFavorites(data, authStatus) {
+    authStatusCheck(authStatus);
+
     const newData = data;
     try {
-      authStatusCheck(authStatus);
       const retrievedBook = await retrieveBook(newData.bookId);
+
       await BookController.addBookIfNotExist(retrievedBook, newData.bookId);
+
       newData.id = helper.generateId();
       newData.userId = authStatus.id;
       const queryObject = {
@@ -34,6 +37,7 @@ class BookFavoritesController {
         userId: authStatus.id,
       };
       const favorite = await favoritesRepository.findOne(queryObject);
+
       if (favorite) {
         await favoritesRepository.deleteOne(queryObject);
 
@@ -42,6 +46,7 @@ class BookFavoritesController {
         };
       }
       await favoritesRepository.create(newData);
+
       return {
         message: ADDED_TO_FAVORITE
       };

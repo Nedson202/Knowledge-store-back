@@ -12,10 +12,10 @@ import {
 } from 'graphql-iso-date';
 
 import ReviewType from './review';
-import ReviewController from '../controller/ReviewController';
-import GoogleBooks from '../controller/GooglBooks';
-import BookFavoritesController from '../controller/BookFavoritesController';
-import utils from '../utils';
+import ReviewController from '../../controller/ReviewController';
+import GoogleBooks from '../../controller/GooglBooks';
+import BookFavoritesController from '../../controller/BookFavoritesController';
+import utils from '../../utils';
 
 const { helper } = utils;
 
@@ -78,17 +78,17 @@ const BookType = new GraphQLObjectType({
     googleAverageRating: {
       type: GraphQLFloat,
     },
-    createdAt: {
-      type: GraphQLDateTime
-    },
-    updatedAt: {
-      type: GraphQLDateTime
-    },
     moreBooks: {
       type: new GraphQLList(BookType),
       resolve(parent) {
         return GoogleBooks.retrieveMoreBooks(parent.id);
       }
+    },
+    createdAt: {
+      type: GraphQLDateTime
+    },
+    updatedAt: {
+      type: GraphQLDateTime
     },
   })
 });

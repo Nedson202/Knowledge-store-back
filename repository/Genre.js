@@ -19,6 +19,7 @@ class GenreRepository extends BaseRepository {
 
     try {
       const result = await dbQuery(queryConfig);
+
       return result.rows;
     } catch (error) {
       return error;
