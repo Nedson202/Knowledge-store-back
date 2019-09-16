@@ -116,6 +116,7 @@ class GoogleBooks {
       more = await getDataFromRedis(redisKey) || [];
       if (more.length) {
         const randomizedData = GoogleBooks.randomizeResult(more);
+
         return randomizedData.slice(0, 4);
       }
 
@@ -128,6 +129,7 @@ class GoogleBooks {
           more = GoogleBooks.randomizeResult(filterBooks);
         }
         addDataToRedis(redisKey, more);
+
         return more.slice(0, 4);
       }
     } catch (error) {
@@ -147,6 +149,7 @@ class GoogleBooks {
     try {
       const redisKey = JSON.stringify(bookId);
       let searchResult = await getDataFromRedis(redisKey) || {};
+
       if (!searchResult.id) {
         // query elasticsearch
         searchResult = await retrieveBook(bookId);
@@ -161,6 +164,7 @@ class GoogleBooks {
           addDataToRedis(redisKey, searchResult);
         }
       }
+
       return searchResult;
     } catch (error) {
       throw new Error(error);
@@ -180,6 +184,7 @@ class GoogleBooks {
     let currentIndex = array.length;
     let temporaryValue;
     let randomIndex;
+
     while (currentIndex) {
       randomIndex = Math.floor(Math.random() * currentIndex);
       currentIndex -= 1;
@@ -187,6 +192,7 @@ class GoogleBooks {
       arrayToShuffle[currentIndex] = array[randomIndex];
       arrayToShuffle[randomIndex] = temporaryValue;
     }
+
     return arrayToShuffle;
   }
 }

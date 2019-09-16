@@ -25,6 +25,7 @@ class LikeRepository extends BaseRepository {
           users: JSON.stringify(users),
         };
         await this.updateOne(findQuery, updateObject);
+
         return;
       }
 

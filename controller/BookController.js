@@ -36,6 +36,7 @@ class BookController {
       }
       const createdBook = await bookRepository.create(newData);
       addDocument(newData, BOOK_LABEL);
+
       return createdBook;
     } catch (error) {
       stackLogger(error);
@@ -70,6 +71,7 @@ class BookController {
       const averageRating = totalReviews
         .reduce((totalRating, value) => totalRating + value.dataValues.rating, 0)
         / totalReviews;
+
       return averageRating || 0;
     } catch (error) {
       stackLogger(error);
@@ -93,6 +95,7 @@ class BookController {
         userId: authStatus.id
       });
       if (!usersBooks) throw new Error(NO_BOOK_CREATED);
+
       return usersBooks;
     } catch (error) {
       stackLogger(error);
@@ -114,6 +117,7 @@ class BookController {
         id: bookId,
       });
       if (!book) throw new Error(NO_BOOK_MESSAGE);
+
       return book;
     } catch (error) {
       stackLogger(error);
@@ -144,6 +148,7 @@ class BookController {
         ...data
       });
       updatedBook.message = BOOK_UPDATED_MESSAGE;
+
       return updatedBook;
     } catch (error) {
       stackLogger(error);
@@ -172,6 +177,7 @@ class BookController {
       await bookRepository.deleteOne({
         id: bookId,
       });
+
       return {
         message: BOOK_DELETED_MESSAGE,
       };

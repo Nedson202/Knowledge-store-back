@@ -43,6 +43,7 @@ class BaseRepository {
 
     try {
       const result = await dbQuery(queryConfig);
+
       return result.rows[0];
     } catch (error) {
       stackLogger(error);
@@ -74,6 +75,7 @@ class BaseRepository {
     try {
       const result = await dbQuery(queryConfig);
       const data = result.rows[0];
+
       return data;
     } catch (error) {
       stackLogger(error);
@@ -103,6 +105,7 @@ class BaseRepository {
     try {
       const result = await dbQuery(queryConfig);
       const data = result.rows;
+
       return data;
     } catch (error) {
       stackLogger(error);
@@ -242,6 +245,7 @@ class BaseRepository {
 
     try {
       const result = await dbQuery(queryConfig);
+
       return result.rowCount;
     } catch (error) {
       stackLogger(error);

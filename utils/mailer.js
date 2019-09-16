@@ -8,6 +8,7 @@ const mailer = async (template, recipient, subject) => {
     subject,
     html: template,
   };
+
   await sgMail.send(msg);
 };
 

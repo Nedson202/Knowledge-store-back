@@ -63,6 +63,7 @@ class UserController {
       const token = helper.generateToken(payload);
       EmailController.sendEmailVerificationMail(payload, { token, OTP });
       payload.token = token;
+
       return payload;
     } catch (error) {
       stackLogger(error);
@@ -91,15 +92,18 @@ class UserController {
       });
 
       if (!existingUser) throw new Error(USER_UNAUTHORIZED);
+
       const passwordMatch = helper.compareHash(password, existingUser.password);
       if (!passwordMatch) {
         throw new Error(
           USER_UNAUTHORIZED
         );
       }
+
       const payload = helper.payloadSchema(existingUser);
       const token = helper.generateToken(payload);
       payload.token = token;
+
       return payload;
     } catch (error) {
       stackLogger(error);
@@ -122,8 +126,10 @@ class UserController {
       if (Object.keys(errors).length !== 0) {
         throw new Error(JSON.stringify(errors));
       }
+
       const user = await UserController.findUser(email);
       if (!user.id) throw new Error(NO_USER);
+
       const payload = helper.payloadSchema(user);
       const token = helper.generateToken(payload, true);
       payload.token = token;
@@ -135,6 +141,7 @@ class UserController {
       }, { OTPSecret: secret });
 
       EmailController.sendPasswordResetMail(payload, { token, OTP });
+
       return {
         message: RESET_LINK_MESSAGE,
         token
@@ -162,6 +169,7 @@ class UserController {
       if (!authStatus) {
         throw new Error(FORGOT_PASSWORD_OP_DENIED);
       }
+
       const user = await UserController.findUser(null, id);
       if (!user.role) throw new Error(NO_USER);
       if (OTP) {
@@ -178,6 +186,7 @@ class UserController {
       }, { OTPSecret: null });
 
       delete (user.password);
+
       return {
         message: OTP_SUCCESS,
       };
@@ -208,6 +217,7 @@ class UserController {
       }, { OTPSecret: secret });
 
       EmailController.newOTPRequestMail(authStatus, OTP);
+
       return {
         message: OTP_RESEND_SUCCESS,
       };
@@ -227,12 +237,14 @@ class UserController {
    * @memberof UserController
    */
   static async editProfile(data, authStatus) {
+    authStatusCheck(authStatus);
+
     const { email, username, picture: image } = data;
 
     try {
-      authStatusCheck(authStatus);
       const { id } = authStatus;
       const user = await UserController.findUser(null, id);
+
       if (!user.role) throw new Error(NO_USER);
 
       const updatedUser = await userRepository.updateOne({
@@ -247,6 +259,7 @@ class UserController {
       const token = helper.generateToken(payload);
       payload.token = token;
       payload.message = PROFILE_UPDATED;
+
       return payload;
     } catch (error) {
       stackLogger(error);
@@ -266,8 +279,10 @@ class UserController {
   static async removeProfilePicture(authStatus) {
     try {
       authStatusCheck(authStatus);
+
       const { id, } = authStatus;
       const user = await UserController.findUser(null, id);
+
       if (!user.role) throw new Error(NO_USER);
 
       const updatedUser = await userRepository.updateOne({
@@ -280,6 +295,7 @@ class UserController {
       const token = helper.generateToken(payload);
       payload.token = token;
       payload.message = PROFILE_UPDATED;
+
       return payload;
     } catch (error) {
       stackLogger(error);

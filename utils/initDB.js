@@ -9,6 +9,7 @@ if (process.env.NODE_ENV.match('production')) {
     connectionString: process.env.DATABASE_URL
   };
 }
+
 const db = new Pool(dbConfig);
 
 db.on('connect', () => {

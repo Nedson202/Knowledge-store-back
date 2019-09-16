@@ -36,6 +36,7 @@ class ReplyController {
 
       newData.id = helper.generateId();
       newData.userId = authStatus.id;
+
       if (Object.keys(errors).length !== 0) {
         throw new Error(JSON.stringify(errors));
       }
@@ -60,6 +61,7 @@ class ReplyController {
     const newData = data;
     try {
       authStatusCheck(authStatus);
+
       const editedReply = await replyRepository.updateOne({
         id: newData.replyId,
         userId: authStatus.id
@@ -68,6 +70,7 @@ class ReplyController {
       });
 
       if (!editedReply || !editedReply.id) throw new Error(NO_REPLY);
+
       return editedReply;
     } catch (error) {
       stackLogger(error);
@@ -120,6 +123,7 @@ class ReplyController {
       });
 
       if (!deletedReply) throw new Error(NO_REPLY);
+
       return deletedReply;
     } catch (error) {
       stackLogger(error);
@@ -142,6 +146,7 @@ class ReplyController {
       });
 
       if (replies.length === 0) throw new Error(NO_REPLY);
+
       return !replies.length ? [] : replies;
     } catch (error) {
       stackLogger(error);
@@ -160,6 +165,7 @@ class ReplyController {
   static async returnReplies(reviewId) {
     try {
       const replies = await ReplyController.getReplies(reviewId);
+
       return await ReplyController.flattenReplies(replies);
     } catch (error) {
       return error;

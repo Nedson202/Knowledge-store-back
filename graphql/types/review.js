@@ -11,7 +11,7 @@ import {
 } from 'graphql-iso-date';
 
 import ReplyType from './reply';
-import ReplyController from '../controller/ReplyController';
+import ReplyController from '../../controller/ReplyController';
 
 const ReviewType = new GraphQLObjectType({
   name: 'Review',

@@ -27,6 +27,7 @@ class EmailController {
     try {
       const { username, email, isVerified } = user;
       const userVerified = JSON.parse(isVerified);
+
       if (userVerified) {
         return;
       }
@@ -34,6 +35,7 @@ class EmailController {
       const emailTemplate = emailVerificationTemplate({
         redirectUrl, username, OTP, token,
       });
+
       await mailer(emailTemplate, email, VERIFY_EMAIL_SUBJECT);
 
       await userRepository.updateOne({
@@ -60,6 +62,7 @@ class EmailController {
       const emailTemplate = passwordResetTemplate({
         redirectUrl, username, OTP, token,
       });
+
       await mailer(emailTemplate, email, PASSWORD_RESET_SUBJECT);
     } catch (error) {
       stackLogger(error);
@@ -81,6 +84,7 @@ class EmailController {
       const emailTemplate = resendOTPTemplate({
         username, OTP,
       });
+
       await mailer(emailTemplate, email, RESENT_OTP_SUBJECT);
     } catch (error) {
       stackLogger(error);
