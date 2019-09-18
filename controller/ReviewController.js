@@ -203,7 +203,7 @@ class ReviewController {
     try {
       const reviews = await ReviewController.retrieveReviewsQuery(bookId);
 
-      return await ReviewController.flattenFetchedReviews(reviews);
+      return ReviewController.flattenFetchedReviews(reviews);
     } catch (error) {
       return error;
     }
@@ -217,7 +217,7 @@ class ReviewController {
    * @returns
    * @memberof ReviewController
    */
-  static async flattenFetchedReviews(reviews) {
+  static flattenFetchedReviews(reviews) {
     try {
       const newReviews = reviews.map(review => ({
         id: review.id,
@@ -249,14 +249,9 @@ class ReviewController {
    * @memberof ReviewController
    */
   static async getAverageRating(bookId) {
-    const reviews = await ReviewController.retrieveReviewsQuery(bookId);
-    const totalReviews = reviews.length;
-    const averageRating = totalReviews
-      && reviews
-        .reduce((totalRating, value) => totalRating + value.rating, 0)
-      / totalReviews;
+    const averageRating = await reviewRepository.getAverageRating(bookId);
 
-    return averageRating || 0;
+    return averageRating;
   }
 }
 

@@ -14,6 +14,9 @@ export const createReviewTable = async () => {
         "updatedAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         "deletedAt" TIMESTAMP
       );
+
+    CREATE INDEX IF NOT EXISTS "book_id_index"
+      ON "Reviews" ("bookId");
   `;
 
   const queryConfig = {
@@ -30,6 +33,8 @@ export const createReviewTable = async () => {
 export const dropReviewTable = async () => {
   const query = `
     DROP TABLE IF EXISTS "Reviews";
+
+    DROP INDEX IF EXISTS "book_id_index";
   `;
 
   const queryConfig = {

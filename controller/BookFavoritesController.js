@@ -1,12 +1,13 @@
 import { stackLogger } from 'info-logger';
-import utils from '../utils';
+
+import FavoritesRepository from '../repository/Favorite';
 import BookController from './BookController';
 import { retrieveBook } from '../elasticSearch';
 import {
   ADDED_TO_FAVORITE, BOOK_REMOVED_FROM_FAVORITES
 } from '../settings/default';
+import utils from '../utils';
 import authStatusCheck from '../utils/authStatusCheck';
-import FavoritesRepository from '../repository/Favorite';
 
 const { helper } = utils;
 const favoritesRepository = new FavoritesRepository();
@@ -30,6 +31,26 @@ class BookFavoritesController {
 
       await BookController.addBookIfNotExist(retrievedBook, newData.bookId);
 
+      const isDeleted = await BookFavoritesController
+        .deleteFavoriteIfExists(data, authStatus);
+
+      if (!isDeleted) {
+        await favoritesRepository.create(newData);
+      }
+
+      return {
+        message: ADDED_TO_FAVORITE
+      };
+    } catch (error) {
+      stackLogger(error);
+      return error;
+    }
+  }
+
+
+  static async deleteFavoriteIfExists(data, authStatus) {
+    const newData = data;
+    try {
       newData.id = helper.generateId();
       newData.userId = authStatus.id;
       const queryObject = {
@@ -41,15 +62,10 @@ class BookFavoritesController {
       if (favorite) {
         await favoritesRepository.deleteOne(queryObject);
 
-        return {
-          message: BOOK_REMOVED_FROM_FAVORITES,
-        };
+        return true;
       }
-      await favoritesRepository.create(newData);
 
-      return {
-        message: ADDED_TO_FAVORITE
-      };
+      return false;
     } catch (error) {
       stackLogger(error);
       return error;

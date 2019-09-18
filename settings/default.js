@@ -77,7 +77,7 @@ export const INVALID_RATING = 'Rating can not be more than 5.0';
 export const REPLY_REQUIRED = 'reply is required';
 export const REVIEW_ID_REQUIRED = 'reviewId is required';
 
-export const production = 'production';
+export const PRODUCTION = 'production';
 export const development = 'development';
 export const DARK_LUMINOSITY = 'dark';
 export const COLOR_FORMAT = 'rgba';

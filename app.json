@@ -38,6 +38,9 @@
     "GOOGLE_CLIENTSECRET": {
       "required": true
     },
+    "HEROKU_POSTGRESQL_AMBER_URL": {
+      "required": true
+    },
     "NODE_ENV": {
       "required": true
     },
