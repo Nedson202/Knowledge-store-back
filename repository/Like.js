@@ -21,7 +21,7 @@ class LikeRepository extends BaseRepository {
           users.push(userId);
         }
         const updateObject = {
-          ...existingLike,
+          likes: existingLike.likes,
           users: JSON.stringify(users),
         };
         await this.updateOne(findQuery, updateObject);

@@ -145,9 +145,7 @@ class ReplyController {
         reviewId,
       });
 
-      if (replies.length === 0) throw new Error(NO_REPLY);
-
-      return !replies.length ? [] : replies;
+      return replies.length ? replies : [];
     } catch (error) {
       stackLogger(error);
       return error;
@@ -166,7 +164,7 @@ class ReplyController {
     try {
       const replies = await ReplyController.getReplies(reviewId);
 
-      return await ReplyController.flattenReplies(replies);
+      return ReplyController.flattenReplies(replies);
     } catch (error) {
       return error;
     }
@@ -180,7 +178,7 @@ class ReplyController {
    * @returns
    * @memberof ReplyController
    */
-  static async flattenReplies(replies) {
+  static flattenReplies(replies) {
     try {
       const newReplies = replies.length && replies.map(reply => ({
         id: reply.id,

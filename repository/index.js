@@ -149,7 +149,8 @@ class BaseRepository {
     });
 
     query = `
-      ${query}
+      ${query},
+      "updatedAt" = CURRENT_TIMESTAMP
       WHERE "${this.model}"."deletedAt" IS NULL
     `;
 
@@ -170,6 +171,7 @@ class BaseRepository {
       values,
     };
 
+    console.log(queryConfig);
     try {
       const result = await dbQuery(queryConfig);
 

@@ -61,8 +61,9 @@ class UserController {
 
       const payload = helper.payloadSchema(newUser);
       const token = helper.generateToken(payload);
-      EmailController.sendEmailVerificationMail(payload, { token, OTP });
       payload.token = token;
+
+      EmailController.sendEmailVerificationMail(payload, { token, OTP });
 
       return payload;
     } catch (error) {

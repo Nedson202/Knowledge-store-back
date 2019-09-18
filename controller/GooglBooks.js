@@ -165,6 +165,8 @@ class GoogleBooks {
         }
       }
 
+      // await BookController.getDownloadURL(searchResult.name);
+
       return searchResult;
     } catch (error) {
       throw new Error(error);

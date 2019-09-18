@@ -45,6 +45,29 @@ class ReviewRepository extends BaseRepository {
       return error;
     }
   }
+
+  async getAverageRating(bookId) {
+    try {
+      const query = `
+        SELECT AVG(rating)
+        FROM "${this.model}"
+        WHERE "deletedAt" IS NULL
+          AND "${this.model}"."bookId" = $1;
+      `;
+
+      const queryConfig = {
+        text: query,
+        values: [bookId],
+      };
+
+      const result = await dbQuery(queryConfig);
+      const average = result.rows[0].avg || 0;
+
+      return average;
+    } catch (error) {
+      return error;
+    }
+  }
 }
 
 export default ReviewRepository;
