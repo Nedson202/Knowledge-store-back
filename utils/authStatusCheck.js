@@ -1,4 +1,4 @@
-import { AUTH_STATUS_PERMISSION } from '../settings/default';
+import { AUTH_STATUS_PERMISSION } from '../settings';
 
 /**
  *

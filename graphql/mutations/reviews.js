@@ -6,9 +6,7 @@ import {
 
 import ReviewType from '../types/review';
 import ReviewController from '../../controller/ReviewController';
-import utils from '../../utils';
-
-const { helper } = utils;
+import Utils from '../../utils';
 
 const ReviewMutation = {
   addReview: {
@@ -30,7 +28,7 @@ const ReviewMutation = {
     resolve(parent, args, context) {
       const { token } = args;
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(token || authorization);
+      const authorized = Utils.authenticate(token || authorization);
       return ReviewController.addReview(args, authorized);
     }
   },
@@ -52,7 +50,7 @@ const ReviewMutation = {
     },
     resolve(parent, args, context) {
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(authorization);
+      const authorized = Utils.authenticate(authorization);
       return ReviewController.editReview(args, authorized);
     }
   },
@@ -65,7 +63,7 @@ const ReviewMutation = {
     },
     resolve(parent, args, context) {
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(authorization);
+      const authorized = Utils.authenticate(authorization);
       return ReviewController.deleteReview(args, authorized);
     }
   },
@@ -78,7 +76,7 @@ const ReviewMutation = {
     },
     resolve(parent, args, context) {
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(authorization);
+      const authorized = Utils.authenticate(authorization);
       return ReviewController.toggleLikeOnReview(args, authorized);
     }
   },

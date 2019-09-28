@@ -2,12 +2,10 @@ import googleBooks from 'google-books-search';
 import {
   elasticItemSearch, elasticBulkCreate, retrieveBook, addDocument
 } from '../elasticSearch';
-import utils from '../utils';
-import { BOOK_LABEL, GOOGLE_BOOK_OPTIONS } from '../settings/default';
+import Utils from '../utils';
+import { BOOK_LABEL, GOOGLE_BOOK_OPTIONS } from '../settings';
 import BookController from './BookController';
 import { addDataToRedis, getDataFromRedis } from '../redis';
-
-const { helper } = utils;
 
 class GoogleBooks {
   /**
@@ -40,7 +38,7 @@ class GoogleBooks {
               }
             } = result;
             return {
-              id: id || helper.generateId(),
+              id: id || Utils.generateId(),
               name: title,
               description,
               image: imageLinks && (imageLinks.thumbnail || imageLinks.large || ''),
@@ -164,8 +162,6 @@ class GoogleBooks {
           addDataToRedis(redisKey, searchResult);
         }
       }
-
-      // await BookController.getDownloadURL(searchResult.name);
 
       return searchResult;
     } catch (error) {

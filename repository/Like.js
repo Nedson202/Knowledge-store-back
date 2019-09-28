@@ -1,5 +1,5 @@
 import BaseRepository from '.';
-import Utils from '../utils/helper';
+import Utils from '../utils';
 
 class LikeRepository extends BaseRepository {
   constructor() {

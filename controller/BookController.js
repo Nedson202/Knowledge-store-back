@@ -1,15 +1,16 @@
 import { stackLogger } from 'info-logger';
-import utils from '../utils';
+
+import Utils from '../utils';
+import validator from '../utils/validator';
 import { addDocument } from '../elasticSearch';
 import authStatusCheck from '../utils/authStatusCheck';
 import {
   BOOK_LABEL, NO_BOOK_MESSAGE,
   BOOK_UPDATED_MESSAGE, BOOK_DELETED_MESSAGE,
   PERMISSION_DENIED, NO_BOOK_FOUND
-} from '../settings/default';
+} from '../settings';
 import BookRepository from '../repository/Book';
 
-const { helper, validator } = utils;
 const bookRepository = new BookRepository();
 
 class BookController {
@@ -26,7 +27,7 @@ class BookController {
     authStatusCheck(authStatus);
 
     const newData = data;
-    newData.id = helper.generateId();
+    newData.id = Utils.generateId();
     newData.userId = authStatus.id;
     const errors = validator.validateAddBook({
       ...newData
@@ -54,9 +55,11 @@ class BookController {
    * @memberof BookController
    */
   static async addBookIfNotExist(book, id) {
-    await bookRepository.findOrCreate({
+    const response = await bookRepository.findOrCreate({
       id
     }, book);
+
+    return response;
   }
 
   /**

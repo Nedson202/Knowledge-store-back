@@ -4,10 +4,8 @@ import {
 } from 'graphql';
 
 import BookType from '../types/books';
-import BookFavoritesController from '../../controller/BookFavoritesController';
-import utils from '../../utils';
-
-const { helper } = utils;
+import FavoritesController from '../../controller/FavoritesController';
+import Utils from '../../utils';
 
 const FavoriteMutation = {
   addFavorite: {
@@ -19,8 +17,8 @@ const FavoriteMutation = {
     },
     resolve(parent, args, context) {
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(authorization);
-      return BookFavoritesController.addToFavorites(args, authorized);
+      const authorized = Utils.authenticate(authorization);
+      return FavoritesController.addToFavorites(args, authorized);
     }
   },
   removeFavorites: {
@@ -32,8 +30,8 @@ const FavoriteMutation = {
     },
     resolve(parent, args, context) {
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(authorization);
-      return BookFavoritesController.removeFavorites(args, authorized);
+      const authorized = Utils.authenticate(authorization);
+      return FavoritesController.removeFavorites(args, authorized);
     }
   },
 };

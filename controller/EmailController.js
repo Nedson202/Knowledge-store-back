@@ -1,16 +1,17 @@
 import { stackLogger } from 'info-logger';
 import mailer from '../utils/mailer';
 import {
-  production, DEV_SERVER, VERIFY_EMAIL_SUBJECT,
+  PRODUCTION, DEV_SERVER, VERIFY_EMAIL_SUBJECT,
   PASSWORD_RESET_SUBJECT, RESENT_OTP_SUBJECT,
-} from '../settings/default';
+} from '../settings';
 import {
   passwordResetTemplate, emailVerificationTemplate, resendOTPTemplate
 } from '../emailTemplates';
 import UserRepository from '../repository/User';
 
-const redirectUrl = process.env.NODE_ENV.match(production)
+const redirectUrl = process.env.NODE_ENV.match(PRODUCTION)
   ? process.env.PROD_SERVER : DEV_SERVER;
+
 const userRepository = new UserRepository();
 
 class EmailController {
@@ -26,9 +27,8 @@ class EmailController {
   static async sendEmailVerificationMail(user, { token, OTP }) {
     try {
       const { username, email, isVerified } = user;
-      const userVerified = JSON.parse(isVerified);
 
-      if (userVerified) {
+      if (isVerified) {
         return;
       }
 

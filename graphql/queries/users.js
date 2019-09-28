@@ -5,9 +5,7 @@ import {
 
 import UserType from '../types/user';
 import UserController from '../../controller/UserController';
-import utils from '../../utils';
-
-const { helper } = utils;
+import Utils from '../../utils';
 
 const UserQuery = {
   fetchUsers: {
@@ -19,7 +17,7 @@ const UserQuery = {
     },
     resolve(parent, args, context) {
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(authorization);
+      const authorized = Utils.authenticate(authorization);
       return UserController.getAllUsers(args, authorized);
     }
   },
@@ -55,7 +53,7 @@ const UserQuery = {
     resolve(parent, args, context) {
       const { token } = args;
       const { authorization } = context.headers;
-      const decodedToken = helper.authenticate(authorization || token);
+      const decodedToken = Utils.authenticate(authorization || token);
       return [decodedToken];
     }
   }

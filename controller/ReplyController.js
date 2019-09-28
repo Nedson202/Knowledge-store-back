@@ -1,12 +1,12 @@
 import { stackLogger } from 'info-logger';
-import utils from '../utils';
-import { NO_REPLY, } from '../settings/default';
+
+import Utils from '../utils';
+import validator from '../utils/validator';
+import { NO_REPLY, } from '../settings';
 import authStatusCheck from '../utils/authStatusCheck';
 import ReplyRepository from '../repository/Reply';
 import ReviewRepository from '../repository/Review';
 import LikeRepository from '../repository/Like';
-
-const { helper, validator } = utils;
 
 const replyRepository = new ReplyRepository();
 const reviewRepository = new ReviewRepository();
@@ -34,7 +34,7 @@ class ReplyController {
         id: newData.reviewId,
       });
 
-      newData.id = helper.generateId();
+      newData.id = Utils.generateId();
       newData.userId = authStatus.id;
 
       if (Object.keys(errors).length !== 0) {

@@ -1,24 +1,9 @@
 import {
-  // GraphQLObjectType,
   GraphQLString,
-  // GraphQLFloat,
-  // GraphQLInt,
-  // GraphQLList
 } from 'graphql';
-// import BookType from '../types/books';
 import UserType from '../types/user';
-// import ReviewType from '../types/review';
 import UserController from '../../controller/UserController';
-// import BookController from '../../controller/BookController';
-import utils from '../../utils';
-// import ReviewController from '../../controller/ReviewController';
-// import ReplyType from '../types/reply';
-// import ReplyController from '../../controller/ReplyController';
-// import BookFavoritesController from '../../controller/BookFavoritesController';
-// import BookMutation from './books';
-// import FavoritesMutation from './favorites';
-
-const { helper } = utils;
+import Utils from '../../utils';
 
 const UserMutation = {
   addUser: {
@@ -64,7 +49,7 @@ const UserMutation = {
     },
     resolve(parent, args, context) {
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(authorization);
+      const authorized = Utils.authenticate(authorization);
       return UserController.toggleAdmin(args, authorized);
     }
   },
@@ -77,7 +62,7 @@ const UserMutation = {
     },
     resolve(parent, args, context) {
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(authorization);
+      const authorized = Utils.authenticate(authorization);
       return UserController.addSuperAdmin(args, authorized);
     }
   },
@@ -90,7 +75,7 @@ const UserMutation = {
     },
     resolve(parent, args, context) {
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(authorization);
+      const authorized = Utils.authenticate(authorization);
       return UserController.deleteUser(args, authorized);
     }
   },
@@ -109,7 +94,7 @@ const UserMutation = {
     },
     resolve(parent, args, context) {
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(authorization);
+      const authorized = Utils.authenticate(authorization);
       return UserController.editProfile(args, authorized);
     }
   },
@@ -123,7 +108,7 @@ const UserMutation = {
     resolve(parent, args, context) {
       const { token } = args;
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(authorization || token);
+      const authorized = Utils.authenticate(authorization || token);
       return UserController.removeProfilePicture(authorized);
     }
   },
@@ -139,7 +124,7 @@ const UserMutation = {
     },
     resolve(parent, args, context) {
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(authorization);
+      const authorized = Utils.authenticate(authorization);
       return UserController.changePassword(args, authorized);
     }
   },
@@ -178,7 +163,7 @@ const UserMutation = {
     },
     resolve(parent, args) {
       const { token } = args;
-      const authorized = helper.authenticate(token);
+      const authorized = Utils.authenticate(token);
       return UserController.verifyEmail(args, authorized);
     }
   },
@@ -194,7 +179,7 @@ const UserMutation = {
     },
     resolve(parent, args) {
       const { token } = args;
-      const authorized = helper.authenticate(token);
+      const authorized = Utils.authenticate(token);
       return UserController.verifyForgotPasswordOTP(args, authorized);
     }
   },
@@ -207,7 +192,7 @@ const UserMutation = {
     },
     resolve(parent, args) {
       const { token } = args;
-      const authorized = helper.authenticate(token);
+      const authorized = Utils.authenticate(token);
       return UserController.resendOTP(authorized);
     }
   },

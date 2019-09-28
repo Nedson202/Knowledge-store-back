@@ -2,7 +2,7 @@ import passport from 'passport';
 import FacebookStrategy from 'passport-facebook';
 import GoogleStrategy from 'passport-google-oauth20';
 import UserController from '../controller/UserController';
-import utils from '../utils';
+import Utils from '../utils';
 
 const { checkUserExists } = UserController;
 
@@ -17,7 +17,7 @@ const saveUser = async (profile, done) => {
       picture: currentUser.picture,
       isVerified: currentUser.isVerified,
     };
-    const token = utils.helper.generateToken(payload);
+    const token = Utils.generateToken(payload);
     payload.token = token;
     return done(null, payload);
   }

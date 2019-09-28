@@ -171,7 +171,6 @@ class BaseRepository {
       values,
     };
 
-    console.log(queryConfig);
     try {
       const result = await dbQuery(queryConfig);
 
@@ -244,7 +243,6 @@ class BaseRepository {
       text: query,
       values,
     };
-
     try {
       const result = await dbQuery(queryConfig);
 

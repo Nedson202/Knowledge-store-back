@@ -54,6 +54,8 @@ export const createUserTable = async () => {
 export const dropUserTable = async () => {
   const query = `
     DROP TABLE IF EXISTS "Users";
+    DROP TYPE IF EXISTS user_role;
+    DROP TYPE IF EXISTS verified_status;
   `;
 
   const queryConfig = {

@@ -1,5 +1,8 @@
 import { stackLogger } from 'info-logger';
-import utils from '../utils';
+
+import Utils from '../utils';
+import validator from '../utils/validator';
+
 import {
   USER_UNAUTHORIZED,
   RESET_LINK_MESSAGE, PROFILE_UPDATED, NO_USER, SUPER_ADMIN_ROLE,
@@ -8,12 +11,11 @@ import {
   USER_ROLE, EMAIL_SENT_MESSAGE, USER_IS_ADMIN, NOT_AN_ADMIN, EMAIL_VERIFIED_MESSAGE,
   OTP_FAILED, OTP_SUCCESS, FORGOT_PASSWORD_OP_DENIED, OTP_RESEND_FAILED,
   OTP_RESEND_SUCCESS, EMAIL_VERIFICATION_FAILED, EMAIL_ALREADY_VERIFIED,
-} from '../settings/default';
+} from '../settings';
 import EmailController from './EmailController';
 import authStatusCheck from '../utils/authStatusCheck';
 import UserRepository from '../repository/User';
 
-const { helper, validator } = utils;
 const userRepository = new UserRepository();
 
 class UserController {
@@ -40,27 +42,27 @@ class UserController {
       }
 
       const userObject = {
-        id: helper.generateId(),
+        id: Utils.generateId(),
         username: username.toLowerCase(),
         email: email.toLowerCase(),
-        password: helper.passwordHash(password),
+        password: Utils.passwordHash(password),
         socialId,
         picture,
-        avatarColor: helper.colorGenerator(),
+        avatarColor: Utils.colorGenerator(),
       };
 
       if (socialAuth) {
         userObject.isVerified = 'true';
       } else {
-        const { OTP: generatedOTP, secret } = utils.helper.generateOTP();
+        const { OTP: generatedOTP, secret } = Utils.generateOTP();
         OTP = generatedOTP;
         userObject.OTPSecret = secret;
       }
 
       const newUser = await userRepository.create(userObject);
 
-      const payload = helper.payloadSchema(newUser);
-      const token = helper.generateToken(payload);
+      const payload = Utils.payloadSchema(newUser);
+      const token = Utils.generateToken(payload);
       payload.token = token;
 
       EmailController.sendEmailVerificationMail(payload, { token, OTP });
@@ -94,15 +96,15 @@ class UserController {
 
       if (!existingUser) throw new Error(USER_UNAUTHORIZED);
 
-      const passwordMatch = helper.compareHash(password, existingUser.password);
+      const passwordMatch = Utils.compareHash(password, existingUser.password);
       if (!passwordMatch) {
         throw new Error(
           USER_UNAUTHORIZED
         );
       }
 
-      const payload = helper.payloadSchema(existingUser);
-      const token = helper.generateToken(payload);
+      const payload = Utils.payloadSchema(existingUser);
+      const token = Utils.generateToken(payload);
       payload.token = token;
 
       return payload;
@@ -131,11 +133,11 @@ class UserController {
       const user = await UserController.findUser(email);
       if (!user.id) throw new Error(NO_USER);
 
-      const payload = helper.payloadSchema(user);
-      const token = helper.generateToken(payload, true);
+      const payload = Utils.payloadSchema(user);
+      const token = Utils.generateToken(payload, true);
       payload.token = token;
       payload.username = user.username;
-      const { OTP, secret } = utils.helper.generateOTP();
+      const { OTP, secret } = Utils.generateOTP();
 
       await userRepository.updateOne({
         id: user.id
@@ -174,7 +176,7 @@ class UserController {
       const user = await UserController.findUser(null, id);
       if (!user.role) throw new Error(NO_USER);
       if (OTP) {
-        isOTPValid = helper.verifyOTP(OTP, user.OTPSecret);
+        isOTPValid = Utils.verifyOTP(OTP, user.OTPSecret);
       }
       if (OTP && !isOTPValid) {
         return {
@@ -211,7 +213,7 @@ class UserController {
       if (!id) throw new Error(OTP_RESEND_FAILED);
       const user = await UserController.findUser(null, id);
       if (!user.role) throw new Error(NO_USER);
-      const { OTP, secret } = utils.helper.generateOTP();
+      const { OTP, secret } = Utils.generateOTP();
 
       await userRepository.updateOne({
         id: user.id,
@@ -256,8 +258,8 @@ class UserController {
         picture: image || user.picture
       });
 
-      const payload = helper.payloadSchema(updatedUser);
-      const token = helper.generateToken(payload);
+      const payload = Utils.payloadSchema(updatedUser);
+      const token = Utils.generateToken(payload);
       payload.token = token;
       payload.message = PROFILE_UPDATED;
 
@@ -292,8 +294,8 @@ class UserController {
         picture: '',
       });
 
-      const payload = helper.payloadSchema(updatedUser);
-      const token = helper.generateToken(payload);
+      const payload = Utils.payloadSchema(updatedUser);
+      const token = Utils.generateToken(payload);
       payload.token = token;
       payload.message = PROFILE_UPDATED;
 
@@ -320,7 +322,7 @@ class UserController {
       const { id } = authStatus;
       const user = await UserController.findUser(null, id);
       if (!user.role) throw new Error(NO_USER);
-      const passwordMatch = helper.compareHash(oldPassword, user.password);
+      const passwordMatch = Utils.compareHash(oldPassword, user.password);
       if (!passwordMatch) {
         throw new Error(OLD_PASSWORD_INCORRECT);
       }
@@ -328,7 +330,7 @@ class UserController {
       await userRepository.updateOne({
         id: user.id,
       }, {
-        password: helper.passwordHash(newPassword)
+        password: Utils.passwordHash(newPassword)
       });
 
       return {
@@ -353,7 +355,7 @@ class UserController {
       id, email, password, token
     } = data;
     try {
-      const decodedValue = helper.authenticate(token);
+      const decodedValue = Utils.authenticate(token);
       if (!decodedValue.email.match(email)) throw new Error(OPERATION_DENIED);
       const user = await UserController.findUser(email, id);
       if (!user.role) throw new Error(NO_USER);
@@ -361,7 +363,7 @@ class UserController {
       const passwordReset = await userRepository.updateOne({
         id: user.id,
       }, {
-        password: helper.passwordHash(password)
+        password: Utils.passwordHash(password)
       });
 
       if (!passwordReset) {
@@ -399,7 +401,7 @@ class UserController {
       const isVerified = JSON.parse(user.isVerified);
       if (isVerified) throw new Error(EMAIL_ALREADY_VERIFIED);
       if (OTP) {
-        isOTPValid = helper.verifyOTP(OTP, user.OTPSecret);
+        isOTPValid = Utils.verifyOTP(OTP, user.OTPSecret);
       }
       if (OTP && !isOTPValid) {
         return {
@@ -413,7 +415,7 @@ class UserController {
 
       const payload = user.dataValues;
       delete (payload.password);
-      const token = helper.generateToken(payload);
+      const token = Utils.generateToken(payload);
       return {
         token,
         message: EMAIL_VERIFIED_MESSAGE
@@ -443,13 +445,13 @@ class UserController {
       if (!user.id) throw new Error(NO_USER);
       const payload = user.dataValues;
       delete (payload.password);
-      const { OTP, secret } = utils.helper.generateOTP();
+      const { OTP, secret } = Utils.generateOTP();
 
       await userRepository.updateOne({
         id: user.id,
       }, { OTPSecret: secret });
 
-      const token = helper.generateToken(payload);
+      const token = Utils.generateToken(payload);
       await EmailController.sendEmailVerificationMail(payload, { token, OTP });
       return {
         message: EMAIL_SENT_MESSAGE

@@ -14,10 +14,8 @@ import {
 import ReviewType from './review';
 import ReviewController from '../../controller/ReviewController';
 import GoogleBooks from '../../controller/GooglBooks';
-import BookFavoritesController from '../../controller/BookFavoritesController';
-import utils from '../../utils';
-
-const { helper } = utils;
+import FavoritesController from '../../controller/FavoritesController';
+import Utils from '../../utils';
 
 const BookType = new GraphQLObjectType({
   name: 'Book',
@@ -50,8 +48,8 @@ const BookType = new GraphQLObjectType({
       type: GraphQLBoolean,
       resolve(parent, _, context) {
         const { authorization } = context.headers;
-        const authorized = helper.authenticate(authorization);
-        return BookFavoritesController.checkFavorite(parent.id, authorized);
+        const authorized = Utils.authenticate(authorization);
+        return FavoritesController.checkFavorite(parent.id, authorized);
       }
     },
     userId: {

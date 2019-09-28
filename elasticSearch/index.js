@@ -4,15 +4,15 @@ import dotenv from 'dotenv';
 import logger from '../utils/initLogger';
 import {
   info, ELASTIC_CLIENT_ALIVE, ELASTIC_CLIENT_RUNNING, BOOKS_INDEX,
-  ERROR_CREATING_INDEX, INDEX_CREATED_MESSAGE, production, NO_INDEX, ELASTIC_SEARCH_MAPPING,
+  ERROR_CREATING_INDEX, INDEX_CREATED_MESSAGE, PRODUCTION, NO_INDEX, ELASTIC_SEARCH_MAPPING,
   PHRASE_PREFIX, MULTI_MATCH_FIELDS, BOOK_UPDATED_MESSAGE, BOOK_ADDED_MESSAGE,
   INDEX_DELETED_MESSAGE,
   BOOK,
-} from '../settings/default';
+} from '../settings';
 
 dotenv.config();
 
-const host = process.env.NODE_ENV.match(production)
+const host = process.env.NODE_ENV.match(PRODUCTION)
   ? process.env.BONSAI_URL : process.env.ELASTIC_LOCAL;
 
 const elasticClient = new elasticSearch.Client({
@@ -30,7 +30,7 @@ elasticClient.ping({
   }
 });
 
-const checkHealthStatus = () => {
+const elasticClientHealthCheck = () => {
   elasticClient.cluster.health({}, (error, resp) => {
     if (error) stackLogger(error);
     logger.info(ELASTIC_CLIENT_RUNNING, resp);
@@ -199,7 +199,7 @@ const elasticItemSearch = async (query, paginateData) => {
 };
 
 export {
-  checkHealthStatus,
+  elasticClientHealthCheck,
   createMapping,
   elasticClient,
   deleteBook,

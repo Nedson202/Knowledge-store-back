@@ -1,16 +1,17 @@
 import { stackLogger } from 'info-logger';
-import utils from '../utils';
+
+import Utils from '../utils';
+import validator from '../utils/validator';
 import { retrieveBook } from '../elasticSearch';
 import BookController from './BookController';
 import {
   NO_REVIEW, NO_BOOK_FOUND,
-} from '../settings/default';
+} from '../settings';
 import { getDataFromRedis } from '../redis';
 import authStatusCheck from '../utils/authStatusCheck';
 import ReviewRepository from '../repository/Review';
 import LikeRepository from '../repository/Like';
 
-const { helper, validator } = utils;
 const reviewRepository = new ReviewRepository();
 const likeRepository = new LikeRepository();
 
@@ -51,7 +52,7 @@ class ReviewController {
         throw new Error('You can not review your book');
       }
 
-      newData.id = helper.generateId();
+      newData.id = Utils.generateId();
       newData.userId = authStatus.id;
 
       if (Object.keys(errors).length !== 0) {

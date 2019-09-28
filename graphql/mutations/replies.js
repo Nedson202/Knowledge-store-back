@@ -2,11 +2,9 @@ import {
   GraphQLString,
 } from 'graphql';
 
-import utils from '../../utils';
+import Utils from '../../utils';
 import ReplyType from '../types/reply';
 import ReplyController from '../../controller/ReplyController';
-
-const { helper } = utils;
 
 const ReplyMutation = {
   addReply: {
@@ -21,7 +19,7 @@ const ReplyMutation = {
     },
     resolve(parent, args, context) {
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(authorization);
+      const authorized = Utils.authenticate(authorization);
       return ReplyController.addReply(args, authorized);
     }
   },
@@ -37,7 +35,7 @@ const ReplyMutation = {
     },
     resolve(parent, args, context) {
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(authorization);
+      const authorized = Utils.authenticate(authorization);
       return ReplyController.editReply(args, authorized);
     }
   },
@@ -50,7 +48,7 @@ const ReplyMutation = {
     },
     resolve(parent, args, context) {
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(authorization);
+      const authorized = Utils.authenticate(authorization);
       return ReplyController.toggleLikeOnReply(args, authorized);
     }
   },
@@ -63,7 +61,7 @@ const ReplyMutation = {
     },
     resolve(parent, args, context) {
       const { authorization } = context.headers;
-      const authorized = helper.authenticate(authorization);
+      const authorized = Utils.authenticate(authorization);
       return ReplyController.deleteReply(args, authorized);
     }
   },
