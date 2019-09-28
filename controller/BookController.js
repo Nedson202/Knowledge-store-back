@@ -54,9 +54,11 @@ class BookController {
    * @memberof BookController
    */
   static async addBookIfNotExist(book, id) {
-    await bookRepository.findOrCreate({
+    const response = await bookRepository.findOrCreate({
       id
     }, book);
+
+    return response;
   }
 
   /**

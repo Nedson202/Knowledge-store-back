@@ -8,7 +8,7 @@ import BookType from '../types/books';
 import GenreType from '../types/genre';
 import BookController from '../../controller/BookController';
 import GenreController from '../../controller/GenreController';
-import BookFavoritesController from '../../controller/BookFavoritesController';
+import FavoritesController from '../../controller/FavoritesController';
 import GoogleBooks from '../../controller/GooglBooks';
 import { updateBook } from '../../elasticSearch';
 import utils from '../../utils';
@@ -105,7 +105,7 @@ const BookQuery = {
       const { token } = args;
       const { authorization } = context.headers;
       const authorized = helper.authenticate(token || authorization);
-      return BookFavoritesController.getFavorites(authorized);
+      return FavoritesController.getFavorites(authorized);
     }
   },
 };

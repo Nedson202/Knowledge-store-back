@@ -1,8 +1,8 @@
 import redis from 'redis';
 import logger from '../utils/initLogger';
-import { production } from '../settings/default';
+import { PRODUCTION } from '../settings/default';
 
-const host = process.env.NODE_ENV.match(production)
+const host = process.env.NODE_ENV.match(PRODUCTION)
   ? process.env.REDIS_URL : process.env.REDIS_LOCAL;
 
 const redisClient = redis.createClient(host);

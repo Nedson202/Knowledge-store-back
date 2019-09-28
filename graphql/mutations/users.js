@@ -14,7 +14,7 @@ import utils from '../../utils';
 // import ReviewController from '../../controller/ReviewController';
 // import ReplyType from '../types/reply';
 // import ReplyController from '../../controller/ReplyController';
-// import BookFavoritesController from '../../controller/BookFavoritesController';
+// import FavoritesController from '../../controller/FavoritesController';
 // import BookMutation from './books';
 // import FavoritesMutation from './favorites';
 

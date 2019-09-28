@@ -78,7 +78,8 @@ export const REPLY_REQUIRED = 'reply is required';
 export const REVIEW_ID_REQUIRED = 'reviewId is required';
 
 export const PRODUCTION = 'production';
-export const development = 'development';
+export const TEST = 'test';
+export const DEVELOPMENT = 'development';
 export const DARK_LUMINOSITY = 'dark';
 export const COLOR_FORMAT = 'rgba';
 
