@@ -39,7 +39,8 @@ const elasticClientHealthCheck = () => {
 
 const createIndex = () => {
   elasticClient.indices.create({
-    index: BOOKS_INDEX
+    index: BOOKS_INDEX,
+    include_type_name: true,
   }, (error, resp, status) => {
     if (error) {
       stackLogger(error);
@@ -62,7 +63,8 @@ elasticClient.indices.exists({
 const createMapping = () => elasticClient.indices.putMapping({
   index: BOOKS_INDEX,
   type: BOOK,
-  body: ELASTIC_SEARCH_MAPPING
+  body: ELASTIC_SEARCH_MAPPING,
+  include_type_name: true,
 });
 
 const getIndexStatus = () => elasticClient.cat.indices({ v: true })
