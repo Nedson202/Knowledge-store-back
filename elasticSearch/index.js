@@ -62,7 +62,8 @@ elasticClient.indices.exists({
 const createMapping = () => elasticClient.indices.putMapping({
   index: BOOKS_INDEX,
   type: BOOK,
-  body: ELASTIC_SEARCH_MAPPING
+  body: ELASTIC_SEARCH_MAPPING,
+  include_type_name: true,
 });
 
 const getIndexStatus = () => elasticClient.cat.indices({ v: true })

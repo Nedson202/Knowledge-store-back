@@ -8,17 +8,17 @@ const redirectUrl = process.env.NODE_ENV.match('production')
 
 // auth with google
 router.get('/google', passport.authenticate('google', {
-  scope: ['https://www.googleapis.com/auth/plus.login',
-    'https://www.googleapis.com/auth/plus.profile.emails.read']
+  scope: ['email', 'profile']
 }));
 
 // callback route for google to redirect to
-router.get('/google/redirect', passport.authenticate('google',
-  { session: false, failureRedirect: '/login' }),
-(req, res) => {
-  const { token } = req.user;
-  return res.redirect(`${redirectUrl}/?token=${token}`);
-});
+router.get('/google/redirect',
+  passport.authenticate('google',
+    { session: false, failureRedirect: '/login' }),
+  (req, res) => {
+    const { token } = req.user;
+    return res.redirect(`${redirectUrl}/?token=${token}`);
+  });
 
 // auth with facebook
 router.get('/facebook', passport.authenticate('facebook', {
