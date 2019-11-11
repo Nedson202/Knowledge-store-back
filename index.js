@@ -17,6 +17,10 @@ app.listen(port,
       App running on ${process.env.NODE_ENV.toUpperCase()} mode and
       Listening on port ${port}...\n
     `);
+
+    if (process.env.NODE_ENV.match('development')) {
+      logger.info(`http://localhost:${port}\n`);
+    }
   });
 
 elasticClientHealthCheck();

@@ -11,9 +11,10 @@
     "add:seed": "babel-node database/createSeeds.js",
     "undo:seed": "babel-node database/dropSeeds.js",
     "seed": "npm run undo:seed && npm run add:seed",
+    "trigger:migration": "npm run migrate && npm run seed",
     "test": "NODE_ENV=test jest --testTimeout=10000",
     "pretest": "NODE_ENV=test npm run undo:migrate && npm run migrate",
-    "heroku-postbuild": "npm run migrate && npm run seed"
+    "heroku-postbuild": "npm run trigger:migration"
   },
   "keywords": [],
   "author": "",
