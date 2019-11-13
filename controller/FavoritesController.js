@@ -141,7 +141,7 @@ class FavoritesController {
 
       const redisKey = `Book-Favorites-${authStatus.id}`;
 
-      let bookData = await getDataFromRedis(redisKey);
+      let bookData = await getDataFromRedis(redisKey) || [];
       bookData = bookData.filter(book => book.id);
 
       if (!bookData.length) {

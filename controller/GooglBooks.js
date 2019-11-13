@@ -25,7 +25,9 @@ class GoogleBooks {
       const awaitResult = await new Promise(((resolve, reject) => googleBooks
         .search(searchQuery, options, (error, results, apiResponse) => {
           if (error) reject(error);
+
           if (!apiResponse) return resolve([]);
+
           query = apiResponse.items.map((result) => {
             const {
               id,
@@ -37,6 +39,7 @@ class GoogleBooks {
                 epub: { downloadLink }, pdf: { downloadLink: pdfDownloadLink }
               }
             } = result;
+
             return {
               id: id || Utils.generateId(),
               name: title,
@@ -53,6 +56,7 @@ class GoogleBooks {
               ]
             };
           });
+
           if (apiResponse) {
             elasticBulkCreate(query);
 
@@ -78,10 +82,12 @@ class GoogleBooks {
     try {
       const redisKey = `${searchQuery}:::${JSON.stringify(paginateData)}`;
       let searchResult = await getDataFromRedis(redisKey) || [];
+
       if (!searchResult.length) {
         searchResult = await elasticItemSearch(searchQuery, paginateData) || [];
         if (searchResult.length) addDataToRedis(redisKey, searchResult);
       }
+
       if (!searchResult.length) {
         searchResult = await GoogleBooks.searchBooks(searchQuery || 'random');
         if (searchResult.length) addDataToRedis(redisKey, searchResult);
@@ -112,6 +118,7 @@ class GoogleBooks {
       let more;
       const redisKey = `${bookId}:::more-books`;
       more = await getDataFromRedis(redisKey) || [];
+
       if (more.length) {
         const randomizedData = GoogleBooks.randomizeResult(more);
 
@@ -121,11 +128,14 @@ class GoogleBooks {
       const searchResult = await GoogleBooks.retrieveBookProfile(bookId);
       if (searchResult) {
         const { name, name: mainBookName } = searchResult;
+
         const moreBooks = await GoogleBooks.searchBooks(name);
-        if (moreBooks.length > 0) {
+
+        if (moreBooks && moreBooks.length) {
           const filterBooks = moreBooks.filter(book => book.name !== mainBookName);
           more = GoogleBooks.randomizeResult(filterBooks);
         }
+
         addDataToRedis(redisKey, more);
 
         return more.slice(0, 4);
