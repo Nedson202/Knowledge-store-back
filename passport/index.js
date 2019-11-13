@@ -8,6 +8,7 @@ const { checkUserExists } = UserController;
 
 const saveUser = async (profile, done) => {
   const currentUser = await checkUserExists(profile.id);
+
   if (currentUser.username) {
     const payload = {
       id: currentUser.id,
@@ -19,17 +20,20 @@ const saveUser = async (profile, done) => {
     };
     const token = Utils.generateToken(payload);
     payload.token = token;
+
     return done(null, payload);
   }
+
   const newUser = {
     username: profile.displayName,
-    email: profile.emails[0].value,
+    email: profile.emails && profile.emails[0].value,
     password: process.env.FAKE_PASSWORD,
     socialId: profile.id,
-    picture: profile.photos[0].value,
+    picture: profile.photos && profile.photos[0].value,
     isVerified: 'true',
     socialAuth: true,
   };
+
   UserController.addUser(newUser).then((user) => {
     done(null, user);
   });
@@ -46,7 +50,6 @@ passport.use(new FacebookStrategy({
 
 passport.use(
   new GoogleStrategy({
-    // options for google strategy
     callbackURL: process.env.GOOGLE_CALLBACKURL,
     clientID: process.env.GOOGLE_CLIENTID,
     clientSecret: process.env.GOOGLE_CLIENTSECRET,
