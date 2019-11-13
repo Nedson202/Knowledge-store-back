@@ -11,6 +11,6 @@ const httpProtocol = process.env.NODE_ENV.match(DEVELOPMENT) ? http : https;
 
 setInterval(() => {
   (() => {
-    httpProtocol.get(`${appUrl}/healthChecker`, () => { });
+    httpProtocol.get(`${appUrl}/health`, () => { });
   })();
 }, 1000 * 10 * 60);
