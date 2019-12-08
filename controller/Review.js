@@ -2,20 +2,22 @@ import { stackLogger } from 'info-logger';
 
 import Utils from '../utils';
 import validator from '../utils/validator';
-import { retrieveBook } from '../elasticSearch';
-import BookController from './BookController';
+import ElasticSearch from '../elasticSearch';
+import Book from './Book';
 import {
   NO_REVIEW, NO_BOOK_FOUND,
 } from '../settings';
-import { getDataFromRedis } from '../redis';
+import Redis from '../redis';
 import authStatusCheck from '../utils/authStatusCheck';
 import ReviewRepository from '../repository/Review';
 import LikeRepository from '../repository/Like';
 
 const reviewRepository = new ReviewRepository();
 const likeRepository = new LikeRepository();
+const redis = new Redis();
+const elasticSearch = new ElasticSearch();
 
-class ReviewController {
+class Review {
   /**
    *
    *
@@ -23,29 +25,34 @@ class ReviewController {
    * @param {*} data
    * @param {*} authStatus
    * @returns
-   * @memberof ReviewController
+   * @memberof Review
    */
   static async addReview(data, authStatus) {
     authStatusCheck(authStatus);
 
     const newData = data;
-    const errors = validator.validateAddReview({
+    const { isValid, errors } = validator.validateAddReview({
       ...newData
     });
+
+    if (!isValid) {
+      throw new Error(JSON.stringify(errors));
+    }
+
     try {
       let retrievedBook;
 
       const { bookId } = newData;
 
       const redisKey = JSON.stringify(bookId);
-      retrievedBook = await getDataFromRedis(redisKey) || {};
+      retrievedBook = await redis.getDataFromRedis(redisKey) || {};
       if (!retrievedBook) {
-        retrievedBook = await retrieveBook(newData.bookId);
+        retrievedBook = await elasticSearch.retrieveBook(newData.bookId);
       }
 
-      if (retrievedBook) await BookController.addBookIfNotExist(retrievedBook, newData.bookId);
+      if (retrievedBook) await Book.addBookIfNotExist(retrievedBook, newData.bookId);
       if (!retrievedBook) {
-        retrievedBook = await BookController.getBook(bookId);
+        retrievedBook = await Book.getBook(bookId);
       }
       if (!retrievedBook) throw new Error(NO_BOOK_FOUND);
       if (retrievedBook.userId === authStatus.id) {
@@ -54,10 +61,6 @@ class ReviewController {
 
       newData.id = Utils.generateId();
       newData.userId = authStatus.id;
-
-      if (Object.keys(errors).length !== 0) {
-        throw new Error(JSON.stringify(errors));
-      }
 
       return retrievedBook && await reviewRepository.create(newData);
     } catch (error) {
@@ -73,7 +76,7 @@ class ReviewController {
    * @param {*} data
    * @param {*} authStatus
    * @returns
-   * @memberof ReviewController
+   * @memberof Review
    */
   static async editReview(data, authStatus) {
     authStatusCheck(authStatus);
@@ -85,6 +88,7 @@ class ReviewController {
       review,
       rating
     };
+
     try {
       const editedReview = await reviewRepository.updateOne({
         id: reviewId,
@@ -107,7 +111,7 @@ class ReviewController {
    * @param {*} data
    * @param {*} authStatus
    * @returns
-   * @memberof ReviewController
+   * @memberof Review
    */
   static async toggleLikeOnReview(data, authStatus) {
     authStatusCheck(authStatus);
@@ -132,7 +136,7 @@ class ReviewController {
    * @param {*} data
    * @param {*} authStatus
    * @returns
-   * @memberof ReviewController
+   * @memberof Review
    */
   static async deleteReview(data, authStatus) {
     authStatusCheck(authStatus);
@@ -158,7 +162,7 @@ class ReviewController {
    * @static
    * @param {*} reviewId
    * @returns
-   * @memberof ReviewController
+   * @memberof Review
    */
   static async getReview(reviewId) {
     try {
@@ -177,7 +181,7 @@ class ReviewController {
    * @static
    * @param {*} bookId
    * @returns
-   * @memberof ReviewController
+   * @memberof Review
    */
   static async retrieveReviewsQuery(bookId) {
     try {
@@ -198,13 +202,13 @@ class ReviewController {
    * @static
    * @param {*} bookId
    * @returns
-   * @memberof ReviewController
+   * @memberof Review
    */
   static async getBookReviews(bookId) {
     try {
-      const reviews = await ReviewController.retrieveReviewsQuery(bookId);
+      const reviews = await Review.retrieveReviewsQuery(bookId);
 
-      return ReviewController.flattenFetchedReviews(reviews);
+      return Review.flattenFetchedReviews(reviews);
     } catch (error) {
       return error;
     }
@@ -216,7 +220,7 @@ class ReviewController {
    * @static
    * @param {*} reviews
    * @returns
-   * @memberof ReviewController
+   * @memberof Review
    */
   static flattenFetchedReviews(reviews) {
     try {
@@ -247,7 +251,7 @@ class ReviewController {
    * @static
    * @param {*} bookId
    * @returns
-   * @memberof ReviewController
+   * @memberof Review
    */
   static async getAverageRating(bookId) {
     const averageRating = await reviewRepository.getAverageRating(bookId);
@@ -256,4 +260,4 @@ class ReviewController {
   }
 }
 
-export default ReviewController;
+export default Review;

@@ -1,5 +1,7 @@
-import { dbQuery } from '..';
+import DB from '..';
 import logger from '../../utils/initLogger';
+
+const db = new DB();
 
 export const seedLikes = async () => {
   const query = `
@@ -15,7 +17,7 @@ export const seedLikes = async () => {
   };
 
   try {
-    await dbQuery(queryConfig);
+    await db.query(queryConfig);
   } catch (error) {
     logger.info(error);
   }
@@ -34,7 +36,7 @@ export const undoLikeSeed = async () => {
   };
 
   try {
-    await dbQuery(queryConfig);
+    await db.query(queryConfig);
   } catch (error) {
     logger.info(error);
   }

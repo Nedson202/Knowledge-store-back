@@ -2,7 +2,7 @@ import { stackLogger } from 'info-logger';
 
 import Utils from '../utils';
 import validator from '../utils/validator';
-import { addDocument } from '../elasticSearch';
+import ElasticSearch from '../elasticSearch';
 import authStatusCheck from '../utils/authStatusCheck';
 import {
   BOOK_LABEL, NO_BOOK_MESSAGE,
@@ -12,8 +12,9 @@ import {
 import BookRepository from '../repository/Book';
 
 const bookRepository = new BookRepository();
+const elasticSearch = new ElasticSearch();
 
-class BookController {
+class Book {
   /**
    *
    *
@@ -21,7 +22,7 @@ class BookController {
    * @param {*} data
    * @param {*} authStatus
    * @returns
-   * @memberof BookController
+   * @memberof Book
    */
   static async addBook(data, authStatus) {
     authStatusCheck(authStatus);
@@ -29,16 +30,16 @@ class BookController {
     const newData = data;
     newData.id = Utils.generateId();
     newData.userId = authStatus.id;
-    const errors = validator.validateAddBook({
+    const { isValid, errors } = validator.validateAddBook({
       ...newData
     });
 
     try {
-      if (Object.keys(errors).length) {
+      if (!isValid) {
         throw new Error(JSON.stringify(errors));
       }
       const createdBook = await bookRepository.create(newData);
-      addDocument(newData, BOOK_LABEL);
+      elasticSearch.addDocument(newData, BOOK_LABEL);
 
       return createdBook;
     } catch (error) {
@@ -52,7 +53,7 @@ class BookController {
    *
    * @static
    * @param {*} book
-   * @memberof BookController
+   * @memberof Book
    */
   static async addBookIfNotExist(book, id) {
     const response = await bookRepository.findOrCreate({
@@ -68,7 +69,7 @@ class BookController {
    * @static
    * @param {*} authStatus
    * @returns
-   * @memberof BookController
+   * @memberof Book
    */
   static async getUsersBooks(authStatus) {
     try {
@@ -91,7 +92,7 @@ class BookController {
    * @static
    * @param {*} bookId
    * @returns
-   * @memberof BookController
+   * @memberof Book
    */
   static async getBook(bookId) {
     try {
@@ -114,13 +115,13 @@ class BookController {
    * @param {*} data
    * @param {*} authStatus
    * @returns
-   * @memberof BookController
+   * @memberof Book
    */
   static async updateBook(data, authStatus) {
     try {
       authStatusCheck(authStatus);
 
-      const book = await BookController.getBook(data.bookId);
+      const book = await Book.getBook(data.bookId);
 
       if (!book.userId) throw new Error(NO_BOOK_FOUND);
       if (authStatus.id !== book.userId) {
@@ -150,14 +151,14 @@ class BookController {
    * @param {*} data
    * @param {*} authStatus
    * @returns
-   * @memberof BookController
+   * @memberof Book
    */
   static async deleteBook(data, authStatus) {
     try {
       authStatusCheck(authStatus);
 
       const { bookId } = data;
-      const book = await BookController.getBook(bookId);
+      const book = await Book.getBook(bookId);
 
       if (!book.userId) throw new Error(NO_BOOK_FOUND);
       if (authStatus.id !== book.userId) {
@@ -178,4 +179,4 @@ class BookController {
   }
 }
 
-export default BookController;
+export default Book;

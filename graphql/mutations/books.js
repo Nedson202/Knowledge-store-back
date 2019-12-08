@@ -3,7 +3,7 @@ import {
   GraphQLList
 } from 'graphql';
 import BookType from '../types/books';
-import BookController from '../../controller/BookController';
+import Book from '../../controller/Book';
 import Utils from '../../utils';
 
 const BookMutation = {
@@ -32,7 +32,7 @@ const BookMutation = {
     resolve(parent, args, context) {
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization);
-      return BookController.addBook(args, authorized);
+      return Book.addBook(args, authorized);
     }
   },
   updateBook: {
@@ -57,7 +57,7 @@ const BookMutation = {
     resolve(parent, args, context) {
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization);
-      return BookController.updateBook(args, authorized);
+      return Book.updateBook(args, authorized);
     }
   },
   deleteBook: {
@@ -70,7 +70,7 @@ const BookMutation = {
     resolve(parent, args, context) {
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization);
-      return BookController.deleteBook(args, authorized);
+      return Book.deleteBook(args, authorized);
     }
   },
 };

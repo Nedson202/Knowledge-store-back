@@ -1,5 +1,7 @@
-import { dbQuery } from '..';
+import DB from '..';
 import logger from '../../utils/initLogger';
+
+const db = new DB();
 
 export const createGenreTable = async () => {
   const query = `
@@ -18,7 +20,7 @@ export const createGenreTable = async () => {
   };
 
   try {
-    await dbQuery(queryConfig);
+    await db.query(queryConfig);
   } catch (error) {
     logger.info(error);
   }
@@ -34,7 +36,7 @@ export const dropGenreTable = async () => {
   };
 
   try {
-    await dbQuery(queryConfig);
+    await db.query(queryConfig);
   } catch (error) {
     logger.info(error);
   }

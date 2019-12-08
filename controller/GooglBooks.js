@@ -1,11 +1,12 @@
 import googleBooks from 'google-books-search';
-import {
-  elasticItemSearch, elasticBulkCreate, retrieveBook, addDocument
-} from '../elasticSearch';
+import ElasticSearch from '../elasticSearch';
 import Utils from '../utils';
 import { BOOK_LABEL, GOOGLE_BOOK_OPTIONS } from '../settings';
-import BookController from './BookController';
-import { addDataToRedis, getDataFromRedis } from '../redis';
+import Book from './Book';
+import Redis from '../redis';
+
+const redis = new Redis();
+const elasticSearch = new ElasticSearch();
 
 class GoogleBooks {
   /**
@@ -58,7 +59,7 @@ class GoogleBooks {
           });
 
           if (apiResponse) {
-            elasticBulkCreate(query);
+            elasticSearch.elasticBulkCreate(query);
 
             resolve(query);
           }
@@ -81,16 +82,16 @@ class GoogleBooks {
   static async completeSearch(searchQuery, paginateData) {
     try {
       const redisKey = `${searchQuery}:::${JSON.stringify(paginateData)}`;
-      let searchResult = await getDataFromRedis(redisKey) || [];
+      let searchResult = await redis.getDataFromRedis(redisKey) || [];
 
       if (!searchResult.length) {
-        searchResult = await elasticItemSearch(searchQuery, paginateData) || [];
-        if (searchResult.length) addDataToRedis(redisKey, searchResult);
+        searchResult = await elasticSearch.search(searchQuery, paginateData) || [];
+        if (searchResult.length) redis.addDataToRedis(redisKey, searchResult);
       }
 
       if (!searchResult.length) {
         searchResult = await GoogleBooks.searchBooks(searchQuery || 'random');
-        if (searchResult.length) addDataToRedis(redisKey, searchResult);
+        if (searchResult.length) redis.addDataToRedis(redisKey, searchResult);
       }
 
       if (!searchResult.length) {
@@ -117,7 +118,7 @@ class GoogleBooks {
     try {
       let more;
       const redisKey = `${bookId}:::more-books`;
-      more = await getDataFromRedis(redisKey) || [];
+      more = await redis.getDataFromRedis(redisKey) || [];
 
       if (more.length) {
         const randomizedData = GoogleBooks.randomizeResult(more);
@@ -136,7 +137,7 @@ class GoogleBooks {
           more = GoogleBooks.randomizeResult(filterBooks);
         }
 
-        addDataToRedis(redisKey, more);
+        redis.addDataToRedis(redisKey, more);
 
         return more.slice(0, 4);
       }
@@ -156,20 +157,20 @@ class GoogleBooks {
   static async retrieveBookProfile(bookId) {
     try {
       const redisKey = JSON.stringify(bookId);
-      let searchResult = await getDataFromRedis(redisKey) || {};
+      let searchResult = await redis.getDataFromRedis(redisKey) || {};
 
       if (!searchResult.id) {
         // query elasticsearch
-        searchResult = await retrieveBook(bookId);
-        addDataToRedis(redisKey, searchResult);
+        searchResult = await elasticSearch.retrieveBook(bookId);
+        redis.addDataToRedis(redisKey, searchResult);
       }
       if (!searchResult) {
         // query pg database
-        searchResult = await BookController.getBook(bookId);
+        searchResult = await Book.getBook(bookId);
         if (searchResult) {
           // add document to elasticsearch and redis
-          addDocument(searchResult, BOOK_LABEL);
-          addDataToRedis(redisKey, searchResult);
+          elasticSearch.addDocument(searchResult, BOOK_LABEL);
+          redis.addDataToRedis(redisKey, searchResult);
         }
       }
 

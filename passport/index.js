@@ -1,15 +1,15 @@
 import passport from 'passport';
 import FacebookStrategy from 'passport-facebook';
 import GoogleStrategy from 'passport-google-oauth20';
-import UserController from '../controller/UserController';
+import User from '../controller/User';
 import Utils from '../utils';
 
-const { checkUserExists } = UserController;
-
 const saveUser = async (profile, done) => {
-  const currentUser = await checkUserExists(profile.id);
+  const currentUser = await User.findUser({
+    socialId: profile.id
+  });
 
-  if (currentUser.username) {
+  if (currentUser && currentUser.username) {
     const payload = {
       id: currentUser.id,
       username: currentUser.username,
@@ -18,6 +18,7 @@ const saveUser = async (profile, done) => {
       picture: currentUser.picture,
       isVerified: currentUser.isVerified,
     };
+
     const token = Utils.generateToken(payload);
     payload.token = token;
 
@@ -34,7 +35,7 @@ const saveUser = async (profile, done) => {
     socialAuth: true,
   };
 
-  UserController.addUser(newUser).then((user) => {
+  User.addUser(newUser).then((user) => {
     done(null, user);
   });
 };

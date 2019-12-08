@@ -1,6 +1,8 @@
-import { dbQuery } from '..';
+import DB from '..';
 import logger from '../../utils/initLogger';
 /* eslint-disable max-len */
+
+const db = new DB();
 
 export const seedBooks = async () => {
   const query = `
@@ -80,7 +82,7 @@ export const seedBooks = async () => {
   };
 
   try {
-    await dbQuery(queryConfig);
+    await db.query(queryConfig);
   } catch (error) {
     logger.info(error);
   }
@@ -110,7 +112,7 @@ export const undoBookSeed = async () => {
   };
 
   try {
-    await dbQuery(queryConfig);
+    await db.query(queryConfig);
   } catch (error) {
     logger.info(error);
   }

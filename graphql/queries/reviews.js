@@ -4,7 +4,7 @@ import {
 } from 'graphql';
 
 import ReviewType from '../types/review';
-import ReviewController from '../../controller/ReviewController';
+import Review from '../../controller/Review';
 
 const ReviewQuery = {
   reviews: {
@@ -15,7 +15,7 @@ const ReviewQuery = {
       }
     },
     resolve(parent, args) {
-      return ReviewController.getBookReviews(args.bookId);
+      return Review.getBookReviews(args.bookId);
     }
   },
 };

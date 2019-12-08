@@ -42,7 +42,6 @@
     "helmet": "^3.15.0",
     "info-logger": "^0.1.2",
     "jsonwebtoken": "^8.3.0",
-    "libgen": "^1.0.0",
     "lodash": "^4.17.11",
     "mem": "^5.1.1",
     "node-postgres": "^0.0.1",
@@ -56,6 +55,7 @@
     "randomcolor": "^0.5.3",
     "redis": "^2.8.0",
     "shortid": "^2.2.13",
+    "validatorjs": "^3.18.1",
     "webpack": "4",
     "winston": "^3.1.0",
     "winston-daily-rotate-file": "^3.3.3"

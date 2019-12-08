@@ -1,66 +1,29 @@
 import express from 'express';
 import passport from 'passport';
+import SocialAuth from '../controller/SocialAuth';
 
 const router = express.Router();
-
-const redirectUrl = process.env.NODE_ENV.match('production')
-  ? process.env.PROD_SERVER : 'http://localhost:3000';
-
-let mobileRedirectUrl;
-
-const authRedirectCallback = (req, res) => {
-  let buildRedirectURL = redirectUrl;
-  const { token } = req.user;
-
-  if (mobileRedirectUrl) {
-    buildRedirectURL = mobileRedirectUrl;
-  }
-
-  return res.redirect(`${buildRedirectURL}?token=${token}`);
-};
+const socialAuth = new SocialAuth();
 
 // auth with google
-router.get('/google', (req, res, next) => {
-  const { redirect_uri: customRedirectURL } = req.query;
-
-  mobileRedirectUrl = customRedirectURL;
-
-  passport.authenticate('google', {
-    scope: [
-      'https://www.googleapis.com/auth/plus.login',
-      'https://www.googleapis.com/auth/plus.profile.emails.read',
-      'email',
-      'profile'
-    ]
-  })(req, res, next);
-});
+router.get('/google', socialAuth.googleAuth);
 
 // callback route for google to redirect to
 router.get('/google/redirect', passport.authenticate('google', {
   session: false,
   failureRedirect: '/login'
 }), (req, res) => {
-  let buildRedirectURL = redirectUrl;
-  const { token } = req.user;
-
-  console.log(mobileRedirectUrl, 'mobileRedirectUrl');
-  if (mobileRedirectUrl) {
-    buildRedirectURL = mobileRedirectUrl;
-  }
-
-  return res.redirect(`${buildRedirectURL}?token=${token}`);
+  socialAuth.authRedirectCallback(req, res);
 });
 
 // auth with facebook
-router.get('/facebook', passport.authenticate('facebook', {
-  scope: 'email'
-}));
+router.get('/facebook', socialAuth.facebookAuth);
 
 router.get('/facebook/redirect', passport.authenticate('facebook', {
   session: false,
   failureRedirect: '/login'
 }), (req, res) => {
-  authRedirectCallback(req, res);
+  socialAuth.authRedirectCallback(req, res);
 });
 
 router.get('/health', (req, res) => res.status(200).json({

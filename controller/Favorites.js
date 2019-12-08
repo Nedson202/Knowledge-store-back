@@ -1,18 +1,20 @@
 import { stackLogger } from 'info-logger';
 
 import FavoritesRepository from '../repository/Favorite';
-import BookController from './BookController';
-import { retrieveBook } from '../elasticSearch';
+import Book from './Book';
+import ElasticSearch from '../elasticSearch';
 import {
   ADDED_TO_FAVORITE, BOOK_REMOVED_FROM_FAVORITES
 } from '../settings';
 import Utils from '../utils';
 import authStatusCheck from '../utils/authStatusCheck';
-import { addDataToRedis, getDataFromRedis } from '../redis';
+import Redis from '../redis';
 
 const favoritesRepository = new FavoritesRepository();
+const redis = new Redis();
+const elasticSearch = new ElasticSearch();
 
-class FavoritesController {
+class Favorites {
   /**
    *
    *
@@ -20,22 +22,22 @@ class FavoritesController {
    * @param {*} data
    * @param {*} authStatus
    * @returns
-   * @memberof FavoritesController
+   * @memberof Favorites
    */
   static async addToFavorites(data, authStatus) {
     authStatusCheck(authStatus);
 
     const newData = data;
     try {
-      const retrievedBook = await retrieveBook(newData.bookId);
+      const retrievedBook = await elasticSearch.retrieveBook(newData.bookId);
 
-      const response = await BookController
+      const response = await Book
         .addBookIfNotExist(retrievedBook, newData.bookId);
 
-      const isDeleted = await FavoritesController
+      const isDeleted = await Favorites
         .deleteFavoriteIfExists(data, authStatus);
 
-      await FavoritesController.toggleFavoriteInRedis(
+      await Favorites.toggleFavoriteInRedis(
         response, isDeleted, authStatus.id
       );
 
@@ -55,12 +57,12 @@ class FavoritesController {
   static async toggleFavoriteInRedis(cacheBook, isFavoriteDeleted, userId) {
     const redisKey = `Book-Favorites-${userId}`;
 
-    const previousCache = await getDataFromRedis(redisKey) || [];
+    const previousCache = await redis.getDataFromRedis(redisKey) || [];
 
     if (!isFavoriteDeleted) {
       const combinedData = [cacheBook, ...previousCache];
 
-      addDataToRedis(redisKey, combinedData);
+      redis.addDataToRedis(redisKey, combinedData);
 
       return;
     }
@@ -73,7 +75,7 @@ class FavoritesController {
       return false;
     });
 
-    addDataToRedis(redisKey, cleanCache);
+    redis.addDataToRedis(redisKey, cleanCache);
   }
 
   static async deleteFavoriteIfExists(data, authStatus) {
@@ -106,7 +108,7 @@ class FavoritesController {
    * @static
    * @param {*} bookId
    * @returns
-   * @memberof FavoritesController
+   * @memberof Favorites
    */
   static async checkFavorite(bookId, authStatus) {
     try {
@@ -133,7 +135,7 @@ class FavoritesController {
    * @static
    * @param {*} authStatus
    * @returns
-   * @memberof FavoritesController
+   * @memberof Favorites
    */
   static async getFavorites(authStatus) {
     try {
@@ -141,7 +143,7 @@ class FavoritesController {
 
       const redisKey = `Book-Favorites-${authStatus.id}`;
 
-      let bookData = await getDataFromRedis(redisKey) || [];
+      let bookData = await redis.getDataFromRedis(redisKey) || [];
       bookData = bookData.filter(book => book.id);
 
       if (!bookData.length) {
@@ -154,7 +156,7 @@ class FavoritesController {
 
       if (!bookData.length) return [];
 
-      addDataToRedis(authStatus.id, bookData);
+      redis.addDataToRedis(authStatus.id, bookData);
 
       return bookData;
     } catch (error) {
@@ -170,7 +172,7 @@ class FavoritesController {
    * @param {*} data
    * @param {*} authStatus
    * @returns
-   * @memberof FavoritesController
+   * @memberof Favorites
    */
   static async removeFavorites(data, authStatus) {
     const { books } = data;
@@ -182,7 +184,7 @@ class FavoritesController {
         userId: id,
       }, { bookId: books, });
 
-      await FavoritesController.removeFavoritesFromRedis(id, books);
+      await Favorites.removeFavoritesFromRedis(id, books);
 
       return {
         message: BOOK_REMOVED_FROM_FAVORITES
@@ -196,7 +198,7 @@ class FavoritesController {
   static async removeFavoritesFromRedis(userId, books) {
     const redisKey = `Book-Favorites-${userId}`;
 
-    const previousCache = await getDataFromRedis(redisKey) || [];
+    const previousCache = await redis.getDataFromRedis(redisKey) || [];
 
     const previousCacheSET = new Set(previousCache);
     const booksToRemove = new Set(books);
@@ -205,8 +207,8 @@ class FavoritesController {
       [...previousCacheSET].filter(bookData => !booksToRemove.has(bookData.id))
     )];
 
-    addDataToRedis(redisKey, cacheIntersection);
+    redis.addDataToRedis(redisKey, cacheIntersection);
   }
 }
 
-export default FavoritesController;
+export default Favorites;

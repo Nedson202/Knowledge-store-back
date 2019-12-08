@@ -14,7 +14,7 @@ const redirectUrl = process.env.NODE_ENV.match(PRODUCTION)
 
 const userRepository = new UserRepository();
 
-class EmailController {
+class Email {
   /**
    *
    *
@@ -22,7 +22,7 @@ class EmailController {
    * @param {*} user
    * @param {*} { token, OTP }
    * @returns
-   * @memberof EmailController
+   * @memberof Email
    */
   static async sendEmailVerificationMail(user, { token, OTP }) {
     try {
@@ -54,7 +54,7 @@ class EmailController {
    * @param {*} user
    * @param {*} { token, OTP }
    * @returns
-   * @memberof EmailController
+   * @memberof Email
    */
   static async sendPasswordResetMail(user, { token, OTP }) {
     try {
@@ -77,7 +77,7 @@ class EmailController {
    * @param {*} user
    * @param {*} { token, OTP }
    * @returns
-   * @memberof EmailController
+   * @memberof Email
    */
   static async newOTPRequestMail({ username, email }, OTP) {
     try {
@@ -93,4 +93,4 @@ class EmailController {
   }
 }
 
-export default EmailController;
+export default Email;

@@ -12,7 +12,7 @@ const replyRepository = new ReplyRepository();
 const reviewRepository = new ReviewRepository();
 const likeRepository = new LikeRepository();
 
-class ReplyController {
+class Reply {
   /**
    *
    *
@@ -20,13 +20,14 @@ class ReplyController {
    * @param {*} data
    * @param {*} authStatus
    * @returns
-   * @memberof ReplyController
+   * @memberof Reply
    */
   static async addReply(data, authStatus) {
     const newData = data;
-    const errors = validator.validateAddReply({
+    const { isValid, errors } = validator.validateAddReply({
       ...newData
     });
+
     try {
       authStatusCheck(authStatus);
 
@@ -37,7 +38,7 @@ class ReplyController {
       newData.id = Utils.generateId();
       newData.userId = authStatus.id;
 
-      if (Object.keys(errors).length !== 0) {
+      if (!isValid) {
         throw new Error(JSON.stringify(errors));
       }
 
@@ -55,7 +56,7 @@ class ReplyController {
    * @param {*} data
    * @param {*} authStatus
    * @returns
-   * @memberof ReplyController
+   * @memberof Reply
    */
   static async editReply(data, authStatus) {
     const newData = data;
@@ -85,7 +86,7 @@ class ReplyController {
    * @param {*} data
    * @param {*} authStatus
    * @returns
-   * @memberof ReplyController
+   * @memberof Reply
    */
   static async toggleLikeOnReply(data, authStatus) {
     const {
@@ -110,7 +111,7 @@ class ReplyController {
    * @param {*} data
    * @param {*} authStatus
    * @returns
-   * @memberof ReplyController
+   * @memberof Reply
    */
   static async deleteReply(data, authStatus) {
     const { replyId } = data;
@@ -137,7 +138,7 @@ class ReplyController {
    * @static
    * @param {*} reviewId
    * @returns
-   * @memberof ReplyController
+   * @memberof Reply
    */
   static async getReplies(reviewId) {
     try {
@@ -158,13 +159,13 @@ class ReplyController {
    * @static
    * @param {*} reviewId
    * @returns
-   * @memberof ReplyController
+   * @memberof Reply
    */
   static async returnReplies(reviewId) {
     try {
-      const replies = await ReplyController.getReplies(reviewId);
+      const replies = await Reply.getReplies(reviewId);
 
-      return ReplyController.flattenReplies(replies);
+      return Reply.flattenReplies(replies);
     } catch (error) {
       return error;
     }
@@ -176,7 +177,7 @@ class ReplyController {
    * @static
    * @param {*} replies
    * @returns
-   * @memberof ReplyController
+   * @memberof Reply
    */
   static flattenReplies(replies) {
     try {
@@ -201,4 +202,4 @@ class ReplyController {
   }
 }
 
-export default ReplyController;
+export default Reply;

@@ -1,7 +1,9 @@
 import bcrypt from 'bcrypt';
 import randomColor from 'randomcolor';
-import { dbQuery } from '..';
+import DB from '..';
 import logger from '../../utils/initLogger';
+
+const db = new DB();
 
 export const seedUser = async () => {
   const fakePassword = bcrypt.hashSync(process.env.FAKE_PASSWORD, 10);
@@ -28,7 +30,7 @@ export const seedUser = async () => {
   };
 
   try {
-    await dbQuery(queryConfig);
+    await db.query(queryConfig);
   } catch (error) {
     logger.info(error);
   }
@@ -47,7 +49,7 @@ export const undoUserSeed = async () => {
   };
 
   try {
-    await dbQuery(queryConfig);
+    await db.query(queryConfig);
   } catch (error) {
     logger.info(error);
   }

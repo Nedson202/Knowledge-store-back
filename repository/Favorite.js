@@ -1,5 +1,7 @@
-import { dbQuery } from '../database';
+import DB from '../database';
 import BaseRepository from '.';
+
+const db = new DB();
 
 class FavoritesRepository extends BaseRepository {
   constructor() {
@@ -29,7 +31,7 @@ class FavoritesRepository extends BaseRepository {
     };
 
     try {
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
 
       return result.rows;
     } catch (error) {

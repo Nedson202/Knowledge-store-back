@@ -4,7 +4,7 @@ import {
 
 import Utils from '../../utils';
 import ReplyType from '../types/reply';
-import ReplyController from '../../controller/ReplyController';
+import Reply from '../../controller/Reply';
 
 const ReplyMutation = {
   addReply: {
@@ -20,7 +20,7 @@ const ReplyMutation = {
     resolve(parent, args, context) {
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization);
-      return ReplyController.addReply(args, authorized);
+      return Reply.addReply(args, authorized);
     }
   },
   editReply: {
@@ -36,7 +36,7 @@ const ReplyMutation = {
     resolve(parent, args, context) {
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization);
-      return ReplyController.editReply(args, authorized);
+      return Reply.editReply(args, authorized);
     }
   },
   toggleLikeOnReply: {
@@ -49,7 +49,7 @@ const ReplyMutation = {
     resolve(parent, args, context) {
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization);
-      return ReplyController.toggleLikeOnReply(args, authorized);
+      return Reply.toggleLikeOnReply(args, authorized);
     }
   },
   deleteReply: {
@@ -62,7 +62,7 @@ const ReplyMutation = {
     resolve(parent, args, context) {
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization);
-      return ReplyController.deleteReply(args, authorized);
+      return Reply.deleteReply(args, authorized);
     }
   },
 };

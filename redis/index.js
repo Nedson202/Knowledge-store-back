@@ -2,37 +2,73 @@ import redis from 'redis';
 import logger from '../utils/initLogger';
 import { PRODUCTION } from '../settings';
 
-const host = process.env.NODE_ENV.match(PRODUCTION)
-  ? process.env.REDIS_URL : process.env.REDIS_LOCAL;
+class Redis {
+  constructor() {
+    this.redisClient = {};
 
-const redisClient = redis.createClient(host);
+    this.createClient();
+  }
 
-redisClient.on('connect', () => {
-  logger.info('Redis client connected');
-});
+  /**
+   *
+   *
+   * @returns
+   * @memberof Redis
+   */
+  getHost() {
+    return process.env.NODE_ENV.match(PRODUCTION)
+      ? process.env.REDIS_URL : process.env.REDIS_LOCAL;
+  }
 
-redisClient.on('error', (err) => {
-  logger.info(`Something went wrong: ${err}`);
-});
+  /**
+   *
+   * @memberof Redis
+   */
+  createClient() {
+    const redisClient = redis.createClient(this.getHost());
 
-export const addDataToRedis = (key, value) => {
-  redisClient.set(key, JSON.stringify(value), (err) => {
-    if (err) {
-      logger.warn(err);
-      throw err;
-    }
-    logger.info('Data added to redis store');
-  });
-};
+    redisClient.on('connect', () => {
+      logger.info('Redis client connected');
+    });
 
-export const getDataFromRedis = async key => new Promise((resolve, reject) => {
-  redisClient.get(key, (err, result) => {
-    if (err) {
-      reject(err);
-      logger.warn(err);
-    }
-    resolve(JSON.parse(result));
-  });
-});
+    redisClient.on('error', (err) => {
+      logger.info(`Something went wrong: ${err}`);
+    });
 
-export default redisClient;
+    this.redisClient = redisClient;
+  }
+
+  /**
+   *
+   * @param {string} key - redis data key
+   * @param {*} value - value to store
+   * @memberof Redis
+   */
+  addDataToRedis = (key, value) => {
+    this.redisClient.set(key, JSON.stringify(value), (err) => {
+      if (err) {
+        logger.warn(err);
+        throw err;
+      }
+      logger.info('Data added to redis store');
+    });
+  };
+
+  /**
+   *
+   * @param {string} key - redis data key
+   * @memberof Redis
+   */
+  getDataFromRedis = async key => new Promise((resolve, reject) => {
+    this.redisClient.get(key, (err, result) => {
+      if (err) {
+        reject(err);
+        logger.warn(err);
+      }
+
+      resolve(JSON.parse(result));
+    });
+  })
+}
+
+export default Redis;

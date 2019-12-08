@@ -60,23 +60,6 @@ export const ADMIN_ROLE = 'admin';
 export const SUPER_ADMIN_ROLE = 'super';
 export const USER_ROLE = 'user';
 
-// validator
-export const USERNAME_REQUIRED = 'Username is required';
-export const MINIMUM_PASSWORD_LENGTH = 'Minimum password length is 6';
-export const INVALID_EMAIL_MESSAGE = 'Email format is invalid';
-export const PASSWORD_PATTERN_MESSAGE = `Password must include lowercase,
-uppercase, and special characters`;
-export const BOOK_NAME_REQUIRED = 'book name is required';
-export const GENRE_REQUIRED = 'genre is required';
-export const YEAR_PUBLISHED_REQUIRED = 'book published year is required';
-export const BOOK_AUTHOR_REQUIRED = 'book author(s) is required';
-export const BOOK_ID_REQUIRED = 'bookId is required';
-export const REVIEW_REQUIRED = 'review is required';
-export const RATING_REQUIRED = 'rating is required';
-export const INVALID_RATING = 'Rating can not be more than 5.0';
-export const REPLY_REQUIRED = 'reply is required';
-export const REVIEW_ID_REQUIRED = 'reviewId is required';
-
 export const PRODUCTION = 'production';
 export const TEST = 'test';
 export const DEVELOPMENT = 'development';

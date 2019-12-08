@@ -1,5 +1,7 @@
 import { stackLogger } from 'info-logger';
-import { dbQuery } from '../database';
+import DB from '../database';
+
+const db = new DB();
 
 class BaseRepository {
   constructor(model) {
@@ -42,9 +44,13 @@ class BaseRepository {
     };
 
     try {
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
 
-      return result.rows[0];
+      if (result && result.rows) {
+        return result.rows[0];
+      }
+
+      return result.detail;
     } catch (error) {
       stackLogger(error);
       return error;
@@ -73,7 +79,7 @@ class BaseRepository {
     };
 
     try {
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
       const data = result.rows[0];
 
       return data;
@@ -103,7 +109,7 @@ class BaseRepository {
     };
 
     try {
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
       const data = result.rows;
 
       return data;
@@ -172,7 +178,7 @@ class BaseRepository {
     };
 
     try {
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
 
       return result.rows[0];
     } catch (error) {
@@ -203,7 +209,7 @@ class BaseRepository {
     };
 
     try {
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
 
       return result.rowCount;
     } catch (error) {
@@ -244,7 +250,7 @@ class BaseRepository {
       values,
     };
     try {
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
 
       return result.rowCount;
     } catch (error) {
