@@ -1,5 +1,5 @@
 import BaseRepository from '.';
-import { dbQuery } from '../database';
+import { dbInstance as db } from '../database';
 
 class ReviewRepository extends BaseRepository {
   constructor() {
@@ -38,7 +38,7 @@ class ReviewRepository extends BaseRepository {
     };
 
     try {
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
 
       return result.rows;
     } catch (error) {
@@ -60,7 +60,7 @@ class ReviewRepository extends BaseRepository {
         values: [bookId],
       };
 
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
       const average = result.rows[0].avg || 0;
 
       return average;

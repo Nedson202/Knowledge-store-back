@@ -4,7 +4,7 @@ import {
 } from 'graphql';
 
 import UserType from '../types/user';
-import UserController from '../../controller/UserController';
+import User from '../../controller/User';
 import Utils from '../../utils';
 
 const UserQuery = {
@@ -18,7 +18,7 @@ const UserQuery = {
     resolve(parent, args, context) {
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization);
-      return UserController.getAllUsers(args, authorized);
+      return User.getAllUsers(args, authorized);
     }
   },
   sendVerificationEmail: {
@@ -29,7 +29,7 @@ const UserQuery = {
       }
     },
     resolve(parent, args) {
-      return UserController.sendVerificationEmail(args);
+      return User.sendVerificationEmail(args);
     }
   },
   forgotPassword: {
@@ -40,7 +40,7 @@ const UserQuery = {
       }
     },
     resolve(parent, args) {
-      return UserController.forgotPassword(args);
+      return User.forgotPassword(args);
     }
   },
   decodeToken: {

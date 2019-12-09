@@ -6,11 +6,11 @@ import {
 
 import BookType from '../types/books';
 import GenreType from '../types/genre';
-import BookController from '../../controller/BookController';
-import GenreController from '../../controller/GenreController';
-import FavoritesController from '../../controller/FavoritesController';
+import Book from '../../controller/Book';
+import Genre from '../../controller/Genre';
+import Favorites from '../../controller/Favorites';
 import GoogleBooks from '../../controller/GooglBooks';
-import { updateBook } from '../../elasticSearch';
+import { esInstance as elasticSearch } from '../../elasticSearch';
 import Utils from '../../utils';
 
 const BookQuery = {
@@ -69,13 +69,13 @@ const BookQuery = {
       }
     },
     resolve(parent, args) {
-      return updateBook(args);
+      return elasticSearch.updateBook(args);
     }
   },
   getGenres: {
     type: new GraphQLList(GenreType),
     resolve() {
-      return GenreController.getGenres();
+      return Genre.getGenres();
     }
   },
   usersBooks: {
@@ -89,7 +89,7 @@ const BookQuery = {
       const { token } = args;
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(token || authorization);
-      return BookController.getUsersBooks(authorized);
+      return Book.getUsersBooks(authorized);
     }
   },
   favoriteBooks: {
@@ -103,7 +103,7 @@ const BookQuery = {
       const { token } = args;
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(token || authorization);
-      return FavoritesController.getFavorites(authorized);
+      return Favorites.getFavorites(authorized);
     }
   },
 };

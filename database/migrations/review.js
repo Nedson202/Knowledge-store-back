@@ -1,5 +1,5 @@
-import { dbQuery } from '..';
-import logger from '../../utils/initLogger';
+import { dbInstance as db } from '..';
+import { loggerInstance as logger } from '../../logger';
 
 export const createReviewTable = async () => {
   const query = `
@@ -24,7 +24,7 @@ export const createReviewTable = async () => {
   };
 
   try {
-    await dbQuery(queryConfig);
+    await db.query(queryConfig);
   } catch (error) {
     logger.info(error);
   }
@@ -42,7 +42,7 @@ export const dropReviewTable = async () => {
   };
 
   try {
-    await dbQuery(queryConfig);
+    await db.query(queryConfig);
   } catch (error) {
     logger.info(error);
   }

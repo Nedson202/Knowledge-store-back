@@ -1,5 +1,5 @@
-import { stackLogger } from 'info-logger';
-import { dbQuery } from '../database';
+import { loggerInstance as logger } from '../logger';
+import { dbInstance as db } from '../database';
 
 class BaseRepository {
   constructor(model) {
@@ -42,11 +42,15 @@ class BaseRepository {
     };
 
     try {
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
 
-      return result.rows[0];
+      if (result && result.rows) {
+        return result.rows[0];
+      }
+
+      return result.detail;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -73,12 +77,12 @@ class BaseRepository {
     };
 
     try {
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
       const data = result.rows[0];
 
       return data;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -103,12 +107,12 @@ class BaseRepository {
     };
 
     try {
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
       const data = result.rows;
 
       return data;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -123,7 +127,7 @@ class BaseRepository {
 
       return data;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -172,11 +176,11 @@ class BaseRepository {
     };
 
     try {
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
 
       return result.rows[0];
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -203,11 +207,11 @@ class BaseRepository {
     };
 
     try {
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
 
       return result.rowCount;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -244,11 +248,11 @@ class BaseRepository {
       values,
     };
     try {
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
 
       return result.rowCount;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }

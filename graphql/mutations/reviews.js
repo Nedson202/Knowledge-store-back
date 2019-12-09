@@ -5,7 +5,7 @@ import {
 } from 'graphql';
 
 import ReviewType from '../types/review';
-import ReviewController from '../../controller/ReviewController';
+import Review from '../../controller/Review';
 import Utils from '../../utils';
 
 const ReviewMutation = {
@@ -29,7 +29,7 @@ const ReviewMutation = {
       const { token } = args;
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(token || authorization);
-      return ReviewController.addReview(args, authorized);
+      return Review.addReview(args, authorized);
     }
   },
   editReview: {
@@ -51,7 +51,7 @@ const ReviewMutation = {
     resolve(parent, args, context) {
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization);
-      return ReviewController.editReview(args, authorized);
+      return Review.editReview(args, authorized);
     }
   },
   deleteReview: {
@@ -64,7 +64,7 @@ const ReviewMutation = {
     resolve(parent, args, context) {
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization);
-      return ReviewController.deleteReview(args, authorized);
+      return Review.deleteReview(args, authorized);
     }
   },
   toggleLikeOnReview: {
@@ -77,7 +77,7 @@ const ReviewMutation = {
     resolve(parent, args, context) {
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization);
-      return ReviewController.toggleLikeOnReview(args, authorized);
+      return Review.toggleLikeOnReview(args, authorized);
     }
   },
 };

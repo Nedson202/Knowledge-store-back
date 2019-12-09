@@ -2,7 +2,7 @@ import {
   GraphQLString,
 } from 'graphql';
 import UserType from '../types/user';
-import UserController from '../../controller/UserController';
+import User from '../../controller/User';
 import Utils from '../../utils';
 
 const UserMutation = {
@@ -20,7 +20,7 @@ const UserMutation = {
       }
     },
     resolve(parent, args) {
-      return UserController.addUser(args);
+      return User.addUser(args);
     }
   },
   loginUser: {
@@ -34,7 +34,7 @@ const UserMutation = {
       },
     },
     resolve(parent, args) {
-      return UserController.authenticateUser(args);
+      return User.authenticateUser(args);
     }
   },
   toggleAdmin: {
@@ -50,7 +50,7 @@ const UserMutation = {
     resolve(parent, args, context) {
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization);
-      return UserController.toggleAdmin(args, authorized);
+      return User.toggleAdmin(args, authorized);
     }
   },
   addSuperAdmin: {
@@ -63,7 +63,7 @@ const UserMutation = {
     resolve(parent, args, context) {
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization);
-      return UserController.addSuperAdmin(args, authorized);
+      return User.addSuperAdmin(args, authorized);
     }
   },
   deleteUser: {
@@ -76,7 +76,7 @@ const UserMutation = {
     resolve(parent, args, context) {
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization);
-      return UserController.deleteUser(args, authorized);
+      return User.deleteUser(args, authorized);
     }
   },
   editProfile: {
@@ -95,7 +95,7 @@ const UserMutation = {
     resolve(parent, args, context) {
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization);
-      return UserController.editProfile(args, authorized);
+      return User.editProfile(args, authorized);
     }
   },
   removeProfilePicture: {
@@ -109,7 +109,7 @@ const UserMutation = {
       const { token } = args;
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization || token);
-      return UserController.removeProfilePicture(authorized);
+      return User.removeProfilePicture(authorized);
     }
   },
   changePassword: {
@@ -125,7 +125,7 @@ const UserMutation = {
     resolve(parent, args, context) {
       const { authorization } = context.headers;
       const authorized = Utils.authenticate(authorization);
-      return UserController.changePassword(args, authorized);
+      return User.changePassword(args, authorized);
     }
   },
   resetPassword: {
@@ -148,7 +148,7 @@ const UserMutation = {
       }
     },
     resolve(parent, args) {
-      return UserController.resetPassword(args);
+      return User.resetPassword(args);
     }
   },
   verifyEmail: {
@@ -164,7 +164,7 @@ const UserMutation = {
     resolve(parent, args) {
       const { token } = args;
       const authorized = Utils.authenticate(token);
-      return UserController.verifyEmail(args, authorized);
+      return User.verifyEmail(args, authorized);
     }
   },
   verifyForgotPasswordRequest: {
@@ -180,7 +180,7 @@ const UserMutation = {
     resolve(parent, args) {
       const { token } = args;
       const authorized = Utils.authenticate(token);
-      return UserController.verifyForgotPasswordOTP(args, authorized);
+      return User.verifyForgotPasswordOTP(args, authorized);
     }
   },
   resendOTP: {
@@ -193,7 +193,7 @@ const UserMutation = {
     resolve(parent, args) {
       const { token } = args;
       const authorized = Utils.authenticate(token);
-      return UserController.resendOTP(authorized);
+      return User.resendOTP(authorized);
     }
   },
 };

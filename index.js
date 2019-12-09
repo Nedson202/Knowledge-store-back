@@ -1,27 +1,23 @@
 import './appSetup/exceptionHandler';
-import app from './appSetup/middlewareHook';
 import './appSetup/pingHealthChecker';
+import app from './appSetup/middlewareHook';
 
 import './passport';
-import {
-  elasticClientHealthCheck, createMapping
-} from './elasticSearch';
-import logger from './utils/initLogger';
-import './redis';
+import { loggerInstance as logger } from './logger';
 
 const port = process.env.PORT || 4000;
 
 app.listen(port,
   () => {
     logger.info(`
-      App running on ${process.env.NODE_ENV.toUpperCase()} mode and
-      Listening on port ${port}...\n
+      App running in ${process.env.NODE_ENV.toUpperCase()} mode
     `);
 
-    if (process.env.NODE_ENV.match('development')) {
+    logger.info(`
+      Listening on port ${port}
+    `);
+
+    if (!process.env.NODE_ENV.match('production')) {
       logger.info(`http://localhost:${port}\n`);
     }
   });
-
-elasticClientHealthCheck();
-createMapping();

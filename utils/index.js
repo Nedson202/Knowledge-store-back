@@ -4,7 +4,7 @@ import authenticator from 'otplib/authenticator';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { stackLogger } from 'info-logger';
+import { loggerInstance as logger } from '../logger';
 import { DARK_LUMINOSITY, COLOR_FORMAT } from '../settings';
 
 authenticator.options = {
@@ -113,7 +113,7 @@ class Utils {
 
       return isValid;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }

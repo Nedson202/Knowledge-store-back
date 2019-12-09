@@ -1,5 +1,5 @@
-import { dbQuery } from '..';
-import logger from '../../utils/initLogger';
+import { dbInstance as db } from '..';
+import { loggerInstance as logger } from '../../logger';
 
 export const createLikeTable = async () => {
   const query = `
@@ -21,7 +21,7 @@ export const createLikeTable = async () => {
   };
 
   try {
-    await dbQuery(queryConfig);
+    await db.query(queryConfig);
   } catch (error) {
     logger.info(error);
   }
@@ -37,7 +37,7 @@ export const dropLikeTable = async () => {
   };
 
   try {
-    await dbQuery(queryConfig);
+    await db.query(queryConfig);
   } catch (error) {
     logger.info(error);
   }

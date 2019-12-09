@@ -11,7 +11,7 @@ import {
 } from 'graphql-iso-date';
 
 import ReplyType from './reply';
-import ReplyController from '../../controller/ReplyController';
+import Reply from '../../controller/Reply';
 
 const ReviewType = new GraphQLObjectType({
   name: 'Review',
@@ -46,7 +46,7 @@ const ReviewType = new GraphQLObjectType({
     replies: {
       type: new GraphQLList(ReplyType),
       resolve(parent) {
-        return ReplyController.returnReplies(parent.id);
+        return Reply.returnReplies(parent.id);
       }
     },
     likes: {

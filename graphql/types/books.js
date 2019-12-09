@@ -12,9 +12,9 @@ import {
 } from 'graphql-iso-date';
 
 import ReviewType from './review';
-import ReviewController from '../../controller/ReviewController';
+import Review from '../../controller/Review';
 import GoogleBooks from '../../controller/GooglBooks';
-import FavoritesController from '../../controller/FavoritesController';
+import Favorites from '../../controller/Favorites';
 import Utils from '../../utils';
 
 const BookType = new GraphQLObjectType({
@@ -49,7 +49,7 @@ const BookType = new GraphQLObjectType({
       resolve(parent, _, context) {
         const { authorization } = context.headers;
         const authorized = Utils.authenticate(authorization);
-        return FavoritesController.checkFavorite(parent.id, authorized);
+        return Favorites.checkFavorite(parent.id, authorized);
       }
     },
     userId: {
@@ -64,13 +64,13 @@ const BookType = new GraphQLObjectType({
     reviews: {
       type: new GraphQLList(ReviewType),
       resolve(parent) {
-        return ReviewController.getBookReviews(parent.id);
+        return Review.getBookReviews(parent.id);
       }
     },
     averageRating: {
       type: GraphQLFloat,
       resolve(parent) {
-        return ReviewController.getAverageRating(parent.id);
+        return Review.getAverageRating(parent.id);
       }
     },
     googleAverageRating: {

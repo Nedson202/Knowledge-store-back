@@ -1,6 +1,6 @@
-import { stackLogger } from 'info-logger';
+import { loggerInstance as logger } from '../logger';
 import BaseRepository from '.';
-import { dbQuery } from '../database';
+import { dbInstance as db } from '../database';
 
 class ReplyRepository extends BaseRepository {
   constructor() {
@@ -34,11 +34,11 @@ class ReplyRepository extends BaseRepository {
     };
 
     try {
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
 
       return result.rows;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }

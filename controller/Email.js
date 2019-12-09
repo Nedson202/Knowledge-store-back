@@ -1,4 +1,4 @@
-import { stackLogger } from 'info-logger';
+import { loggerInstance as logger } from '../logger';
 import mailer from '../utils/mailer';
 import {
   PRODUCTION, DEV_SERVER, VERIFY_EMAIL_SUBJECT,
@@ -14,7 +14,7 @@ const redirectUrl = process.env.NODE_ENV.match(PRODUCTION)
 
 const userRepository = new UserRepository();
 
-class EmailController {
+class Email {
   /**
    *
    *
@@ -22,7 +22,7 @@ class EmailController {
    * @param {*} user
    * @param {*} { token, OTP }
    * @returns
-   * @memberof EmailController
+   * @memberof Email
    */
   static async sendEmailVerificationMail(user, { token, OTP }) {
     try {
@@ -42,7 +42,7 @@ class EmailController {
         username: username.toLowerCase(),
       }, { isEmailSent: 'true' });
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -54,7 +54,7 @@ class EmailController {
    * @param {*} user
    * @param {*} { token, OTP }
    * @returns
-   * @memberof EmailController
+   * @memberof Email
    */
   static async sendPasswordResetMail(user, { token, OTP }) {
     try {
@@ -65,7 +65,7 @@ class EmailController {
 
       await mailer(emailTemplate, email, PASSWORD_RESET_SUBJECT);
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -77,7 +77,7 @@ class EmailController {
    * @param {*} user
    * @param {*} { token, OTP }
    * @returns
-   * @memberof EmailController
+   * @memberof Email
    */
   static async newOTPRequestMail({ username, email }, OTP) {
     try {
@@ -87,10 +87,10 @@ class EmailController {
 
       await mailer(emailTemplate, email, RESENT_OTP_SUBJECT);
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
 }
 
-export default EmailController;
+export default Email;

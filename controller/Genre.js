@@ -1,34 +1,34 @@
-import { stackLogger } from 'info-logger';
-import { addDataToRedis, getDataFromRedis } from '../redis';
+import { loggerInstance as logger } from '../logger';
+import { redisInstance as redis } from '../redis';
 import GenreRepository from '../repository/Genre';
 
 const genreRepository = new GenreRepository();
 
-class GenreController {
+class Genre {
   /**
    *
    *
    * @static
    * @returns
-   * @memberof GenreController
+   * @memberof Genre
    */
   static async getGenres() {
     try {
       const redisKey = 'book::::genres';
-      let bookGenres = await getDataFromRedis(redisKey) || [];
+      let bookGenres = await redis.getDataFromRedis(redisKey) || [];
 
       if (!bookGenres.length) {
         bookGenres = await genreRepository.getAll();
 
-        addDataToRedis(redisKey, bookGenres);
+        redis.addDataToRedis(redisKey, bookGenres);
       }
 
       return bookGenres;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
 }
 
-export default GenreController;
+export default Genre;

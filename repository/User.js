@@ -1,4 +1,4 @@
-import { dbQuery } from '../database';
+import { dbInstance as db } from '../database';
 import BaseRepository from '.';
 
 class UserRepository extends BaseRepository {
@@ -31,7 +31,7 @@ class UserRepository extends BaseRepository {
     };
 
     try {
-      const result = await dbQuery(queryConfig);
+      const result = await db.query(queryConfig);
 
       return result.rows;
     } catch (error) {

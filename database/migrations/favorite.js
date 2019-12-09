@@ -1,5 +1,5 @@
-import { dbQuery } from '..';
-import logger from '../../utils/initLogger';
+import { dbInstance as db } from '..';
+import { loggerInstance as logger } from '../../logger';
 
 export const createFavoriteTable = async () => {
   const query = `
@@ -19,7 +19,7 @@ export const createFavoriteTable = async () => {
   };
 
   try {
-    await dbQuery(queryConfig);
+    await db.query(queryConfig);
   } catch (error) {
     logger.info(error);
   }
@@ -35,7 +35,7 @@ export const dropFavoriteTable = async () => {
   };
 
   try {
-    await dbQuery(queryConfig);
+    await db.query(queryConfig);
   } catch (error) {
     logger.info(error);
   }

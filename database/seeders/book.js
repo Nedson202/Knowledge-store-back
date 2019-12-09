@@ -1,5 +1,5 @@
-import { dbQuery } from '..';
-import logger from '../../utils/initLogger';
+import { dbInstance as db } from '..';
+import { loggerInstance as logger } from '../../logger';
 /* eslint-disable max-len */
 
 export const seedBooks = async () => {
@@ -80,7 +80,7 @@ export const seedBooks = async () => {
   };
 
   try {
-    await dbQuery(queryConfig);
+    await db.query(queryConfig);
   } catch (error) {
     logger.info(error);
   }
@@ -110,7 +110,7 @@ export const undoBookSeed = async () => {
   };
 
   try {
-    await dbQuery(queryConfig);
+    await db.query(queryConfig);
   } catch (error) {
     logger.info(error);
   }
