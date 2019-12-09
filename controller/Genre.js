@@ -1,9 +1,8 @@
-import { stackLogger } from 'info-logger';
-import Redis from '../redis';
+import { loggerInstance as logger } from '../logger';
+import { redisInstance as redis } from '../redis';
 import GenreRepository from '../repository/Genre';
 
 const genreRepository = new GenreRepository();
-const redis = new Redis();
 
 class Genre {
   /**
@@ -26,7 +25,7 @@ class Genre {
 
       return bookGenres;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }

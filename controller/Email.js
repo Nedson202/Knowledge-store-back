@@ -1,4 +1,4 @@
-import { stackLogger } from 'info-logger';
+import { loggerInstance as logger } from '../logger';
 import mailer from '../utils/mailer';
 import {
   PRODUCTION, DEV_SERVER, VERIFY_EMAIL_SUBJECT,
@@ -42,7 +42,7 @@ class Email {
         username: username.toLowerCase(),
       }, { isEmailSent: 'true' });
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -65,7 +65,7 @@ class Email {
 
       await mailer(emailTemplate, email, PASSWORD_RESET_SUBJECT);
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -87,7 +87,7 @@ class Email {
 
       await mailer(emailTemplate, email, RESENT_OTP_SUBJECT);
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }

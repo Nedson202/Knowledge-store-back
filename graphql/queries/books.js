@@ -10,10 +10,8 @@ import Book from '../../controller/Book';
 import Genre from '../../controller/Genre';
 import Favorites from '../../controller/Favorites';
 import GoogleBooks from '../../controller/GooglBooks';
-import ElasticSearch from '../../elasticSearch';
+import { esInstance as elasticSearch } from '../../elasticSearch';
 import Utils from '../../utils';
-
-const elasticSearch = new ElasticSearch();
 
 const BookQuery = {
   book: {

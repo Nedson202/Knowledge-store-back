@@ -1,12 +1,9 @@
 import googleBooks from 'google-books-search';
-import ElasticSearch from '../elasticSearch';
+import { esInstance as elasticSearch } from '../elasticSearch';
 import Utils from '../utils';
 import { BOOK_LABEL, GOOGLE_BOOK_OPTIONS } from '../settings';
 import Book from './Book';
-import Redis from '../redis';
-
-const redis = new Redis();
-const elasticSearch = new ElasticSearch();
+import { redisInstance as redis } from '../redis';
 
 class GoogleBooks {
   /**

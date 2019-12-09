@@ -1,4 +1,4 @@
-import { stackLogger } from 'info-logger';
+import { loggerInstance as logger } from '../logger';
 
 import Utils from '../utils';
 import validator from '../utils/validator';
@@ -44,7 +44,7 @@ class Reply {
 
       return review && await replyRepository.create(newData);
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -74,7 +74,7 @@ class Reply {
 
       return editedReply;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -99,7 +99,7 @@ class Reply {
         replyId
       }, authStatus.id);
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -127,7 +127,7 @@ class Reply {
 
       return deletedReply;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -148,7 +148,7 @@ class Reply {
 
       return replies.length ? replies : [];
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }

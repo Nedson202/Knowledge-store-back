@@ -1,7 +1,10 @@
 import http from 'http';
 import https from 'https';
+import dotenv from 'dotenv';
 
-import { DEVELOPMENT } from '../settings';
+import { DEVELOPMENT, PRODUCTION } from '../settings';
+
+dotenv.config();
 
 const port = process.env.PORT || 4000;
 const appUrl = process.env.NODE_ENV.match(DEVELOPMENT)
@@ -9,8 +12,16 @@ const appUrl = process.env.NODE_ENV.match(DEVELOPMENT)
 
 const httpProtocol = process.env.NODE_ENV.match(DEVELOPMENT) ? http : https;
 
-setInterval(() => {
-  (() => {
-    httpProtocol.get(`${appUrl}/health`, () => { });
-  })();
-}, 1000 * 10 * 60);
+const handlePing = () => {
+  if (!process.env.NODE_ENV.match(PRODUCTION)) {
+    return;
+  }
+
+  setInterval(() => {
+    (() => {
+      httpProtocol.get(`${appUrl}/health`, () => { });
+    })();
+  }, 1000 * 10 * 60);
+};
+
+handlePing();

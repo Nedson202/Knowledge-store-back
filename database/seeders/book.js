@@ -1,8 +1,6 @@
-import DB from '..';
-import logger from '../../utils/initLogger';
+import { dbInstance as db } from '..';
+import { loggerInstance as logger } from '../../logger';
 /* eslint-disable max-len */
-
-const db = new DB();
 
 export const seedBooks = async () => {
   const query = `

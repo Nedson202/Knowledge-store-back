@@ -1,8 +1,8 @@
-import { stackLogger } from 'info-logger';
+import { loggerInstance as logger } from '../logger';
 
 import Utils from '../utils';
 import validator from '../utils/validator';
-import ElasticSearch from '../elasticSearch';
+import { esInstance as elasticSearch } from '../elasticSearch';
 import authStatusCheck from '../utils/authStatusCheck';
 import {
   BOOK_LABEL, NO_BOOK_MESSAGE,
@@ -12,7 +12,6 @@ import {
 import BookRepository from '../repository/Book';
 
 const bookRepository = new BookRepository();
-const elasticSearch = new ElasticSearch();
 
 class Book {
   /**
@@ -43,7 +42,7 @@ class Book {
 
       return createdBook;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -81,7 +80,7 @@ class Book {
 
       return usersBooks || [];
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -103,7 +102,7 @@ class Book {
 
       return book;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -139,7 +138,7 @@ class Book {
 
       return updatedBook;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -173,7 +172,7 @@ class Book {
         message: BOOK_DELETED_MESSAGE,
       };
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }

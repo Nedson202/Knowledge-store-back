@@ -1,21 +1,19 @@
-import { stackLogger } from 'info-logger';
+import { loggerInstance as logger } from '../logger';
 
 import Utils from '../utils';
 import validator from '../utils/validator';
-import ElasticSearch from '../elasticSearch';
+import { esInstance as elasticSearch } from '../elasticSearch';
 import Book from './Book';
 import {
   NO_REVIEW, NO_BOOK_FOUND,
 } from '../settings';
-import Redis from '../redis';
+import { redisInstance as redis } from '../redis';
 import authStatusCheck from '../utils/authStatusCheck';
 import ReviewRepository from '../repository/Review';
 import LikeRepository from '../repository/Like';
 
 const reviewRepository = new ReviewRepository();
 const likeRepository = new LikeRepository();
-const redis = new Redis();
-const elasticSearch = new ElasticSearch();
 
 class Review {
   /**
@@ -64,7 +62,7 @@ class Review {
 
       return retrievedBook && await reviewRepository.create(newData);
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -99,7 +97,7 @@ class Review {
 
       return editedReview;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -124,7 +122,7 @@ class Review {
         reviewId
       }, authStatus.id);
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -170,7 +168,7 @@ class Review {
         id: reviewId
       });
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -191,7 +189,7 @@ class Review {
 
       return !reviews.length ? [] : reviews;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }

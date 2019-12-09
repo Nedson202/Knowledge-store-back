@@ -1,4 +1,4 @@
-import { stackLogger } from 'info-logger';
+import { loggerInstance as logger } from '../logger';
 
 import Utils from '../utils';
 import validator from '../utils/validator';
@@ -61,6 +61,7 @@ class User {
 
       const newUser = await userRepository.create(userObject);
       if (!newUser.id) {
+        logger.error(newUser);
         throw new Error(newUser);
       }
 
@@ -72,7 +73,7 @@ class User {
 
       return payload;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -113,7 +114,7 @@ class User {
 
       return payload;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -156,7 +157,7 @@ class User {
         token
       };
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -202,7 +203,7 @@ class User {
         message: OTP_SUCCESS,
       };
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -235,7 +236,7 @@ class User {
         message: OTP_RESEND_SUCCESS,
       };
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -277,7 +278,7 @@ class User {
 
       return payload;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -315,7 +316,7 @@ class User {
 
       return payload;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -354,7 +355,7 @@ class User {
         message: PASSWORD_CHANGE_SUCCESSFUL,
       };
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -398,7 +399,7 @@ class User {
 
       return payload;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -448,7 +449,7 @@ class User {
         message: EMAIL_VERIFIED_MESSAGE
       };
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -489,7 +490,7 @@ class User {
         message: EMAIL_SENT_MESSAGE
       };
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -510,7 +511,7 @@ class User {
 
       return user;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -554,7 +555,7 @@ class User {
           : 'User has been removed as admin'
       };
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -588,7 +589,7 @@ class User {
           return false;
       }
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
     }
   }
 
@@ -628,7 +629,7 @@ class User {
         message: 'User role successfully changed to super admin'
       };
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
     }
   }
 
@@ -664,7 +665,7 @@ class User {
         message: USER_DELETED_MESSAGE
       };
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -694,7 +695,7 @@ class User {
 
       return users;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }

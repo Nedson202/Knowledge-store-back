@@ -1,8 +1,6 @@
-import { stackLogger } from 'info-logger';
+import { loggerInstance as logger } from '../logger';
 import BaseRepository from '.';
-import DB from '../database';
-
-const db = new DB();
+import { dbInstance as db } from '../database';
 
 class ReplyRepository extends BaseRepository {
   constructor() {
@@ -40,7 +38,7 @@ class ReplyRepository extends BaseRepository {
 
       return result.rows;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }

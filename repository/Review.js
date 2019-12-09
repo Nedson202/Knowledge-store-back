@@ -1,7 +1,5 @@
 import BaseRepository from '.';
-import DB from '../database';
-
-const db = new DB();
+import { dbInstance as db } from '../database';
 
 class ReviewRepository extends BaseRepository {
   constructor() {

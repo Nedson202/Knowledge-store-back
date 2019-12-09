@@ -1,18 +1,16 @@
-import { stackLogger } from 'info-logger';
+import { loggerInstance as logger } from '../logger';
 
 import FavoritesRepository from '../repository/Favorite';
 import Book from './Book';
-import ElasticSearch from '../elasticSearch';
+import { esInstance as elasticSearch } from '../elasticSearch';
 import {
   ADDED_TO_FAVORITE, BOOK_REMOVED_FROM_FAVORITES
 } from '../settings';
 import Utils from '../utils';
 import authStatusCheck from '../utils/authStatusCheck';
-import Redis from '../redis';
+import { redisInstance as redis } from '../redis';
 
 const favoritesRepository = new FavoritesRepository();
-const redis = new Redis();
-const elasticSearch = new ElasticSearch();
 
 class Favorites {
   /**
@@ -49,7 +47,7 @@ class Favorites {
         };
       }
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -97,7 +95,7 @@ class Favorites {
 
       return false;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -124,7 +122,7 @@ class Favorites {
 
       if (favorite) return true;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -160,7 +158,7 @@ class Favorites {
 
       return bookData;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -190,7 +188,7 @@ class Favorites {
         message: BOOK_REMOVED_FROM_FAVORITES
       };
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }

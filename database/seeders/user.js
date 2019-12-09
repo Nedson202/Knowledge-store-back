@@ -1,9 +1,8 @@
 import bcrypt from 'bcrypt';
 import randomColor from 'randomcolor';
-import DB from '..';
-import logger from '../../utils/initLogger';
 
-const db = new DB();
+import { dbInstance as db } from '..';
+import { loggerInstance as logger } from '../../logger';
 
 export const seedUser = async () => {
   const fakePassword = bcrypt.hashSync(process.env.FAKE_PASSWORD, 10);

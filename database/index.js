@@ -1,8 +1,6 @@
 import { Pool } from 'pg';
-import { stackLogger } from 'info-logger';
-import logger from '../utils/initLogger';
+import { loggerInstance as logger } from '../logger';
 import config from './config';
-import { PRODUCTION, TEST } from '../settings';
 
 class DB {
   constructor() {
@@ -12,19 +10,7 @@ class DB {
   }
 
   initDBConnectiion = () => {
-    let dbConfig = config;
-
-    if (process.env.NODE_ENV.match(PRODUCTION)) {
-      dbConfig = {
-        connectionString: process.env.HEROKU_POSTGRESQL_AMBER_URL
-      };
-    }
-
-    if (process.env.NODE_ENV.match(TEST)) {
-      dbConfig.database = process.env.TEST_DB_NAME;
-    }
-
-    const db = new Pool(dbConfig);
+    const db = new Pool(config);
 
     db.on('connect', () => {
       logger.info('Connected successfully to database');
@@ -44,7 +30,7 @@ class DB {
       `);
       return executedQuery;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   };
@@ -55,5 +41,7 @@ class DB {
     });
   };
 }
+
+export const dbInstance = new DB();
 
 export default DB;

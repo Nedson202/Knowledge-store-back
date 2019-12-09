@@ -1,7 +1,6 @@
 import elasticSearch from 'elasticsearch';
-import { stackLogger } from 'info-logger';
 import dotenv from 'dotenv';
-import logger from '../utils/initLogger';
+import { loggerInstance as logger } from '../logger';
 import {
   info, ELASTIC_CLIENT_ALIVE, ELASTIC_CLIENT_RUNNING, BOOKS_INDEX,
   ERROR_CREATING_INDEX, INDEX_CREATED_MESSAGE, PRODUCTION, NO_INDEX, ELASTIC_SEARCH_MAPPING,
@@ -40,7 +39,11 @@ class ElasticSearch {
     this.elasticClient.indices.exists({
       index: BOOKS_INDEX
     }, (error, resp) => {
-      if (error) logger.info(NO_INDEX, error);
+      if (error) {
+        logger.info(NO_INDEX, error);
+
+        return;
+      }
 
       if (!resp) {
         this.createIndex();
@@ -74,10 +77,12 @@ class ElasticSearch {
       requestTimeout: 50000,
     }, (error) => {
       if (error) {
-        stackLogger(error);
-      } else {
-        logger.info(ELASTIC_CLIENT_ALIVE);
+        logger.stackLogger(error);
+
+        return;
       }
+
+      logger.info(ELASTIC_CLIENT_ALIVE);
     });
 
     this.elasticClient = elasticClient;
@@ -90,7 +95,12 @@ class ElasticSearch {
    */
   elasticClientHealthCheck = () => {
     this.elasticClient.cluster.health({}, (error, resp) => {
-      if (error) stackLogger(error);
+      if (error) {
+        logger.stackLogger(error);
+
+        return;
+      }
+
       logger.info(ELASTIC_CLIENT_RUNNING, resp);
     });
   };
@@ -106,11 +116,13 @@ class ElasticSearch {
       include_type_name: true,
     }, (error, resp, status) => {
       if (error) {
-        stackLogger(error);
+        logger.stackLogger(error);
         logger.info(ERROR_CREATING_INDEX, error);
-      } else {
-        logger.info(INDEX_CREATED_MESSAGE, resp, status);
+
+        return;
       }
+
+      logger.info(INDEX_CREATED_MESSAGE, resp, status);
     });
   };
 
@@ -134,7 +146,7 @@ class ElasticSearch {
    */
   deleteIndex = (index) => {
     this.elasticClient.indices.delete({ index }, (error, resp, status) => {
-      if (error) return stackLogger(error);
+      if (error) return logger.stackLogger(error);
 
       logger.info(INDEX_DELETED_MESSAGE, resp, status);
     });
@@ -154,7 +166,7 @@ class ElasticSearch {
       type,
       body: index
     }, (error, resp) => {
-      if (error) return stackLogger(error);
+      if (error) return logger.stackLogger(error);
 
       logger.info(BOOK_ADDED_MESSAGE, resp);
     });
@@ -174,7 +186,7 @@ class ElasticSearch {
       id,
     }).then(result => result._source) // eslint-disable-line
       .catch((error) => {
-        stackLogger(error);
+        logger.stackLogger(error);
       });
 
     return book;
@@ -200,7 +212,7 @@ class ElasticSearch {
       id,
       body
     }, (error, resp) => {
-      if (error) return stackLogger(error);
+      if (error) return logger.stackLogger(error);
       logger.info(BOOK_UPDATED_MESSAGE, resp);
     });
   };
@@ -219,7 +231,7 @@ class ElasticSearch {
       id,
       type
     }, (error, resp, status) => {
-      if (error) return stackLogger(error);
+      if (error) return logger.stackLogger(error);
       logger.info('-- Deleted', resp, status);
     });
   };
@@ -247,7 +259,7 @@ class ElasticSearch {
     this.elasticClient.bulk({
       body: data
     }, (error) => {
-      if (error) return stackLogger(error);
+      if (error) return logger.stackLogger(error);
 
       logger.info('Successfully imported %s'.yellow, bulkData.length);
     });
@@ -288,11 +300,13 @@ class ElasticSearch {
     })
       .then(results => results.hits.hits.map(result => result._source)) // eslint-disable-line
       .catch((error) => {
-        stackLogger(error);
+        logger.stackLogger(error);
       });
 
     return hits;
   };
 }
+
+export const esInstance = new ElasticSearch();
 
 export default ElasticSearch;

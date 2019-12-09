@@ -1,7 +1,5 @@
-import DB from '../database';
+import { dbInstance as db } from '../database';
 import BaseRepository from '.';
-
-const db = new DB();
 
 class FavoritesRepository extends BaseRepository {
   constructor() {

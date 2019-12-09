@@ -1,5 +1,5 @@
 import redis from 'redis';
-import logger from '../utils/initLogger';
+import { loggerInstance as logger } from '../logger';
 import { PRODUCTION } from '../settings';
 
 class Redis {
@@ -28,11 +28,11 @@ class Redis {
     const redisClient = redis.createClient(this.getHost());
 
     redisClient.on('connect', () => {
-      logger.info('Redis client connected');
+      logger.info('-- Redis client connected --');
     });
 
     redisClient.on('error', (err) => {
-      logger.info(`Something went wrong: ${err}`);
+      logger.info(`-- Something went wrong: ${err} --`);
     });
 
     this.redisClient = redisClient;
@@ -70,5 +70,7 @@ class Redis {
     });
   })
 }
+
+export const redisInstance = new Redis();
 
 export default Redis;

@@ -1,7 +1,5 @@
-import { stackLogger } from 'info-logger';
-import DB from '../database';
-
-const db = new DB();
+import { loggerInstance as logger } from '../logger';
+import { dbInstance as db } from '../database';
 
 class BaseRepository {
   constructor(model) {
@@ -52,7 +50,7 @@ class BaseRepository {
 
       return result.detail;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -84,7 +82,7 @@ class BaseRepository {
 
       return data;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -114,7 +112,7 @@ class BaseRepository {
 
       return data;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -129,7 +127,7 @@ class BaseRepository {
 
       return data;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -182,7 +180,7 @@ class BaseRepository {
 
       return result.rows[0];
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -213,7 +211,7 @@ class BaseRepository {
 
       return result.rowCount;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
@@ -254,7 +252,7 @@ class BaseRepository {
 
       return result.rowCount;
     } catch (error) {
-      stackLogger(error);
+      logger.stackLogger(error);
       return error;
     }
   }
