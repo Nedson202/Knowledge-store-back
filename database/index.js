@@ -4,19 +4,21 @@ import config from './config';
 
 class DB {
   constructor() {
-    this.db = {};
+    this.db = new Pool(config);
 
-    this.initDBConnectiion();
+    this.initDBConnection();
   }
 
-  initDBConnectiion = () => {
-    const db = new Pool(config);
+  initDBConnection = () => {
+    this.db.connect((err) => {
+      if (err) {
+        logger.info('-- Unable to establish a connection to database --');
 
-    db.on('connect', () => {
-      logger.info('Connected successfully to database');
+        return;
+      }
+
+      logger.info('-- Connected successfully to database --');
     });
-
-    this.db = db;
   }
 
   query = async (queryConfig) => {

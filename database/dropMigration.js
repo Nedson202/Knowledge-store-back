@@ -8,7 +8,6 @@ import { dropBookTable } from './migrations/book';
 import { dropReviewTable } from './migrations/review';
 import config from './config';
 
-
 (async () => {
   const pool = new Pool(config);
 

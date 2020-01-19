@@ -1,6 +1,5 @@
 import redis from 'redis';
 import { loggerInstance as logger } from '../logger';
-import { PRODUCTION } from '../settings';
 
 class Redis {
   constructor() {
@@ -11,28 +10,17 @@ class Redis {
 
   /**
    *
-   *
-   * @returns
-   * @memberof Redis
-   */
-  getHost() {
-    return process.env.NODE_ENV.match(PRODUCTION)
-      ? process.env.REDIS_URL : process.env.REDIS_LOCAL;
-  }
-
-  /**
-   *
    * @memberof Redis
    */
   createClient() {
-    const redisClient = redis.createClient(this.getHost());
+    const redisClient = redis.createClient(process.env.REDIS_URL);
 
     redisClient.on('connect', () => {
-      logger.info('-- Redis client connected --');
+      logger.info('Redis:createClient: Redis client connected --');
     });
 
     redisClient.on('error', (err) => {
-      logger.info(`-- Something went wrong: ${err} --`);
+      logger.info(`Redis:createClient: Something went wrong: ${err} --`);
     });
 
     this.redisClient = redisClient;
@@ -45,6 +33,12 @@ class Redis {
    * @memberof Redis
    */
   addDataToRedis = (key, value) => {
+    if (!value) {
+      logger.warn('Redis:addDataToRedis: Value is not defined');
+
+      return;
+    }
+
     this.redisClient.set(key, JSON.stringify(value), (err) => {
       if (err) {
         logger.warn(err);
@@ -63,10 +57,14 @@ class Redis {
     this.redisClient.get(key, (err, result) => {
       if (err) {
         reject(err);
-        logger.warn(err);
+        logger.warn(`Redis:getDataFromRedis: ${err}`);
       }
 
-      resolve(JSON.parse(result));
+      if (result !== 'undefined') {
+        resolve(JSON.parse(result));
+      }
+
+      resolve(null);
     });
   })
 }
