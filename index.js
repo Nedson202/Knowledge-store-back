@@ -11,9 +11,6 @@ app.listen(port,
   () => {
     logger.info(`
       App running in ${process.env.NODE_ENV.toUpperCase()} mode
-    `);
-
-    logger.info(`
       Listening on port ${port}
     `);
 

@@ -9,11 +9,11 @@ import { createBookTable } from './migrations/book';
 import { createReviewTable } from './migrations/review';
 import config from './config';
 
-const pool = new Pool(config);
-
-const db = pool;
-
 (async () => {
+  const pool = new Pool(config);
+
+  const db = pool;
+
   createGenreTable(db);
   await createUserTable(db);
   await createBookTable(db);

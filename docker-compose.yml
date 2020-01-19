@@ -1,0 +1,95 @@
+version: "3"
+
+services:
+  redis:
+    container_name: redis-cache
+    image: redis:alpine
+    expose:
+      - 6379
+    networks:
+      - app-network
+
+  elasticsearch:
+    container_name: the-knowledger-store-server-elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    environment:
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+    ports:
+      - 9300:9300
+      - 9200:9200
+    networks:
+      - app-network
+
+  the-knowledger-store-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: the-knowledger-store-server
+    container_name: the-knowledge-store-server
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "4000:4000"
+    links:
+      - db
+      - redis:redis-cache
+      - elasticsearch
+    depends_on:
+      - db
+      - redis
+      - elasticsearch
+      - migration
+    volumes:
+      - .:/home/node/app
+      - node_modules:/home/node/app/node_modules
+    environment:
+      - REDIS_URL=redis://redis-cache
+      - DB_PORT=54320
+      - DB_PASSWORD=postgres
+      - DB_USER=postgres
+      - DB_HOST=host.docker.internal
+      - ELASTIC_LOCAL=http://elasticsearch:9200
+    networks:
+      - app-network
+    # command: ["./wait-for.sh host.docker.internal:54320", "--", "npm run start:dev && npm run trigger:migration"]
+    command:  ./wait-for.sh elasticsearch:9200 -- npm run start:dev
+
+  db:
+    image: postgres
+    container_name: the-knowledge-store-server-db
+    environment:
+      POSTGRES_DB: online_bookstore
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '54320:5432'
+    restart: always
+    networks:
+      - app-network
+    volumes:
+      - ./the-knowledge-store-server-db:/var/lib/postgresql/data
+
+  migration:
+    build: .
+    image: the-knowledger-store-server
+    volumes:
+    - .:/home/node/app
+    links:
+      - db
+    depends_on:
+      - db
+    networks:
+      - app-network
+    command:  ./wait-for.sh host.docker.internal:54320 -- npm run trigger:migration
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+  node_modules:
+  esdata:

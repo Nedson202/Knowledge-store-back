@@ -3,12 +3,10 @@ import { TEST, PRODUCTION } from '../settings';
 
 dotenv.config();
 
+const databaseURL = `postgres://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
+
 let config = {
-  host: '127.0.0.1',
-  port: 5432,
-  database: process.env.DB_NAME,
-  user: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
+  connectionString: databaseURL
 };
 
 if (process.env.NODE_ENV.match(PRODUCTION)) {
