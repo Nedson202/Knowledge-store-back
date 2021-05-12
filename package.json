@@ -54,7 +54,7 @@
     "lodash": "^4.17.11",
     "mem": "^5.1.1",
     "node-postgres": "^0.0.1",
-    "nodemailer": "^4.6.8",
+    "nodemailer": "^6.4.16",
     "nodemon": "^1.18.4",
     "otplib": "^11.0.1",
     "passport": "^0.4.0",
